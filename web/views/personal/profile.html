@@ -1,0 +1,57 @@
+<div>
+    <div class="container">
+        <div class="jumbotron">
+            <p>
+                <img src="{{$.UserInfo.ProfileImage}}" class="img-circle img-responsive center-block">
+            </p>
+            <p class="text-center">{{$.UserInfo.NickName}}</p>
+            {{if and (gt .CurUid 0) (ne .CurUid .UserInfo.Uid)}}
+            <p class="text-center">
+                {{if eq .RelationStatus 0}}
+                <button class="btn-warning" id="btn_follow" uid="{{$.UserInfo.Uid}}" status="0">关注</button>
+                {{else}}
+                <button class="btn-warning" id="btn_follow" uid="{{$.UserInfo.Uid}}" status="1">取关</button>
+                {{end}}
+                <button class="btn-default" id="btn_send_message">私信</button>
+            </p>
+            {{end}}
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div>
+        {{range $i,$v := .Mblogs}}
+            <div class="well well-sm">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{$v.UpdateTime}}
+                </div>
+                <div class="panel-body">
+                    <p>
+                        {{$v.Content}}
+                    </p>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>转发:{{$v.TransCnt}}</th>
+                                <th>评论:{{$v.CommentCnt}}</th>
+                                <th>赞:{{$v.LikesCnt}}</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </li>
+                    {{/*<li class="list-group-item">转发:{{$v.TransCnt}}</li>*/}}
+                    {{/*<li class="list-group-item">评论:{{$v.CommentCnt}}</li>*/}}
+                    {{/*<li class="list-group-item">赞:{{$v.LikesCnt}}</li>*/}}
+                </ul>
+            </div>
+            </div>
+        {{end}}
+    </div>
+</div>
+<script>
+    var userInfo = {{$.UserInfo}}
+</script>
+<script type="text/javascript" src="/public/js/personal/profile.js"></script>

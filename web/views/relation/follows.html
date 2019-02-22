@@ -1,0 +1,21 @@
+{{range $i,$v := .Follows}}
+<div class="row">
+    <div class="col-md-2 col-md-offset-2">
+        <button class="btn-primary">取关</button>
+        <button class="btn-primary">私信</button>
+    </div>
+    <div class="col-md-6">
+        {{/*<img src="//tvax3.sinaimg.cn/crop.19.0.620.620.180/006VvoKYly8fijhpwx2qoj30hs0hsdfx.jpg" class="img-circle img-responsive img-thumbnail">*/}}
+        <span>{{(index $.UserInfos $v.FollowUid).NickName}}</span>
+    </div>
+    {{/*<div class="col-md-3">*/}}
+        {{/*<select class="form-control" id="sel_group">*/}}
+            {{/*<option>1</option>*/}}
+            {{/*<option>2</option>*/}}
+            {{/*<option>3</option>*/}}
+            {{/*<option>4</option>*/}}
+            {{/*<option>5</option>*/}}
+        {{/*</select>*/}}
+    {{/*</div>*/}}
+</div>
+{{end}}
