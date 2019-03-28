@@ -37,6 +37,12 @@
 			"path": "golang.org/x/crypto/bcrypt",
 			"revision": "a4c6cb3142f211c99e4bf4cd769535b29a9b616f",
 			"revisionTime": "2019-02-12T17:56:05Z"
+		},
+		{
+			"checksumSHA1": "vZR8rRBYG+rTBXyjuHVK2Y7cpC4=",
+			"path": "google.golang.org/grpc",
+			"revision": "f1437f7cc5fa7525032e27aa5fdc15e288220c4e",
+			"revisionTime": "2019-03-27T23:19:28Z"
 		}
 	],
 	"rootPath": "github.com/bluesky1024/goMblog"
