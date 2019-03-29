@@ -29,8 +29,6 @@ FUNCTION|PATH|METHOD|NEED_LOGIN
 个人关注feed页|/feed|GET|YES
 个人关注feed页(定领域)|/feed/[domain]|GET|YES
 
-go run main.go -brokers="127.0.0.1:9092" -topics="sarama" -group="example"
-
 ### 微博广场
 FUNCTION|PATH|METHOD|NEED_LOGIN
 ---|:--:|:--:|:--:

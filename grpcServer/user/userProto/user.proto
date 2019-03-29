@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package userGrpc;
+
+message User {
+    int32 Id = 1;
+    int64 Uid = 2;
+    string NickName = 3;
+    string Password = 4;
+    string Telephone = 5;
+    string Email = 6;
+    string ProfileImages = 7;
+    int64 FollowsCount = 8;
+    int64 FriendsCount = 9;
+    google.protobuf.Timestamp CreateTime = 10;
+    google.protobuf.Timestamp UpdateTime = 11;
+}
+
+message MultiUsers {
+    repeated User userInfo = 1;
+}
+
+message Uid {
+    int64 Uid = 1;
+}
+
+service UserServ {
+    rpc GetByUid(Uid) returns (User) {}
+}
