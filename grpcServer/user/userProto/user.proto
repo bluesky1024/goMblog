@@ -4,6 +4,11 @@ import "google/protobuf/timestamp.proto";
 
 package userGrpc;
 
+message ResInfo {
+    int32 code = 1;
+    string msg = 2;
+}
+
 message User {
     int32 Id = 1;
     int64 Uid = 2;
@@ -19,13 +24,30 @@ message User {
 }
 
 message MultiUsers {
-    repeated User userInfo = 1;
+    repeated User UserInfo = 1;
 }
 
 message Uid {
     int64 Uid = 1;
 }
 
-service UserServ {
-    rpc GetByUid(Uid) returns (User) {}
+message Uids {
+    repeated Uid singleUid = 1;
+}
+
+message UserRes {
+    ResInfo res = 1;
+    User info = 2;
+}
+
+message MultiUsersRes {
+    ResInfo res = 1;
+    MultiUsers info = 2;
+}
+
+service MblogUser {
+    rpc Create(User) returns (UserRes) {}
+    rpc GetByUid(Uid) returns (UserRes) {}
+    rpc GetByNicknameAndPassword(User) returns (UserRes) {}
+    rpc GetMultiByUids(Uids) returns (MultiUsersRes) {}
 }

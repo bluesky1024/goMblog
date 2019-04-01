@@ -23,6 +23,53 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type ResInfo struct {
+	Code                 int32    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Msg                  string   `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ResInfo) Reset()         { *m = ResInfo{} }
+func (m *ResInfo) String() string { return proto.CompactTextString(m) }
+func (*ResInfo) ProtoMessage()    {}
+func (*ResInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_116e343673f7ffaf, []int{0}
+}
+
+func (m *ResInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ResInfo.Unmarshal(m, b)
+}
+func (m *ResInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ResInfo.Marshal(b, m, deterministic)
+}
+func (m *ResInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResInfo.Merge(m, src)
+}
+func (m *ResInfo) XXX_Size() int {
+	return xxx_messageInfo_ResInfo.Size(m)
+}
+func (m *ResInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ResInfo proto.InternalMessageInfo
+
+func (m *ResInfo) GetCode() int32 {
+	if m != nil {
+		return m.Code
+	}
+	return 0
+}
+
+func (m *ResInfo) GetMsg() string {
+	if m != nil {
+		return m.Msg
+	}
+	return ""
+}
+
 type User struct {
 	Id                   int32                `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	Uid                  int64                `protobuf:"varint,2,opt,name=Uid,proto3" json:"Uid,omitempty"`
@@ -44,7 +91,7 @@ func (m *User) Reset()         { *m = User{} }
 func (m *User) String() string { return proto.CompactTextString(m) }
 func (*User) ProtoMessage()    {}
 func (*User) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{0}
+	return fileDescriptor_116e343673f7ffaf, []int{1}
 }
 
 func (m *User) XXX_Unmarshal(b []byte) error {
@@ -143,7 +190,7 @@ func (m *User) GetUpdateTime() *timestamp.Timestamp {
 }
 
 type MultiUsers struct {
-	UserInfo             []*User  `protobuf:"bytes,1,rep,name=userInfo,proto3" json:"userInfo,omitempty"`
+	UserInfo             []*User  `protobuf:"bytes,1,rep,name=UserInfo,proto3" json:"UserInfo,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -153,7 +200,7 @@ func (m *MultiUsers) Reset()         { *m = MultiUsers{} }
 func (m *MultiUsers) String() string { return proto.CompactTextString(m) }
 func (*MultiUsers) ProtoMessage()    {}
 func (*MultiUsers) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{1}
+	return fileDescriptor_116e343673f7ffaf, []int{2}
 }
 
 func (m *MultiUsers) XXX_Unmarshal(b []byte) error {
@@ -192,7 +239,7 @@ func (m *Uid) Reset()         { *m = Uid{} }
 func (m *Uid) String() string { return proto.CompactTextString(m) }
 func (*Uid) ProtoMessage()    {}
 func (*Uid) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{2}
+	return fileDescriptor_116e343673f7ffaf, []int{3}
 }
 
 func (m *Uid) XXX_Unmarshal(b []byte) error {
@@ -220,38 +267,185 @@ func (m *Uid) GetUid() int64 {
 	return 0
 }
 
+type Uids struct {
+	SingleUid            []*Uid   `protobuf:"bytes,1,rep,name=singleUid,proto3" json:"singleUid,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Uids) Reset()         { *m = Uids{} }
+func (m *Uids) String() string { return proto.CompactTextString(m) }
+func (*Uids) ProtoMessage()    {}
+func (*Uids) Descriptor() ([]byte, []int) {
+	return fileDescriptor_116e343673f7ffaf, []int{4}
+}
+
+func (m *Uids) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Uids.Unmarshal(m, b)
+}
+func (m *Uids) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Uids.Marshal(b, m, deterministic)
+}
+func (m *Uids) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Uids.Merge(m, src)
+}
+func (m *Uids) XXX_Size() int {
+	return xxx_messageInfo_Uids.Size(m)
+}
+func (m *Uids) XXX_DiscardUnknown() {
+	xxx_messageInfo_Uids.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Uids proto.InternalMessageInfo
+
+func (m *Uids) GetSingleUid() []*Uid {
+	if m != nil {
+		return m.SingleUid
+	}
+	return nil
+}
+
+type UserRes struct {
+	Res                  *ResInfo `protobuf:"bytes,1,opt,name=res,proto3" json:"res,omitempty"`
+	Info                 *User    `protobuf:"bytes,2,opt,name=info,proto3" json:"info,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UserRes) Reset()         { *m = UserRes{} }
+func (m *UserRes) String() string { return proto.CompactTextString(m) }
+func (*UserRes) ProtoMessage()    {}
+func (*UserRes) Descriptor() ([]byte, []int) {
+	return fileDescriptor_116e343673f7ffaf, []int{5}
+}
+
+func (m *UserRes) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UserRes.Unmarshal(m, b)
+}
+func (m *UserRes) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UserRes.Marshal(b, m, deterministic)
+}
+func (m *UserRes) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserRes.Merge(m, src)
+}
+func (m *UserRes) XXX_Size() int {
+	return xxx_messageInfo_UserRes.Size(m)
+}
+func (m *UserRes) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserRes.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UserRes proto.InternalMessageInfo
+
+func (m *UserRes) GetRes() *ResInfo {
+	if m != nil {
+		return m.Res
+	}
+	return nil
+}
+
+func (m *UserRes) GetInfo() *User {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
+type MultiUsersRes struct {
+	Res                  *ResInfo    `protobuf:"bytes,1,opt,name=res,proto3" json:"res,omitempty"`
+	Info                 *MultiUsers `protobuf:"bytes,2,opt,name=info,proto3" json:"info,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *MultiUsersRes) Reset()         { *m = MultiUsersRes{} }
+func (m *MultiUsersRes) String() string { return proto.CompactTextString(m) }
+func (*MultiUsersRes) ProtoMessage()    {}
+func (*MultiUsersRes) Descriptor() ([]byte, []int) {
+	return fileDescriptor_116e343673f7ffaf, []int{6}
+}
+
+func (m *MultiUsersRes) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MultiUsersRes.Unmarshal(m, b)
+}
+func (m *MultiUsersRes) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MultiUsersRes.Marshal(b, m, deterministic)
+}
+func (m *MultiUsersRes) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MultiUsersRes.Merge(m, src)
+}
+func (m *MultiUsersRes) XXX_Size() int {
+	return xxx_messageInfo_MultiUsersRes.Size(m)
+}
+func (m *MultiUsersRes) XXX_DiscardUnknown() {
+	xxx_messageInfo_MultiUsersRes.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MultiUsersRes proto.InternalMessageInfo
+
+func (m *MultiUsersRes) GetRes() *ResInfo {
+	if m != nil {
+		return m.Res
+	}
+	return nil
+}
+
+func (m *MultiUsersRes) GetInfo() *MultiUsers {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*ResInfo)(nil), "userGrpc.ResInfo")
 	proto.RegisterType((*User)(nil), "userGrpc.User")
 	proto.RegisterType((*MultiUsers)(nil), "userGrpc.MultiUsers")
 	proto.RegisterType((*Uid)(nil), "userGrpc.Uid")
+	proto.RegisterType((*Uids)(nil), "userGrpc.Uids")
+	proto.RegisterType((*UserRes)(nil), "userGrpc.UserRes")
+	proto.RegisterType((*MultiUsersRes)(nil), "userGrpc.MultiUsersRes")
 }
 
 func init() { proto.RegisterFile("user.proto", fileDescriptor_116e343673f7ffaf) }
 
 var fileDescriptor_116e343673f7ffaf = []byte{
-	// 351 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0x4f, 0x4b, 0xf3, 0x40,
-	0x10, 0xc6, 0xdf, 0x24, 0x6d, 0xdf, 0x74, 0xfa, 0xb6, 0xbc, 0x2c, 0x82, 0x4b, 0x10, 0x0c, 0xc1,
-	0x43, 0x50, 0x48, 0xa1, 0x1e, 0x14, 0x8f, 0x16, 0x2d, 0x39, 0x58, 0x4a, 0x6c, 0x3f, 0x40, 0xda,
-	0x4c, 0xeb, 0x62, 0x92, 0x0d, 0xbb, 0x89, 0xc5, 0xaf, 0xee, 0x49, 0x76, 0xd3, 0xf4, 0x8f, 0x17,
-	0x6f, 0x33, 0xcf, 0xf3, 0x9b, 0x61, 0x98, 0x07, 0xa0, 0x92, 0x28, 0x82, 0x42, 0xf0, 0x92, 0x13,
-	0x5b, 0xd5, 0x13, 0x51, 0xac, 0x9c, 0xcb, 0x0d, 0xe7, 0x9b, 0x14, 0x87, 0x5a, 0x5f, 0x56, 0xeb,
-	0x61, 0xc9, 0x32, 0x94, 0x65, 0x9c, 0x15, 0x35, 0xea, 0x7d, 0x99, 0xd0, 0x5a, 0x48, 0x14, 0x64,
-	0x00, 0x66, 0x98, 0x50, 0xc3, 0x35, 0xfc, 0x76, 0x64, 0x86, 0x09, 0xf9, 0x0f, 0xd6, 0x82, 0x25,
-	0xd4, 0x74, 0x0d, 0xdf, 0x8a, 0x54, 0x49, 0x1c, 0xb0, 0xa7, 0x6c, 0xf5, 0x3e, 0x8d, 0x33, 0xa4,
-	0x96, 0x6b, 0xf8, 0xdd, 0x68, 0xdf, 0x2b, 0x6f, 0x16, 0x4b, 0xb9, 0xe5, 0x22, 0xa1, 0xad, 0xda,
-	0x6b, 0x7a, 0x72, 0x01, 0xdd, 0x39, 0xa6, 0x58, 0xbc, 0xf1, 0x1c, 0x69, 0x5b, 0x9b, 0x07, 0x81,
-	0x9c, 0x41, 0xfb, 0x29, 0x8b, 0x59, 0x4a, 0x3b, 0xda, 0xa9, 0x1b, 0x72, 0x05, 0xfd, 0x99, 0xe0,
-	0x6b, 0x96, 0x62, 0x98, 0xc5, 0x1b, 0x94, 0xf4, 0xaf, 0x76, 0x4f, 0x45, 0xe2, 0xc1, 0xbf, 0x67,
-	0x9e, 0xa6, 0x7c, 0x2b, 0xc7, 0xbc, 0xca, 0x4b, 0x6a, 0xeb, 0x63, 0x4f, 0x34, 0xcd, 0x08, 0x86,
-	0x79, 0xb2, 0x63, 0xba, 0x3b, 0xe6, 0x48, 0x23, 0x0f, 0x00, 0x63, 0x81, 0x71, 0x89, 0x73, 0x96,
-	0x21, 0x05, 0xd7, 0xf0, 0x7b, 0x23, 0x27, 0xa8, 0x5f, 0x17, 0x34, 0xaf, 0x0b, 0xe6, 0xcd, 0xeb,
-	0xa2, 0x23, 0x5a, 0xcd, 0x2e, 0x8a, 0xa4, 0x99, 0xed, 0xfd, 0x3e, 0x7b, 0xa0, 0xbd, 0x7b, 0x80,
-	0x97, 0x2a, 0x2d, 0x99, 0x0a, 0x40, 0x92, 0x6b, 0xd0, 0xb9, 0x85, 0xf9, 0x9a, 0x53, 0xc3, 0xb5,
-	0xfc, 0xde, 0x68, 0x10, 0x34, 0x41, 0x06, 0x0a, 0x89, 0xf6, 0xbe, 0x77, 0xae, 0xd3, 0x69, 0x42,
-	0x32, 0xf6, 0x21, 0x8d, 0xee, 0xc0, 0x56, 0xe8, 0x2b, 0x8a, 0x0f, 0x72, 0x03, 0xf6, 0x04, 0xcb,
-	0xc7, 0x4f, 0x45, 0xf6, 0x8f, 0x56, 0xb1, 0xc4, 0xf9, 0xb1, 0xd9, 0xfb, 0xb3, 0xec, 0xe8, 0x5b,
-	0x6f, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x9f, 0x97, 0xc1, 0x6e, 0x48, 0x02, 0x00, 0x00,
+	// 498 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xdf, 0x8b, 0xd3, 0x40,
+	0x10, 0x36, 0xfd, 0xdd, 0xa9, 0x2d, 0xde, 0x72, 0x70, 0x4b, 0x10, 0x2c, 0xab, 0x0f, 0x41, 0x31,
+	0x85, 0xde, 0x8b, 0xe8, 0x83, 0xe8, 0xa1, 0xa5, 0x0f, 0x77, 0x1c, 0xa1, 0x7d, 0x15, 0xd2, 0xee,
+	0x34, 0x2e, 0x26, 0xd9, 0x90, 0x4d, 0x39, 0xfc, 0x8f, 0xfd, 0x1b, 0x7c, 0x92, 0x9d, 0x34, 0x4d,
+	0x53, 0x0e, 0xbc, 0xb7, 0xd9, 0xf9, 0xbe, 0xf9, 0x76, 0x66, 0xbe, 0x01, 0xd8, 0x1b, 0xcc, 0xfd,
+	0x2c, 0xd7, 0x85, 0x66, 0x03, 0x1b, 0x2f, 0xf2, 0x6c, 0xeb, 0xbe, 0x8a, 0xb4, 0x8e, 0x62, 0x9c,
+	0x51, 0x7e, 0xb3, 0xdf, 0xcd, 0x0a, 0x95, 0xa0, 0x29, 0xc2, 0x24, 0x2b, 0xa9, 0x62, 0x06, 0xfd,
+	0x00, 0xcd, 0x32, 0xdd, 0x69, 0xc6, 0xa0, 0xb3, 0xd5, 0x12, 0xb9, 0x33, 0x75, 0xbc, 0x6e, 0x40,
+	0x31, 0x7b, 0x01, 0xed, 0xc4, 0x44, 0xbc, 0x35, 0x75, 0xbc, 0x61, 0x60, 0x43, 0xf1, 0xb7, 0x05,
+	0x9d, 0xb5, 0xc1, 0x9c, 0x4d, 0xa0, 0xb5, 0x94, 0x07, 0x72, 0x6b, 0x29, 0x2d, 0x75, 0xad, 0x24,
+	0x51, 0xdb, 0x81, 0x0d, 0x99, 0x0b, 0x83, 0x3b, 0xb5, 0xfd, 0x75, 0x17, 0x26, 0xc8, 0xdb, 0xa4,
+	0x70, 0x7c, 0x5b, 0xec, 0x3e, 0x34, 0xe6, 0x41, 0xe7, 0x92, 0x77, 0x4a, 0xac, 0x7a, 0xb3, 0x97,
+	0x30, 0x5c, 0x61, 0x8c, 0xd9, 0x4f, 0x9d, 0x22, 0xef, 0x12, 0x58, 0x27, 0xd8, 0x25, 0x74, 0xbf,
+	0x25, 0xa1, 0x8a, 0x79, 0x8f, 0x90, 0xf2, 0xc1, 0xde, 0xc0, 0xf8, 0x3e, 0xd7, 0x3b, 0x15, 0xe3,
+	0x32, 0x09, 0x23, 0x34, 0xbc, 0x4f, 0x68, 0x33, 0xc9, 0x04, 0x3c, 0xff, 0xae, 0xe3, 0x58, 0x3f,
+	0x98, 0x1b, 0xbd, 0x4f, 0x0b, 0x3e, 0xa0, 0x66, 0x1b, 0x39, 0xe2, 0xe4, 0x0a, 0x53, 0x79, 0xe0,
+	0x0c, 0x0f, 0x9c, 0x93, 0x1c, 0xfb, 0x08, 0x70, 0x93, 0x63, 0x58, 0xe0, 0x4a, 0x25, 0xc8, 0x61,
+	0xea, 0x78, 0xa3, 0xb9, 0xeb, 0x97, 0xbb, 0xf6, 0xab, 0x5d, 0xfb, 0xab, 0x6a, 0xd7, 0xc1, 0x09,
+	0xdb, 0xd6, 0xae, 0x33, 0x59, 0xd5, 0x8e, 0xfe, 0x5f, 0x5b, 0xb3, 0xc5, 0x07, 0x80, 0xdb, 0x7d,
+	0x5c, 0x28, 0x6b, 0x80, 0x61, 0x6f, 0x61, 0x60, 0x03, 0x6b, 0x1e, 0x77, 0xa6, 0x6d, 0x6f, 0x34,
+	0x9f, 0xf8, 0x95, 0xf3, 0xbe, 0x45, 0x82, 0x23, 0x2e, 0xae, 0xc8, 0x9d, 0xca, 0x24, 0xe7, 0x68,
+	0x92, 0xb8, 0x86, 0xce, 0x5a, 0x49, 0xc3, 0xde, 0xc1, 0xd0, 0xa8, 0x34, 0x8a, 0xb1, 0xc4, 0xad,
+	0xda, 0xf8, 0x44, 0x4d, 0xc9, 0xa0, 0xc6, 0x45, 0x00, 0x7d, 0xd2, 0x47, 0xc3, 0x5e, 0x43, 0x3b,
+	0x47, 0x43, 0x8a, 0xa3, 0xf9, 0x45, 0x5d, 0x71, 0xb8, 0xaa, 0xc0, 0xa2, 0x4c, 0x40, 0x47, 0xd9,
+	0x2e, 0x5b, 0xc4, 0x3a, 0xef, 0x92, 0x30, 0xf1, 0x03, 0xc6, 0xf5, 0x6c, 0x4f, 0x56, 0xf6, 0x1a,
+	0xca, 0x97, 0x35, 0xeb, 0x44, 0x8b, 0x18, 0xf3, 0x3f, 0x0e, 0x0c, 0x6f, 0x37, 0xb1, 0x8e, 0xe8,
+	0x7a, 0xdf, 0x43, 0xaf, 0xf4, 0x84, 0x9d, 0x75, 0xe3, 0x5e, 0x9c, 0x75, 0x87, 0x46, 0x3c, 0x63,
+	0x3e, 0x0c, 0x16, 0x58, 0x7c, 0xfd, 0x6d, 0x77, 0xd8, 0x5c, 0xcb, 0xe3, 0xfc, 0xcf, 0xc0, 0x89,
+	0x6f, 0xef, 0x3d, 0x0d, 0x13, 0xfc, 0x92, 0xca, 0xe3, 0x79, 0x3f, 0xe9, 0xc3, 0x4f, 0x30, 0x59,
+	0x60, 0x41, 0x43, 0xd0, 0xaf, 0xa6, 0x51, 0xa6, 0xa4, 0x71, 0xaf, 0x1e, 0x9d, 0xd5, 0x16, 0x6f,
+	0x7a, 0x74, 0x46, 0xd7, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0x62, 0xa6, 0x72, 0xd2, 0x14, 0x04,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -262,64 +456,163 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// UserServClient is the client API for UserServ service.
+// MblogUserClient is the client API for MblogUser service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type UserServClient interface {
-	GetByUid(ctx context.Context, in *Uid, opts ...grpc.CallOption) (*User, error)
+type MblogUserClient interface {
+	Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserRes, error)
+	GetByUid(ctx context.Context, in *Uid, opts ...grpc.CallOption) (*UserRes, error)
+	GetByNicknameAndPassword(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserRes, error)
+	GetMultiByUids(ctx context.Context, in *Uids, opts ...grpc.CallOption) (*MultiUsersRes, error)
 }
 
-type userServClient struct {
+type mblogUserClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewUserServClient(cc *grpc.ClientConn) UserServClient {
-	return &userServClient{cc}
+func NewMblogUserClient(cc *grpc.ClientConn) MblogUserClient {
+	return &mblogUserClient{cc}
 }
 
-func (c *userServClient) GetByUid(ctx context.Context, in *Uid, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
-	err := c.cc.Invoke(ctx, "/userGrpc.UserServ/GetByUid", in, out, opts...)
+func (c *mblogUserClient) Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserRes, error) {
+	out := new(UserRes)
+	err := c.cc.Invoke(ctx, "/userGrpc.MblogUser/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UserServServer is the server API for UserServ service.
-type UserServServer interface {
-	GetByUid(context.Context, *Uid) (*User, error)
+func (c *mblogUserClient) GetByUid(ctx context.Context, in *Uid, opts ...grpc.CallOption) (*UserRes, error) {
+	out := new(UserRes)
+	err := c.cc.Invoke(ctx, "/userGrpc.MblogUser/GetByUid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func RegisterUserServServer(s *grpc.Server, srv UserServServer) {
-	s.RegisterService(&_UserServ_serviceDesc, srv)
+func (c *mblogUserClient) GetByNicknameAndPassword(ctx context.Context, in *User, opts ...grpc.CallOption) (*UserRes, error) {
+	out := new(UserRes)
+	err := c.cc.Invoke(ctx, "/userGrpc.MblogUser/GetByNicknameAndPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func _UserServ_GetByUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func (c *mblogUserClient) GetMultiByUids(ctx context.Context, in *Uids, opts ...grpc.CallOption) (*MultiUsersRes, error) {
+	out := new(MultiUsersRes)
+	err := c.cc.Invoke(ctx, "/userGrpc.MblogUser/GetMultiByUids", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MblogUserServer is the server API for MblogUser service.
+type MblogUserServer interface {
+	Create(context.Context, *User) (*UserRes, error)
+	GetByUid(context.Context, *Uid) (*UserRes, error)
+	GetByNicknameAndPassword(context.Context, *User) (*UserRes, error)
+	GetMultiByUids(context.Context, *Uids) (*MultiUsersRes, error)
+}
+
+func RegisterMblogUserServer(s *grpc.Server, srv MblogUserServer) {
+	s.RegisterService(&_MblogUser_serviceDesc, srv)
+}
+
+func _MblogUser_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MblogUserServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userGrpc.MblogUser/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MblogUserServer).Create(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MblogUser_GetByUid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Uid)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServServer).GetByUid(ctx, in)
+		return srv.(MblogUserServer).GetByUid(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGrpc.UserServ/GetByUid",
+		FullMethod: "/userGrpc.MblogUser/GetByUid",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServServer).GetByUid(ctx, req.(*Uid))
+		return srv.(MblogUserServer).GetByUid(ctx, req.(*Uid))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _UserServ_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "userGrpc.UserServ",
-	HandlerType: (*UserServServer)(nil),
+func _MblogUser_GetByNicknameAndPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MblogUserServer).GetByNicknameAndPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userGrpc.MblogUser/GetByNicknameAndPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MblogUserServer).GetByNicknameAndPassword(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MblogUser_GetMultiByUids_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Uids)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MblogUserServer).GetMultiByUids(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userGrpc.MblogUser/GetMultiByUids",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MblogUserServer).GetMultiByUids(ctx, req.(*Uids))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _MblogUser_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "userGrpc.MblogUser",
+	HandlerType: (*MblogUserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Create",
+			Handler:    _MblogUser_Create_Handler,
+		},
+		{
 			MethodName: "GetByUid",
-			Handler:    _UserServ_GetByUid_Handler,
+			Handler:    _MblogUser_GetByUid_Handler,
+		},
+		{
+			MethodName: "GetByNicknameAndPassword",
+			Handler:    _MblogUser_GetByNicknameAndPassword_Handler,
+		},
+		{
+			MethodName: "GetMultiByUids",
+			Handler:    _MblogUser_GetMultiByUids_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
