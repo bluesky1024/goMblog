@@ -15,6 +15,7 @@ import (
 	"github.com/bluesky1024/goMblog/datasource/dbSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/user"
 	mblogSrv "github.com/bluesky1024/goMblog/services/mblog"
+	"github.com/bluesky1024/goMblog/services/userGrpc"
 	//"github.com/go-xorm/xorm"
 
 )
@@ -173,6 +174,21 @@ func testRedisRepo(){
 	//fmt.Println(mid,err)
 }
 
+func testUserGrpcServer() {
+	userServ := userGrpc.NewUserGrpcServicer()
+	if userServ == nil{
+		fmt.Println("new server error")
+		return
+	}
+	fmt.Println("gen server success")
+	userInfo,err := userServ.Create("testGrpc","123","188","a@a.com")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(userInfo)
+}
+
 func main() {
-	testRedisRepo()
+	testUserGrpcServer()
 }
