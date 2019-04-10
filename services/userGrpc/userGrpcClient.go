@@ -11,9 +11,9 @@ var logType = "userGrpc"
 
 type UserServicer interface {
 	Create(nickname string, password string, telephone string, email string) (user dm.User, err error)
-	//GetByNicknameAndPassword(nickname string, password string) (user dm.User, found bool)
-	//GetByUid(uid int64) (user dm.User, found bool)
-	//GetMultiByUids(uids []int64) (users map[int64]dm.User, err error)
+	GetByNicknameAndPassword(nickname string, password string) (user dm.User, err error)
+	GetByUid(uid int64) (user dm.User, err error)
+	GetMultiByUids(uids []int64) (users []dm.User, err error)
 }
 
 func NewUserGrpcServicer() UserServicer {

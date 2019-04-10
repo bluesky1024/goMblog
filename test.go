@@ -181,12 +181,22 @@ func testUserGrpcServer() {
 		return
 	}
 	fmt.Println("gen server success")
-	userInfo,err := userServ.Create("testGrpc","123","188","a@a.com")
+	//userInfo,err := userServ.Create("testGrpc","123","188","a@a.com")
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//fmt.Println(userInfo)
+
+	uids := make([]int64,2)
+	uids[0] = 160846466519040
+	uids[1] = 1055425730449408
+	users,err := userServ.GetMultiByUids(uids)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(userInfo)
+	fmt.Println(users)
 }
 
 func main() {
