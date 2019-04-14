@@ -40,7 +40,7 @@ func (r *RelationDbRepository) SelectFanByUid(uid int64,uidFan int64) (relation 
 	return relation,found
 }
 
-func (r *RelationDbRepository) SelectMultiFansByUid(uid int64,page int,pageSize int) (infos []dm.FollowInfo,cnt int64){
+func (r *RelationDbRepository) SelectMultiFansByUid(uid int64,page int,pageSize int) (infos []dm.FanInfo,cnt int64){
 	start := (page-1)*pageSize
 	cnt, err := r.sourceS.Table(getFanTableName(uid)).Where("uid = ?",uid).Limit(pageSize,start).Asc("id").FindAndCount(&infos)
 	if err!= nil {

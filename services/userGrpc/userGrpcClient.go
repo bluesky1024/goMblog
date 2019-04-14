@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-var logType = "userGrpc"
+var logType = "userGrpcClient"
 
 type UserServicer interface {
 	Create(nickname string, password string, telephone string, email string) (user dm.User, err error)
@@ -15,6 +15,11 @@ type UserServicer interface {
 	GetByUid(uid int64) (user dm.User, err error)
 	GetMultiByUids(uids []int64) (users []dm.User, err error)
 }
+
+const (
+	// Address gRPC服务地址
+	Address = "127.0.0.1:50052"
+)
 
 func NewUserGrpcServicer() UserServicer {
 	var opts []grpc.DialOption
@@ -35,29 +40,3 @@ func NewUserGrpcServicer() UserServicer {
 		client: c,
 	}
 }
-
-const (
-	// Address gRPC服务地址
-	Address = "127.0.0.1:50052"
-)
-
-//func init() {
-//	var opts []grpc.DialOption
-//
-//	opts = append(opts, grpc.WithInsecure())
-//
-//	opts = append(opts, grpc.WithPerRPCCredentials(new(customCredential)))
-//
-//	conn, err := grpc.Dial(Address, opts...)
-//	if err != nil {
-//		logger.Err("userGrpcClient", err.Error())
-//	}
-//
-//	c := pb.
-//
-//	r, err := c.GetByUid(context.Background(), &pb.Uid{Uid: 123})
-//	userInfo := datamodels.User{
-//		Uid:      r.Info.Uid,
-//		NickName: r.Info.NickName,
-//	}
-//}

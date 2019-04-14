@@ -15,7 +15,7 @@ var logType = "userService"
 type MblogServicer interface {
 	Create(uid int64,content string,readAble int8,originUid int64,originMid int64) (mblog dm.MblogInfo, err error)
 	GetByMid(mid int64) (mblog dm.MblogInfo, found bool)
-	GetByUid(mid int64,page int,pageSize int) (mblogs map[int64]dm.MblogInfo)
+	GetByUid(uid int64,page int,pageSize int) (mblogs map[int64]dm.MblogInfo)
 
 	//	GetAll() []datamodels.User
 	//	GetByID(id int64) (datamodels.User, bool)

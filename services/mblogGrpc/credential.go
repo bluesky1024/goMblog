@@ -1,4 +1,4 @@
-package userGrpc
+package mblogGrpc
 
 import (
 	"context"

@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
-	pb "github.com/bluesky1024/goMblog/grpcServer/user/userProto"
+	pb "github.com/bluesky1024/goMblog/grpcServer/relation/relationProto"
 	"github.com/bluesky1024/goMblog/tools/logger"
 	"google.golang.org/grpc"
-	//"google.golang.org/grpc/credentials"
 	"net"
 )
 
 const (
-	logType = "userGrpc"
-	ServerAddress = "127.0.0.1:50052"
+	logType = "relationGrpc"
+	ServerAddress = "127.0.0.1:50054"
 )
 
 func main() {
@@ -22,13 +21,6 @@ func main() {
 	}
 
 	var opts []grpc.ServerOption
-
-	//// TLS认证
-	//creds, err := credentials.NewServerTLSFromFile("../../keys/server.pem", "../../keys/server.key")
-	//if err != nil {
-	//	grpclog.Fatalf("Failed to generate credentials %v", err)
-	//}
-	//opts = append(opts, grpc.Creds(creds))
 
 	//注册interceptor
 	var interceptor grpc.UnaryServerInterceptor
@@ -44,9 +36,9 @@ func main() {
 
 	s := grpc.NewServer(opts...)
 
-	mblogUserServ := NewMblogUserService()
+	relationServ := NewRelationService()
 
-	pb.RegisterMblogUserServer(s, mblogUserServ)
+	pb.RegisterRelationServer(s, relationServ)
 	if err := s.Serve(lis); err != nil {
 		logger.Err(logType, err.Error())
 	}

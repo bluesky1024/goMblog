@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-package userProtobuf;
+package mblogProtobuf;
 
 message User {
     int64 Id = 1;

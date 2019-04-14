@@ -17,7 +17,7 @@ var logType = "relationService"
 
 type RelationServicer interface {
 	GetFollowsByUid(uid int64, page int, pageSize int) (follows []dm.FollowInfo, cnt int64)
-	GetFansByUid(uid int64, page int, pageSize int) (fans []dm.FollowInfo, cnt int64)
+	GetFansByUid(uid int64, page int, pageSize int) (fans []dm.FanInfo, cnt int64)
 	Follow(uid int64, uidFollow int64) bool
 	UnFollow(uid int64, uidFollow int64) bool
 	CheckFollow(uidA int64, uidB int64) int
@@ -69,7 +69,7 @@ func (s *relationService) GetFollowsByUid(uid int64, page int, pageSize int) (fo
 	return s.repo.SelectMultiFollowsByUid(uid, page, pageSize)
 }
 
-func (s *relationService) GetFansByUid(uid int64, page int, pageSize int) (fans []dm.FollowInfo, cnt int64) {
+func (s *relationService) GetFansByUid(uid int64, page int, pageSize int) (fans []dm.FanInfo, cnt int64) {
 	return s.repo.SelectMultiFansByUid(uid, page, pageSize)
 }
 

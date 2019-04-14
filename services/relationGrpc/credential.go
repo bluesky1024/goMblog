@@ -1,4 +1,4 @@
-package userGrpc
+package relationGrpc
 
 import (
 	"context"
