@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/mvc"
 )
 
-func RequestMain(ctx iris.Context){
+func RequestMain(ctx iris.Context) {
 	ctx.Redirect("/personal/profile")
 }
 

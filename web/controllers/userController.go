@@ -29,7 +29,7 @@ func (c *UserController) GetRegister() mvc.Result {
 	data := iris.Map{
 		"Title": "用户注册",
 	}
-	return GenViewResponse(c.Ctx,"user/register.html",data)
+	return GenViewResponse(c.Ctx, "user/register.html", data)
 }
 
 // PostRegister handles POST: http://localhost:8080/user/register.
@@ -61,7 +61,7 @@ func (c *UserController) GetLogin() mvc.Result {
 	data := iris.Map{
 		"Title": "用户登录",
 	}
-	return GenViewResponse(c.Ctx,"user/login.html",data)
+	return GenViewResponse(c.Ctx, "user/login.html", data)
 }
 
 // PostLogin handles Post: http://localhost:8080/user/login.
@@ -84,7 +84,7 @@ func (c *UserController) PostLogin() interface{} {
 	}
 
 	//登录成功，种session
-	SetSessionUserId(c.Session,user.Uid)
+	SetSessionUserId(c.Session, user.Uid)
 
 	return ResParams{
 		Code: 1000,
@@ -101,7 +101,6 @@ func (c *UserController) AnyLogout() {
 
 	c.Ctx.Redirect("/user/login")
 }
-
 
 //测试主页
 type Test struct {

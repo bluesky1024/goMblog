@@ -57,7 +57,7 @@ func main() {
 			panic(err)
 		}
 	}
-	defer func(){
+	defer func() {
 		resourceRecycle()
 	}()
 }

@@ -48,8 +48,8 @@ type FanInfo struct {
 }
 
 type FollowGroup struct {
-	Id int64
-	Uid int64
+	Id         int64
+	Uid        int64
 	GroupName  string
 	Status     int8
 	CreateTime time.Time `xorm:"created"`

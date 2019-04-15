@@ -17,7 +17,6 @@ import (
 	mblogSrv "github.com/bluesky1024/goMblog/services/mblog"
 	"github.com/bluesky1024/goMblog/services/userGrpc"
 	//"github.com/go-xorm/xorm"
-
 )
 
 func testConfig() {
@@ -111,52 +110,52 @@ func testPasswordHashed() {
 	fmt.Println("user", user, "found:", found)
 }
 
-func testMblogOrm(){
+func testMblogOrm() {
 	//mblogSourceM, _ := datasource.LoadMblogSour(true)
 	//mblogSourceS, _ := datasource.LoadMblogSour(false)
 
 }
 
-func testGetTimeInMid(){
+func testGetTimeInMid() {
 	idGen.InitMidPool(1)
-	mid,_ :=idGen.GenMidId()
-	fmt.Printf("mid: %b\n",mid)
+	mid, _ := idGen.GenMidId()
+	fmt.Printf("mid: %b\n", mid)
 
 	var baseMblogTableName string = "mblog_info"
 
 	//时间戳在mid/uid中位置
 	var timestampPos int64 = 0x3fffffffffe00000
 
-	mblogTime := (mid&timestampPos)>>21
+	mblogTime := (mid & timestampPos) >> 21
 
-	fmt.Printf("mblogTime: %b \t %d\n",mblogTime,mblogTime)
+	fmt.Printf("mblogTime: %b \t %d\n", mblogTime, mblogTime)
 
 	realTime := mblogTime/1e3 + idGen.Epoch/1e3
 
-	fmt.Printf("mblogTime: %b \t %d\n",realTime,realTime)
+	fmt.Printf("mblogTime: %b \t %d\n", realTime, realTime)
 
 	//Format("2006-01-02 15:04:05")
-	timeFormat := time.Unix(realTime,0).Format("200601")
-	fmt.Println(baseMblogTableName+"_"+timeFormat)
+	timeFormat := time.Unix(realTime, 0).Format("200601")
+	fmt.Println(baseMblogTableName + "_" + timeFormat)
 }
 
-func testSendMblog(){
+func testSendMblog() {
 	//idGen.InitUidPool(1)
 	idGen.InitMidPool(1)
 	//uid,_ :=idGen.GenUidId()
 	uid := 160846466519040
 
 	srv := mblogSrv.NewMblogServicer()
-	mblog,err := srv.Create(int64(uid),"123",1,0,0)
-	fmt.Println("mblog:",mblog,"err:",err)
+	mblog, err := srv.Create(int64(uid), "123", 1, 0, 0)
+	fmt.Println("mblog:", mblog, "err:", err)
 }
 
-func testRedisRepo(){
-	redisPoolM,_ := redisSource.LoadRedisSource("127.0.0.1","6379")
-	redisPoolS,_ := redisSource.LoadRedisSource("127.0.0.1","6379")
-	feedRepo := feedRdRepo.NewFeedRdRepo(redisPoolM,redisPoolS)
+func testRedisRepo() {
+	redisPoolM, _ := redisSource.LoadRedisSource("127.0.0.1", "6379")
+	redisPoolS, _ := redisSource.LoadRedisSource("127.0.0.1", "6379")
+	feedRepo := feedRdRepo.NewFeedRdRepo(redisPoolM, redisPoolS)
 
-	res := feedRepo.RemoveMids(1,1,[]int64{222,444})
+	res := feedRepo.RemoveMids(1, 1, []int64{222, 444})
 	fmt.Println(res)
 
 	//feedRepo.DelFeed(1,1)
@@ -176,7 +175,7 @@ func testRedisRepo(){
 
 func testUserGrpcServer() {
 	userServ := userGrpc.NewUserGrpcServicer()
-	if userServ == nil{
+	if userServ == nil {
 		fmt.Println("new server error")
 		return
 	}
@@ -188,10 +187,10 @@ func testUserGrpcServer() {
 	//}
 	//fmt.Println(userInfo)
 
-	uids := make([]int64,2)
+	uids := make([]int64, 2)
 	uids[0] = 160846466519040
 	uids[1] = 1055425730449408
-	users,err := userServ.GetMultiByUids(uids)
+	users, err := userServ.GetMultiByUids(uids)
 	if err != nil {
 		fmt.Println(err)
 		return

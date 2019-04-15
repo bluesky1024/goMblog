@@ -24,7 +24,7 @@ func CheckSign(sign string, token string, reqData interface{}) (err error) {
 	for i := 0; i < v.NumField(); i++ {
 		f := v.Field(i)
 		if ind := strings.Index(v.Type().Field(i).Name, "XXX_"); ind != 0 {
-			mapData[v.Type().Field(i).Name] = fmt.Sprintf("%v",f)
+			mapData[v.Type().Field(i).Name] = fmt.Sprintf("%v", f)
 		}
 	}
 
@@ -42,7 +42,7 @@ func GetSign(data interface{}, token string) (sign string) {
 
 	for i := 0; i < v.NumField(); i++ {
 		f := v.Field(i)
-		a := fmt.Sprintf("%v",f)
+		a := fmt.Sprintf("%v", f)
 
 		ind := strings.Index(v.Type().Field(i).Name, "XXX_")
 		if ind != 0 {

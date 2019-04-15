@@ -14,8 +14,8 @@ var logType = "userService"
 type UserServicer interface {
 	Create(nickname string, password string, telephone string, email string) (user dm.User, err error)
 	GetByNicknameAndPassword(nickname string, password string) (user dm.User, found bool)
-	GetByUid(uid int64)(user dm.User,found bool)
-	GetMultiByUids(uids []int64)(users map[int64]dm.User,err error)
+	GetByUid(uid int64) (user dm.User, found bool)
+	GetMultiByUids(uids []int64) (users map[int64]dm.User, err error)
 
 	//	GetAll() []datamodels.User
 	//	GetByID(id int64) (datamodels.User, bool)
@@ -33,6 +33,9 @@ type userService struct {
 
 // NewUserService returns the default user service.
 func NewUserServicer() UserServicer {
+	//id生成池初始化
+	idGen.InitUidPool(3)
+
 	//user服务仓库初始化
 	userSourceM, err := ds.LoadUsers(true)
 	if err != nil {
@@ -97,7 +100,7 @@ func (s *userService) GetByUid(uid int64) (user dm.User, found bool) {
 	return dm.User{}, false
 }
 
-func (s *userService) GetMultiByUids(uids []int64) (users map[int64]dm.User,err error) {
+func (s *userService) GetMultiByUids(uids []int64) (users map[int64]dm.User, err error) {
 	return s.repo.SelectMultiByUids(uids)
 }
 

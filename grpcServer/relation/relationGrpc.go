@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	logType = "relationGrpc"
+	logType       = "relationGrpc"
 	ServerAddress = "127.0.0.1:50054"
 )
 

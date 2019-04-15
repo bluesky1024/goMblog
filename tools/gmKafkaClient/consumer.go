@@ -3,7 +3,8 @@ package gmKafkaClient
 import (
 	"github.com/Shopify/sarama"
 )
-func NewGMKafkaConsumer(addr []string) sarama.Consumer{
+
+func NewGMKafkaConsumer(addr []string) sarama.Consumer {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 	config.Version = sarama.V2_2_0_0

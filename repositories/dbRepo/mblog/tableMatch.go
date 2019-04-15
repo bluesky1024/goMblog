@@ -8,13 +8,13 @@ var baseMblogTableName string = "mblog_info"
 var baseUidToMblogTableName string = "uid_to_mblog"
 
 // 根据mid中时间信息获取mblog的表名
-func getMblogTableName(mid int64)  string{
+func getMblogTableName(mid int64) string {
 	timeFormat := idGen.GetTimeInfoById(mid).Format("200601")
-	return baseMblogTableName+"_"+timeFormat
+	return baseMblogTableName + "_" + timeFormat
 }
 
 // 根据uid中时间信息获取uid_to_mblog的表名
-func getUidToMblogTableName(uid int64) string{
+func getUidToMblogTableName(uid int64) string {
 	timeFormat := idGen.GetTimeInfoById(uid).Format("200601")
-	return baseUidToMblogTableName+"_"+timeFormat
+	return baseUidToMblogTableName + "_" + timeFormat
 }

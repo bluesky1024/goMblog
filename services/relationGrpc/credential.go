@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-var(
+var (
 	appId = "123"
 	token = "abc"
 )
@@ -17,7 +17,7 @@ type customCredential struct{}
 
 func (c customCredential) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"appid":  appId,
+		"appid": appId,
 	}, nil
 }
 
@@ -25,9 +25,8 @@ func (c customCredential) RequireTransportSecurity() bool {
 	return false
 }
 
-
-func getSign(ctxOri context.Context,req interface{}) (ctx context.Context) {
-	ctx = metadata.AppendToOutgoingContext(ctxOri,"app_id",appId)
-	ctx = metadata.AppendToOutgoingContext(ctx,"app_sign",authen.GetSign(req,token))
+func getSign(ctxOri context.Context, req interface{}) (ctx context.Context) {
+	ctx = metadata.AppendToOutgoingContext(ctxOri, "app_id", appId)
+	ctx = metadata.AppendToOutgoingContext(ctx, "app_sign", authen.GetSign(req, token))
 	return ctx
 }

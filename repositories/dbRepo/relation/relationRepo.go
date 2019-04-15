@@ -20,45 +20,44 @@ func NewRelationRepository(sourceM *xorm.Engine, sourceS *xorm.Engine) *Relation
 	}
 }
 
-
-func (r *RelationDbRepository) addFollow(uid int64,uidFollow int64,isFriend int8) bool {
+func (r *RelationDbRepository) addFollow(uid int64, uidFollow int64, isFriend int8) bool {
 	relation := dm.FollowInfo{
-		Uid:uid,
-		FollowUid:uidFollow,
-		Status:dm.FollowStatusNormal,
-		IsFriend:isFriend,
+		Uid:       uid,
+		FollowUid: uidFollow,
+		Status:    dm.FollowStatusNormal,
+		IsFriend:  isFriend,
 	}
-	_ ,err := r.sourceM.Table(getFollowTableName(uid)).Insert(relation)
-	if err != nil{
-		logger.Err(logType,err.Error())
+	_, err := r.sourceM.Table(getFollowTableName(uid)).Insert(relation)
+	if err != nil {
+		logger.Err(logType, err.Error())
 		return false
 	}
 	return true
 }
 
 func (r *RelationDbRepository) updateFollow(info dm.FollowInfo) bool {
-	if info.Uid == 0 || info.FollowUid == 0{
+	if info.Uid == 0 || info.FollowUid == 0 {
 		return false
 	}
-	_ ,err := r.sourceM.Table(getFollowTableName(info.Uid)).Cols("status","update_time","is_friend").Where("uid = ? and follow_uid = ?",info.Uid,info.FollowUid).Update(&info)
+	_, err := r.sourceM.Table(getFollowTableName(info.Uid)).Cols("status", "update_time", "is_friend").Where("uid = ? and follow_uid = ?", info.Uid, info.FollowUid).Update(&info)
 	if err != nil {
-		logger.Err(logType,err.Error())
+		logger.Err(logType, err.Error())
 		return false
 	}
 	return true
 }
 
-func (r *RelationDbRepository) SelectFollowByUid(uid int64,uidFollow int64) (relation dm.FollowInfo, found bool){
-	found,err := r.sourceS.Table(getFollowTableName(uid)).Where("uid = ?",uid).And("follow_uid = ?",uidFollow).Get(&relation)
+func (r *RelationDbRepository) SelectFollowByUid(uid int64, uidFollow int64) (relation dm.FollowInfo, found bool) {
+	found, err := r.sourceS.Table(getFollowTableName(uid)).Where("uid = ?", uid).And("follow_uid = ?", uidFollow).Get(&relation)
 	if err != nil {
-		return dm.FollowInfo{},false
+		return dm.FollowInfo{}, false
 	}
-	return relation,found
+	return relation, found
 }
 
-func (r *RelationDbRepository) AddOrUpdateFollow(uid int64,uidFollow int64) bool {
+func (r *RelationDbRepository) AddOrUpdateFollow(uid int64, uidFollow int64) bool {
 	//搜索是否存在关系
-	relationA,foundA := r.SelectFollowByUid(uid,uidFollow)
+	relationA, foundA := r.SelectFollowByUid(uid, uidFollow)
 
 	//若已存在,直接返回
 	if foundA && (relationA.Status == dm.FollowStatusNormal) {
@@ -71,21 +70,21 @@ func (r *RelationDbRepository) AddOrUpdateFollow(uid int64,uidFollow int64) bool
 	var res bool
 	if foundA {
 		relationA = dm.FollowInfo{
-			Uid:uid,
-			FollowUid:uidFollow,
-			Status:dm.FollowStatusNormal,
-			IsFriend:dm.IsFriendFalse,
+			Uid:       uid,
+			FollowUid: uidFollow,
+			Status:    dm.FollowStatusNormal,
+			IsFriend:  dm.IsFriendFalse,
 		}
 		res = r.updateFollow(relationA)
-	}else{
-		res = r.addFollow(uid,uidFollow,dm.IsFriendFalse)
+	} else {
+		res = r.addFollow(uid, uidFollow, dm.IsFriendFalse)
 	}
 	return res
 }
 
-func (r *RelationDbRepository) DeleteFollow(uid int64,uidFollow int64) bool {
+func (r *RelationDbRepository) DeleteFollow(uid int64, uidFollow int64) bool {
 	//搜索是否存在关系
-	relationA,foundA := r.SelectFollowByUid(uid,uidFollow)
+	relationA, foundA := r.SelectFollowByUid(uid, uidFollow)
 
 	//若不存在,直接返回
 	if !foundA || (relationA.Status == dm.FollowStatusDelete) {
@@ -93,20 +92,20 @@ func (r *RelationDbRepository) DeleteFollow(uid int64,uidFollow int64) bool {
 	}
 
 	relationA = dm.FollowInfo{
-		Uid:uid,
-		FollowUid:uidFollow,
-		Status:dm.FollowStatusDelete,
-		IsFriend:dm.IsFriendFalse,
+		Uid:       uid,
+		FollowUid: uidFollow,
+		Status:    dm.FollowStatusDelete,
+		IsFriend:  dm.IsFriendFalse,
 	}
 	return r.updateFollow(relationA)
 }
 
-func (r *RelationDbRepository) SelectMultiFollowsByUid(uid int64,page int,pageSize int) (infos []dm.FollowInfo,cnt int64){
-	start := (page-1)*pageSize
-	cnt, err := r.sourceS.Table(getFollowTableName(uid)).Where("uid = ?",uid).Limit(pageSize,start).Asc("id").FindAndCount(&infos)
-	if err!= nil {
-		logger.Err(logType,err.Error())
-		return infos,0
+func (r *RelationDbRepository) SelectMultiFollowsByUid(uid int64, page int, pageSize int) (infos []dm.FollowInfo, cnt int64) {
+	start := (page - 1) * pageSize
+	cnt, err := r.sourceS.Table(getFollowTableName(uid)).Where("uid = ?", uid).Limit(pageSize, start).Asc("id").FindAndCount(&infos)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return infos, 0
 	}
-	return infos,cnt
+	return infos, cnt
 }

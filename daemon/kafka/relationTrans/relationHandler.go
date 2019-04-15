@@ -20,8 +20,8 @@ func (h relationConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSess
 		var err error
 		var msgEncode = new(dm.FollowKafkaStruct)
 		err = json.Unmarshal(msg.Value, msgEncode)
-		if err != nil{
-			fmt.Println("json unmarshal err:",err.Error())
+		if err != nil {
+			fmt.Println("json unmarshal err:", err.Error())
 			continue
 		}
 

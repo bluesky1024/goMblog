@@ -4,7 +4,8 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
-func NewGMKafkaProducer(addr []string) sarama.AsyncProducer{
+
+func NewGMKafkaProducer(addr []string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
@@ -13,7 +14,7 @@ func NewGMKafkaProducer(addr []string) sarama.AsyncProducer{
 	config.Version = sarama.V2_2_0_0
 	producer, err := sarama.NewAsyncProducer(addr, config)
 	if err != nil {
-		logger.Err(logType,err.Error())
+		logger.Err(logType, err.Error())
 	}
 	return producer
 }

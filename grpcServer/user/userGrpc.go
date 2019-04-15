@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	logType = "userGrpc"
+	logType       = "userGrpc"
 	ServerAddress = "127.0.0.1:50052"
 )
 

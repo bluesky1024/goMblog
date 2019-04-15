@@ -14,7 +14,7 @@ import (
 func NewMblogUserService() *MblogUserService {
 	err := idGenerate.InitUidPool(3)
 	if err != nil {
-		logger.Err(logType,err.Error())
+		logger.Err(logType, err.Error())
 		return nil
 	}
 

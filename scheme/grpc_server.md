@@ -11,3 +11,41 @@
     * 服务端配置证书及私钥
     * 客户端安装证书
 * 自定义签名认证 （根据不同服务接口权限定制）
+
+
+type FollowInfo struct {
+    Id         int32
+    Uid        int64
+    FollowUid  int64
+    Status     int8
+    IsFriend   int8
+    GroupId    int64
+    CreateTime time.Time `xorm:"created"`
+    UpdateTime time.Time `xorm:"updated"`
+}
+
+type FanInfo struct {
+    Id         int32
+    Uid        int64
+    FanUid     int64
+    Status     int8
+    IsFriend   int8
+    CreateTime time.Time `xorm:"created"`
+    UpdateTime time.Time `xorm:"updated"`
+}
+
+type FollowGroup struct {
+    Id int64
+    Uid int64
+    GroupName  string
+    Status     int8
+    CreateTime time.Time `xorm:"created"`
+    UpdateTime time.Time `xorm:"updated"`
+}
+
+type FollowKafkaStruct struct {
+    Uid       int64
+    FollowUid int64
+    Status    int8
+}
+

@@ -28,15 +28,15 @@ func auth(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo) erro
 	}
 
 	//检查权限
-	token,err := authen.CheckPower(appId,info.FullMethod)
+	token, err := authen.CheckPower(appId, info.FullMethod)
 	if err != nil {
-		return status.Error(codes.PermissionDenied,"not allow")
+		return status.Error(codes.PermissionDenied, "not allow")
 	}
 
 	//验证签名
-	err = authen.CheckSign(appSign,token,req)
+	err = authen.CheckSign(appSign, token, req)
 	if err != nil {
-		return status.Error(codes.Unavailable,err.Error())
+		return status.Error(codes.Unavailable, err.Error())
 	}
 	return nil
 }

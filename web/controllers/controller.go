@@ -30,17 +30,17 @@ func Logout(s *sessions.Session) {
 	s.Destroy()
 }
 
-func SetSessionUserId(s *sessions.Session,uid int64){
+func SetSessionUserId(s *sessions.Session, uid int64) {
 	s.Set(UserIDKey, uid)
 }
 
-func GenViewResponse(ctx iris.Context,viewPath string,data iris.Map) mvc.Result{
+func GenViewResponse(ctx iris.Context, viewPath string, data iris.Map) mvc.Result {
 	//data中统一封装当前登录信息
 	curUid := ctx.Values().Get("CurUid").(int64)
 	curUserInfo := ctx.Values().Get("CurUserInfo").(dm.User)
 	curNickName := curUserInfo.NickName
 
-	if data == nil{
+	if data == nil {
 		data = make(iris.Map)
 	}
 	data["CurUid"] = curUid
@@ -52,6 +52,6 @@ func GenViewResponse(ctx iris.Context,viewPath string,data iris.Map) mvc.Result{
 	}
 }
 
-func GenErrorView(ctx iris.Context,data iris.Map) mvc.Result{
-	return GenViewResponse(ctx,"shared/error.html",data)
+func GenErrorView(ctx iris.Context, data iris.Map) mvc.Result {
+	return GenViewResponse(ctx, "shared/error.html", data)
 }

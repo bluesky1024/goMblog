@@ -32,42 +32,42 @@ func (s *MblogService) Create(ctx context.Context, mblogInfo *pb.MblogInfo) (res
 	}
 
 	return &pb.MblogInfo{
-		Mid:     mblog.Mid,
-		Uid:     mblog.Uid,
-		Content: mblog.Content,
-		OriginMid:mblog.OriginMid,
-		OriginUid:mblog.OriginUid,
+		Mid:       mblog.Mid,
+		Uid:       mblog.Uid,
+		Content:   mblog.Content,
+		OriginMid: mblog.OriginMid,
+		OriginUid: mblog.OriginUid,
 	}, nil
 }
 
 func (s *MblogService) GetByUid(ctx context.Context, uidReq *pb.UidReq) (res *pb.MultiMblogs, err error) {
-	mblogs := s.serv.GetByUid(uidReq.Uid,int(uidReq.Page),int(uidReq.PageSize))
+	mblogs := s.serv.GetByUid(uidReq.Uid, int(uidReq.Page), int(uidReq.PageSize))
 
-	res.MblogInfo = make([]*pb.MblogInfo,len(mblogs))
-	for ind,mblog := range mblogs{
+	res.MblogInfo = make([]*pb.MblogInfo, len(mblogs))
+	for ind, mblog := range mblogs {
 		res.MblogInfo[ind] = &pb.MblogInfo{
-			Mid:mblog.Mid,
-			Uid:mblog.Uid,
-			Content:mblog.Content,
-			OriginMid:mblog.OriginMid,
-			OriginUid:mblog.OriginUid,
+			Mid:       mblog.Mid,
+			Uid:       mblog.Uid,
+			Content:   mblog.Content,
+			OriginMid: mblog.OriginMid,
+			OriginUid: mblog.OriginUid,
 		}
 	}
 
-	return res,err
+	return res, err
 }
 
 func (s *MblogService) GetByMid(ctx context.Context, midReq *pb.MidReq) (res *pb.MblogInfo, err error) {
-	mblog,found := s.serv.GetByMid(midReq.Mid)
+	mblog, found := s.serv.GetByMid(midReq.Mid)
 	if !found {
-		return res,errors.New("not found mblog")
+		return res, errors.New("not found mblog")
 	}
 
 	return &pb.MblogInfo{
-		Mid:     mblog.Mid,
-		Uid:     mblog.Uid,
-		Content: mblog.Content,
-		OriginMid:mblog.OriginMid,
-		OriginUid:mblog.OriginUid,
+		Mid:       mblog.Mid,
+		Uid:       mblog.Uid,
+		Content:   mblog.Content,
+		OriginMid: mblog.OriginMid,
+		OriginUid: mblog.OriginUid,
 	}, nil
 }

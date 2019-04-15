@@ -176,7 +176,7 @@ func (p *nodePool) genId(n *idNode) (id int64, err error) {
 }
 
 func GetTimeInfoById(id int64) time.Time {
-	mblogTime := (id&timestampPos)>>21
-	realTime := (mblogTime + Epoch)/1e3
-	return time.Unix(realTime,0)
+	mblogTime := (id & timestampPos) >> 21
+	realTime := (mblogTime + Epoch) / 1e3
+	return time.Unix(realTime, 0)
 }

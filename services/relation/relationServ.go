@@ -24,12 +24,11 @@ type RelationServicer interface {
 	CheckRelation(uidA int64, uidB int64) int8
 
 	/*分组信息*/
-	GetGroupsByUid(uid int64)(groups []dm.FollowGroup,cnt int64)
-	AddGroup(uid int64,groupName string) bool
-	DelGroup(uid int64,groupId int64) bool
+	GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cnt int64)
+	AddGroup(uid int64, groupName string) bool
+	DelGroup(uid int64, groupId int64) bool
 	UpdateGroup(group dm.FollowGroup) bool
-	SetFollowGroup(uid int64,uidFollow int64,groupId int32) bool
-
+	SetFollowGroup(uid int64, uidFollow int64, groupId int32) bool
 
 	/*kafka关注取关分组管理补充操作*/
 	HandleFollowMsg(msg dm.FollowKafkaStruct) (err error)
@@ -73,16 +72,16 @@ func (s *relationService) GetFansByUid(uid int64, page int, pageSize int) (fans 
 	return s.repo.SelectMultiFansByUid(uid, page, pageSize)
 }
 
-func (s *relationService) GetGroupsByUid(uid int64) (groups []dm.FollowGroup,cnt int64){
+func (s *relationService) GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cnt int64) {
 	return s.repo.SelectMultiGroupsByUid(uid)
 }
 
-func (s *relationService) AddGroup(uid int64,groupName string) bool {
-	return s.repo.AddOrUpdateGroup(uid,groupName)
+func (s *relationService) AddGroup(uid int64, groupName string) bool {
+	return s.repo.AddOrUpdateGroup(uid, groupName)
 }
 
-func (s *relationService) DelGroup(uid int64,groupId int64) bool {
-	return s.repo.DeleteGroupByUidAndGroupId(uid,groupId)
+func (s *relationService) DelGroup(uid int64, groupId int64) bool {
+	return s.repo.DeleteGroupByUidAndGroupId(uid, groupId)
 }
 
 func (s *relationService) UpdateGroup(group dm.FollowGroup) bool {
@@ -105,7 +104,7 @@ func (s *relationService) Follow(uid int64, uidFollow int64) bool {
 	return succ
 }
 
-func (s *relationService) SetFollowGroup(uid int64,uidFollow int64,groupId int32) bool {
+func (s *relationService) SetFollowGroup(uid int64, uidFollow int64, groupId int32) bool {
 	return false
 }
 
@@ -167,16 +166,16 @@ func (s *relationService) sendKafkaMsg(msg dm.FollowKafkaStruct) {
 	}
 }
 
-func (s *relationService) HandleFollowMsg(msg dm.FollowKafkaStruct) (err error){
+func (s *relationService) HandleFollowMsg(msg dm.FollowKafkaStruct) (err error) {
 	//新增粉丝表记录
-	s.repo.AddOrUpdateFan(msg.FollowUid,msg.Uid)
+	s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
 
 	return err
 }
 
-func (s *relationService) HandleUnFollowMsg(msg dm.FollowKafkaStruct) (err error){
+func (s *relationService) HandleUnFollowMsg(msg dm.FollowKafkaStruct) (err error) {
 	//删除粉丝表记录
-	s.repo.DeleteFan(msg.FollowUid,msg.Uid)
+	s.repo.DeleteFan(msg.FollowUid, msg.Uid)
 
 	return err
 }
