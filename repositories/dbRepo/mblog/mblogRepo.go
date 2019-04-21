@@ -103,6 +103,21 @@ func (r *MblogDbRepository) SelectMultiByMids(mids []int64) (mblogs map[int64]dm
 			}
 		}(tableName)
 	}
+	wg.Wait()
+
+	////顺序遍历各张表
+	//for tableName, tempMids := range midMap {
+	//	var tempMblogs []dm.MblogInfo
+	//	err := r.sourceS.Table(tableName).In("mid", tempMids).Desc("id").Find(&tempMblogs)
+	//	if err != nil {
+	//		logger.Err(logType, err.Error())
+	//		return
+	//	}
+	//	for ind, mblog := range tempMblogs {
+	//		mblogs[int64(ind)] = mblog
+	//	}
+	//}
+
 	return mblogs
 }
 

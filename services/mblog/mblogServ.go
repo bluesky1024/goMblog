@@ -15,6 +15,7 @@ var logType = "userService"
 type MblogServicer interface {
 	Create(uid int64, content string, readAble int8, originUid int64, originMid int64) (mblog dm.MblogInfo, err error)
 	GetByMid(mid int64) (mblog dm.MblogInfo, found bool)
+	GetMultiByMids(mids []int64) map[int64]dm.MblogInfo
 	GetByUid(uid int64, page int, pageSize int) (mblogs map[int64]dm.MblogInfo)
 
 	//	GetAll() []datamodels.User
@@ -85,6 +86,11 @@ func (m *mblogService) GetByMid(mid int64) (mblog dm.MblogInfo, found bool) {
 		return dm.MblogInfo{}, false
 	}
 	return m.repo.SelectByMid(mid)
+}
+
+func (m *mblogService) GetMultiByMids(mids []int64) map[int64]dm.MblogInfo {
+	res := m.repo.SelectMultiByMids(mids)
+	return res
 }
 
 func (m *mblogService) GetByUid(uid int64, page int, pageSize int) (mblogs map[int64]dm.MblogInfo) {

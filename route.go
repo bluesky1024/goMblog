@@ -45,8 +45,19 @@ func relation(app *mvc.Application) {
 	//注册服务
 	app.Register(userSrv)
 	app.Register(relationSrv)
+	app.Register(SessManager.Start)
 
 	app.Handle(new(controllers.RelationController))
+}
+
+func feed(app *mvc.Application) {
+	app.Register(feedSrv)
+	app.Register(userSrv)
+	app.Register(mblogSrv)
+	app.Register(relationSrv)
+	app.Register(SessManager.Start)
+
+	app.Handle(new(controllers.FeedController))
 }
 
 //func public(app *mvc.Application) {

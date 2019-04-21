@@ -1,6 +1,7 @@
 package main
 
 import (
+	feedServ "github.com/bluesky1024/goMblog/services/feed"
 	mblogServ "github.com/bluesky1024/goMblog/services/mblog"
 	relationServ "github.com/bluesky1024/goMblog/services/relation"
 	userServ "github.com/bluesky1024/goMblog/services/user"
@@ -17,6 +18,7 @@ var (
 	userSrv     userServ.UserServicer
 	mblogSrv    mblogServ.MblogServicer
 	relationSrv relationServ.RelationServicer
+	feedSrv     feedServ.FeedServicer
 )
 
 func initServ() {
@@ -31,6 +33,7 @@ func initBasicServ() {
 	userSrv = userServ.NewUserServicer()
 	mblogSrv = mblogServ.NewMblogServicer()
 	relationSrv = relationServ.NewRelationServicer()
+	feedSrv = feedServ.NewFeedServicer()
 }
 
 func initIdGen() {

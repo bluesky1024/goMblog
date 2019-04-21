@@ -1,13 +1,11 @@
 package mblogGrpc
 
 import (
-	"context"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	pb "github.com/bluesky1024/goMblog/services/mblogGrpc/mblogProto"
-	"google.golang.org/grpc"
 )
 
-type relationService struct {
+type mblogService struct {
 	client pb.MblogClient
 }
 

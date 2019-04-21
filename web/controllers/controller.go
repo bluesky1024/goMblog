@@ -45,6 +45,7 @@ func GenViewResponse(ctx iris.Context, viewPath string, data iris.Map) mvc.Resul
 	}
 	data["CurUid"] = curUid
 	data["CurNickName"] = curNickName
+	data["CurUserInfo"] = curUserInfo
 
 	return mvc.View{
 		Name: viewPath,

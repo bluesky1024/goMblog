@@ -30,9 +30,9 @@ func (c *PersonalController) GetProfile() {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
 	if CurUid == 0 {
 		c.Ctx.Redirect("/user/login")
-	} else {
-		c.Ctx.Redirect("/personal/profile/" + strconv.FormatInt(CurUid, 10))
 	}
+
+	c.Ctx.Redirect("/personal/profile/" + strconv.FormatInt(CurUid, 10))
 }
 
 // GetProfle handles GET: http://localhost:8080/personal/profile/[uid].
@@ -45,8 +45,16 @@ func (c *PersonalController) GetProfileBy(uid int64) interface{} {
 	curUid := c.Ctx.Values().Get("CurUid").(int64)
 	relationStatus := c.RelationSrv.CheckFollow(curUid, uid)
 
+	CurUid := c.Ctx.Values().Get("CurUid").(int64)
+	var title string
+	if CurUid == uid {
+		title = "personal profile"
+	} else {
+		title = userInfo.NickName + "'s profile"
+	}
+
 	data := iris.Map{
-		"Title":          "个人主页",
+		"Title":          title,
 		"Mblogs":         mblogs,
 		"UserInfo":       userInfo,
 		"RelationStatus": relationStatus,

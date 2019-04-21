@@ -180,3 +180,9 @@ func GetTimeInfoById(id int64) time.Time {
 	realTime := (mblogTime + Epoch) / 1e3
 	return time.Unix(realTime, 0)
 }
+
+//返回ms级时间戳
+func GetDetailTimeById(id int64) (microTimestamp int64) {
+	microTimestamp = (id & timestampPos) >> 21
+	return microTimestamp + Epoch
+}
