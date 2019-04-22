@@ -24,10 +24,6 @@ type RelationController struct {
 }
 
 func (c *RelationController) GetFollows() mvc.Result {
-	data := iris.Map{
-		"Title": "我的关注",
-	}
-
 	curUid := c.Ctx.Values().Get("CurUid").(int64)
 
 	follows, cnt := c.RelationServ.GetFollowsByUid(curUid, 1, 20)
@@ -38,18 +34,26 @@ func (c *RelationController) GetFollows() mvc.Result {
 	}
 	followUserInfo, err := c.UserServ.GetMultiByUids(followUids)
 	if err != nil {
+		data := iris.Map{}
 		GenErrorView(c.Ctx, data)
 	}
 
-	data["Follows"] = follows
-	data["Cnt"] = cnt
-	data["UserInfos"] = followUserInfo
+	//分组数据
+	groupsInfo, _ := c.RelationServ.GetGroupsByUid(curUid)
+
+	data := iris.Map{
+		"Title":      "my follows",
+		"Follows":    follows,
+		"Cnt":        cnt,
+		"UserInfos":  followUserInfo,
+		"GroupsInfo": groupsInfo,
+	}
 	return GenViewResponse(c.Ctx, "relation/follows.html", data)
 }
 
 func (c *RelationController) GetFans() mvc.Result {
 	data := iris.Map{
-		"Title": "用户注册",
+		"Title": "my fans",
 	}
 	return GenViewResponse(c.Ctx, "user/register.html", data)
 }
@@ -138,6 +142,61 @@ func (c *RelationController) PostUnfollow() interface{} {
 	}
 }
 
+//////////////////////////////
+//////relation分组管理/////////
+//////////////////////////////
+//为关注人设置分组
+func (c *RelationController) PostSetGroup() interface{} {
+	curUid := c.Ctx.Values().Get("CurUid").(int64)
+	if curUid == 0 {
+		return ResParams{
+			Code: 1001,
+			Msg:  "please login first",
+		}
+	}
+	var (
+		groupIdStr = c.Ctx.FormValue("groupId")
+		uidStr     = c.Ctx.FormValue("uidFollow")
+	)
+	groupId, _ := strconv.ParseInt(groupIdStr, 10, 64)
+	uidFollow, _ := strconv.ParseInt(uidStr, 10, 64)
+
+	//判断是否关注用户
+	if check := c.RelationServ.CheckFollow(curUid, uidFollow); check == 0 {
+		return ResParams{
+			Code: 1001,
+			Msg:  "invalid follow person",
+		}
+	}
+
+	//检查分组是否存在
+	groups, _ := c.RelationServ.GetGroupsByUid(curUid)
+	find := false
+	for _, group := range groups {
+		if group.Id == groupId {
+			find = true
+		}
+	}
+	if !find {
+		return ResParams{
+			Code: 1001,
+			Msg:  "invalid group",
+		}
+	}
+
+	//设置分组
+	if setRes := c.RelationServ.SetFollowGroup(curUid, uidFollow, groupId); !setRes {
+		return ResParams{
+			Code: 1001,
+			Msg:  "set group fail",
+		}
+	}
+	return ResParams{
+		Code: 1000,
+		Msg:  "set group success",
+	}
+}
+
 func (c *RelationController) GetGroups() interface{} {
 	curUid := c.Ctx.Values().Get("CurUid").(int64)
 	groups, _ := c.RelationServ.GetGroupsByUid(curUid)
@@ -206,5 +265,8 @@ func (c *RelationController) PostUpdateGroup() interface{} {
 		Code: 1000,
 		Msg:  "update group success",
 	}
-
 }
+
+//////////////////////////////
+//////relation分组管理/////////
+//////////////////////////////

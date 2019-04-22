@@ -10,6 +10,9 @@ import (
 	"strconv"
 )
 
+// GET				/feed/get
+// POST 			/feed/more
+// POST 			/feed/newer
 type FeedController struct {
 	Ctx iris.Context
 
@@ -48,7 +51,6 @@ func (c *FeedController) Get() interface{} {
 func (c *FeedController) PostMore() interface{} {
 	//判断是否登录
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-	CurUid = 2317487850917888
 	if CurUid == 0 {
 		return ResParams{
 			Code: 1001,
@@ -111,7 +113,6 @@ func (c *FeedController) PostMore() interface{} {
 func (c *FeedController) PostNewer() interface{} {
 	//判断是否登录
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-	CurUid = 2317487850917888
 	if CurUid == 0 {
 		return ResParams{
 			Code: 1001,

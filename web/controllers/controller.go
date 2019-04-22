@@ -54,5 +54,9 @@ func GenViewResponse(ctx iris.Context, viewPath string, data iris.Map) mvc.Resul
 }
 
 func GenErrorView(ctx iris.Context, data iris.Map) mvc.Result {
+	if data == nil {
+		data = make(iris.Map)
+	}
+	data["Title"] = "error page"
 	return GenViewResponse(ctx, "shared/error.html", data)
 }

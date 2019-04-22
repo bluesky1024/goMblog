@@ -23,12 +23,12 @@ type RelationServicer interface {
 	CheckFollow(uidA int64, uidB int64) int
 	CheckRelation(uidA int64, uidB int64) int8
 
-	/*分组信息*/
+	/*分组管理*/
 	GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cnt int64)
 	AddGroup(uid int64, groupName string) bool
 	DelGroup(uid int64, groupId int64) bool
 	UpdateGroup(group dm.FollowGroup) bool
-	SetFollowGroup(uid int64, uidFollow int64, groupId int32) bool
+	SetFollowGroup(uid int64, uidFollow int64, groupId int64) bool
 
 	/*kafka关注取关分组管理补充操作*/
 	HandleFollowMsg(msg dm.FollowKafkaStruct) (err error)
@@ -104,7 +104,7 @@ func (s *relationService) Follow(uid int64, uidFollow int64) bool {
 	return succ
 }
 
-func (s *relationService) SetFollowGroup(uid int64, uidFollow int64, groupId int32) bool {
+func (s *relationService) SetFollowGroup(uid int64, uidFollow int64, groupId int64) bool {
 	return false
 }
 
@@ -130,6 +130,7 @@ func (s *relationService) CheckFollow(uidA int64, uidB int64) int {
 	}
 
 	info, found := s.repo.SelectFollowByUid(uidA, uidB)
+	fmt.Println(info)
 	if !found || info.Status == dm.FollowStatusDelete {
 		return 0
 	}

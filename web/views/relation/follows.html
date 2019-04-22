@@ -1,14 +1,14 @@
-{{range $i,$v := .Follows}}
+{{range $i,$v := $.Follows}}
 <div class="row">
     <div class="col-md-2 col-md-offset-2">
-        <button class="btn-primary">取关</button>
+        <button class="btn-primary btn-follow" id="btn_follow_{{$v.FollowUid}}" uid="{{$v.FollowUid}}" status="1">取关</button>
         <button class="btn-primary">私信</button>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
         {{/*<img src="//tvax3.sinaimg.cn/crop.19.0.620.620.180/006VvoKYly8fijhpwx2qoj30hs0hsdfx.jpg" class="img-circle img-responsive img-thumbnail">*/}}
         <span>{{(index $.UserInfos $v.FollowUid).NickName}}</span>
     </div>
-    {{/*<div class="col-md-3">*/}}
+    <div class="col-md-3">
         {{/*<select class="form-control" id="sel_group">*/}}
             {{/*<option>1</option>*/}}
             {{/*<option>2</option>*/}}
@@ -16,6 +16,13 @@
             {{/*<option>4</option>*/}}
             {{/*<option>5</option>*/}}
         {{/*</select>*/}}
-    {{/*</div>*/}}
+        <select class="form-control group-sel" style="width:200px" id="group_sel_{{$v.FollowUid}}" uid="{{$v.FollowUid}}" ori_group_id="{{$v.GroupId}}">
+            <option value="0" {{if eq $v.GroupId 0}} selected="selected"{{end}}>no group</option>
+            {{range $gi,$gv := $.GroupsInfo}}
+                <option value="{{$gv.Id}}" {{if eq $v.GroupId $gv.Id}} selected="selected"{{end}}>{{$gv.GroupName}}</option>
+            {{end}}
+        </select>
+    </div>
 </div>
 {{end}}
+<script type="text/javascript" src="/public/js/relation/follow.js"></script>
