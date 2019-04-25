@@ -35,7 +35,7 @@ func (s *relationService) UnFollow(uid int64, uidFollow int64) bool {
 			FollowUid: uidFollow,
 			Status:    dm.FollowStatusDelete,
 		}
-		s.sendFollowMsg(msg)
+		s.sendUnFollowMsg(msg)
 	}
 	return succ
 }

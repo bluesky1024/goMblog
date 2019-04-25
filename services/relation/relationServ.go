@@ -1,11 +1,9 @@
 package relationService
 
 import (
-	"github.com/bluesky1024/goMblog/config"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/relation"
-	"github.com/bluesky1024/goMblog/tools/kafkaClient"
 	"github.com/bluesky1024/goMblog/tools/logger"
 
 	"github.com/Shopify/sarama"
@@ -30,6 +28,7 @@ type RelationServicer interface {
 
 	/*kafka关注取关分组管理补充操作*/
 	HandleFollowMsg(msg dm.FollowMsg) (err error)
+	HandleUnFollowMsg(msg dm.FollowMsg) (err error)
 
 	ReleaseSrv() error
 }

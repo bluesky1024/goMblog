@@ -35,7 +35,7 @@ func main() {
 	defer func() { _ = client.Close() }()
 
 	// Start a new consumer group
-	group, err := sarama.NewConsumerGroupFromClient(relationConfig["groupId"], client)
+	group, err := sarama.NewConsumerGroupFromClient(groupId, client)
 	if err != nil {
 		panic(err)
 	}

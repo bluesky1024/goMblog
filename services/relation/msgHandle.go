@@ -42,6 +42,25 @@ func (s *relationService) sendFollowMsg(msg dm.FollowMsg) {
 	}
 }
 
+func (s *relationService) sendUnFollowMsg(msg dm.FollowMsg) {
+	//kafkaConfig := conf.InitConfig("kafkaConfig.relation")
+
+	msgStr, _ := json.Marshal(&msg)
+	kafkaMsg := &sarama.ProducerMessage{
+		Topic: "relationUnFollow",
+		Key:   sarama.StringEncoder(msg.Uid),
+		Value: sarama.ByteEncoder(msgStr),
+	}
+
+	s.kafkaProducer.Input() <- kafkaMsg
+	select {
+	case suc := <-s.kafkaProducer.Successes():
+		fmt.Println("offset:", suc.Offset, "timestamp:", suc.Timestamp)
+	case fail := <-s.kafkaProducer.Errors():
+		fmt.Println("err:", fail.Err.Error())
+	}
+}
+
 func (s *relationService) sendGroupMsg(msg dm.GroupMsg) {
 	msgStr, _ := json.Marshal(&msg)
 	kafkaMsg := &sarama.ProducerMessage{
@@ -60,13 +79,9 @@ func (s *relationService) sendGroupMsg(msg dm.GroupMsg) {
 }
 
 func (s *relationService) HandleFollowMsg(msg dm.FollowMsg) (err error) {
-	if msg.Status == 1 {
-		//新增粉丝表记录
-		s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
-	} else {
-		//删除粉丝表记录
-		s.repo.DeleteFan(msg.FollowUid, msg.Uid)
-	}
+	//新增粉丝表记录
+	s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
+
 	return err
 }
 
