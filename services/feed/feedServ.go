@@ -22,8 +22,8 @@ type FeedServicer interface {
 	GetFeedNewerByMid(uid int64, groupId int64, Mid int64, size int) (mids []int64, err error)
 
 	/*kafka关注取关分组管理补充操作*/
-	//HandleFollowMsg(msg dm.FollowKafkaStruct) (err error)
-	//HandleUnFollowMsg(msg dm.FollowKafkaStruct) (err error)
+	//HandleFollowMsg(msg dm.FollowMsg) (err error)
+	//HandleUnFollowMsg(msg dm.FollowMsg) (err error)
 	////HandleGroupAddUidMsg()
 	////HandleGroupRemUidMsg()
 	////HandleGroupDelMsg()

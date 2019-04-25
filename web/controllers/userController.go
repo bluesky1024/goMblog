@@ -3,7 +3,6 @@
 package controllers
 
 import (
-	"fmt"
 	userServ "github.com/bluesky1024/goMblog/services/user"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -113,7 +112,6 @@ func (c *UserController) GetMe() interface{} {
 		Demo1: 123,
 		Demo2: 234,
 	}
-	fmt.Println(test)
 	return test
 }
 

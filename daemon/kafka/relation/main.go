@@ -2,24 +2,26 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/Shopify/sarama"
-	"github.com/bluesky1024/goMblog/config"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-var logType = "kafkaConsumerRelation"
+var (
+	logType = "kafkaConsumerRelation"
+	groupId = "relationSrv"
+)
 
 func main() {
 	initServ()
+	defer func() {
+		resourceRecycle()
+	}()
 
-	relationConfig := conf.InitConfig("kafkaConfig.relation")
-	fmt.Println(relationConfig)
-	//relationConfig := make(map[string]string)
-	//relationConfig["host"] = "0.0.0.0"
-	//relationConfig["port"] = "9092"
-	//relationConfig["groupId"] = "relation"
-	//relationConfig["topic"] = "relation_trans"
+	//relationConfig := conf.InitConfig("kafkaConfig.relation")
+	//fmt.Println(relationConfig)
+	relationConfig := make(map[string]string)
+	relationConfig["host"] = "0.0.0.0"
+	relationConfig["port"] = "9092"
 
 	config := sarama.NewConfig()
 	config.Version = sarama.V2_2_0_0
@@ -46,25 +48,14 @@ func main() {
 		}
 	}()
 
+	topics, msgHandler := newRelationHandler()
+
 	// Iterate over consumer sessions.
 	ctx := context.Background()
 	for {
-		topics := []string{relationConfig["topic"]}
-		handler := relationConsumerGroupHandler{}
-
-		err := group.Consume(ctx, topics, handler)
+		err := group.Consume(ctx, topics, msgHandler)
 		if err != nil {
 			panic(err)
 		}
-	}
-	defer func() {
-		resourceRecycle()
-	}()
-}
-
-func resourceRecycle() {
-	//服务释放
-	if relationSrv != nil {
-		relationSrv.ReleaseSrv()
 	}
 }

@@ -78,31 +78,38 @@ function setGroup(uid,groupId,oriGroupId){
                     $("#group_sel_" + uid).attr("ori_group_id",groupId)
                 }else{
                     alert(res.Msg);
-                    var oriStr = "option[value=" + oriGroupId + "]";
-                    var newStr = "option[value=" + groupId + "]";
-                    $("#group_sel_" + uid).find(newStr).attr("selected",false);
-                    $("#group_sel_" + uid).find(oriStr).attr("selected",true);
+                    $("#group_sel_" + uid).val(oriGroupId);
                 }
                 btnLock = false;
             },
             error: function(){
                 alert("error happend");
-                var oriStr = "option[value=" + oriGroupId + "]";
-                var newStr = "option[value=" + groupId + "]";
-                $("#group_sel_" + uid).find(newStr).attr("selected",false);
-                $("#group_sel_" + uid).find(oriStr).attr("selected",true);
+                $("#group_sel_" + uid).val(oriGroupId);
                 btnLock = false;
             }
         });
     }
 }
 
+function refresh_sel(uid,groupId){
+    $("#group_sel_" + uid).val(groupId);
+    // $("#group_sel_" + uid).children("option").each(function(){
+    //     alert($(this).text());
+    //     if($(this).val() != groupId){
+    //         $(this).removeAttr("selected");
+    //     }else{
+    //         $(this).attr("selected","selected");
+    //     }
+    // });
+}
+
 $(function () {
     $(".group-sel").change(function(){
-        // var uid = $(this).attr("uid");
-        // var group_id = $(this).val();
-        // var oriGroupId = $(this).attr("ori_group_id");
-        // setGroup(uid,group_id,oriGroupId);
+        // alert(123);
+        var uid = $(this).attr("uid");
+        var group_id = $(this).val();
+        var oriGroupId = $(this).attr("ori_group_id");
+        setGroup(uid,group_id,oriGroupId);
     });
 
     $(".btn-follow").on("click",function(){

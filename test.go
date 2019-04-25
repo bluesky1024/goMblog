@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bluesky1024/goMblog/datasource/redisSource"
 	"github.com/bluesky1024/goMblog/repositories/redisRepo/feed"
+	"reflect"
 
 	"sync"
 	"time"
@@ -198,6 +200,73 @@ func testUserGrpcServer() {
 	fmt.Println(users)
 }
 
+func testJsonEncodeDecode() {
+	//realMsg := dm.FollowMsg{
+	//	Uid:       1,
+	//	FollowUid: 2,
+	//	Status:    1,
+	//}
+
+	type InnerStruct struct {
+		Id   int64
+		Name string
+		Test string
+	}
+
+	type tempStruct struct {
+		Uid      int64
+		InStruct InnerStruct
+		A        int32
+	}
+
+	realMsg := tempStruct{
+		Uid: 1,
+		A:   2,
+		InStruct: InnerStruct{
+			Id:   123,
+			Name: "ABC",
+			Test: "EFD",
+		},
+	}
+
+	msg := dm.KafkaMsg{
+		MsgId:     111,
+		Topic:     "abc",
+		Partition: 1,
+		Data:      realMsg,
+	}
+
+	jsonData, _ := json.Marshal(&msg)
+
+	msgRecover := new(dm.KafkaMsg)
+	err := json.Unmarshal(jsonData, msgRecover)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Printf("%s \n", jsonData)
+	fmt.Printf("%s \n", msgRecover.Data)
+
+	//realMsgRecover := msgRecover.Data.(dm.FollowMsg)
+
+	//遍历解析msgRecover
+	//for ind, v := range msgRecover.Data.(map[string]interface{}) {
+	//	fmt.Println(ind, reflect.TypeOf(v))
+	//}
+	//SearchDeepMap(msgRecover.Data.(map[string]interface{}))
+	//fmt.Println(msgRecover.Data)
+}
+
+func SearchDeepMap(data map[string]interface{}) {
+	for ind, v := range data {
+		if reflect.TypeOf(v).Name() == "map[string]interface {}" {
+			SearchDeepMap(v.(map[string]interface{}))
+			continue
+		}
+		fmt.Println(ind, reflect.TypeOf(v).Name())
+	}
+}
+
 func main() {
-	testUserGrpcServer()
+	//testJsonEncodeDecode()
 }

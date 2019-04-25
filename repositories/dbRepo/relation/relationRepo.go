@@ -1,6 +1,7 @@
 package relationDbRepo
 
 import (
+	"errors"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/tools/logger"
 	"github.com/go-xorm/xorm"
@@ -35,11 +36,11 @@ func (r *RelationDbRepository) addFollow(uid int64, uidFollow int64, isFriend in
 	return true
 }
 
-func (r *RelationDbRepository) updateFollow(info dm.FollowInfo) bool {
+func (r *RelationDbRepository) updateFollowByUid(info dm.FollowInfo) bool {
 	if info.Uid == 0 || info.FollowUid == 0 {
 		return false
 	}
-	_, err := r.sourceM.Table(getFollowTableName(info.Uid)).Cols("status", "update_time", "is_friend").Where("uid = ? and follow_uid = ?", info.Uid, info.FollowUid).Update(&info)
+	_, err := r.sourceM.Table(getFollowTableName(info.Uid)).Cols("status", "update_time", "is_friend", "group_id").Where("uid = ? and follow_uid = ?", info.Uid, info.FollowUid).Update(&info)
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return false
@@ -74,8 +75,9 @@ func (r *RelationDbRepository) AddOrUpdateFollow(uid int64, uidFollow int64) boo
 			FollowUid: uidFollow,
 			Status:    dm.FollowStatusNormal,
 			IsFriend:  dm.IsFriendFalse,
+			GroupId:   0,
 		}
-		res = r.updateFollow(relationA)
+		res = r.updateFollowByUid(relationA)
 	} else {
 		res = r.addFollow(uid, uidFollow, dm.IsFriendFalse)
 	}
@@ -96,8 +98,23 @@ func (r *RelationDbRepository) DeleteFollow(uid int64, uidFollow int64) bool {
 		FollowUid: uidFollow,
 		Status:    dm.FollowStatusDelete,
 		IsFriend:  dm.IsFriendFalse,
+		GroupId:   0,
 	}
-	return r.updateFollow(relationA)
+	return r.updateFollowByUid(relationA)
+}
+
+func (r *RelationDbRepository) UpdateFollowGroupByUid(uid int64, uidFollow int64, groupId int64) (res bool, err error) {
+	//搜索是否存在关系
+	relationA, foundA := r.SelectFollowByUid(uid, uidFollow)
+
+	//若不存在,直接返回
+	if !foundA || (relationA.Status == dm.FollowStatusDelete) {
+		return false, errors.New("not found relation")
+	}
+
+	relationA.GroupId = groupId
+	res = r.updateFollowByUid(relationA)
+	return res, nil
 }
 
 func (r *RelationDbRepository) SelectMultiFollowsByUid(uid int64, page int, pageSize int) (infos []dm.FollowInfo, cnt int64) {
