@@ -1,0 +1,82 @@
+<div>
+    <div class="container">
+        <div class="jumbotron">
+            <p>
+                <img src="{{$.UserInfo.ProfileImage}}" class="img-circle img-responsive center-block">
+            </p>
+            <p class="text-center">{{$.UserInfo.NickName}}</p>
+            <p class="text-center">
+                <select class="form-control center-block" style="width:200px" id="group-sel">
+                    <option value="0">全部关注</option>
+                    {{range $i,$v := .GroupsInfo}}
+                    <option value="{{$v.Id}}">{{$v.GroupName}}</option>
+                    {{end}}
+                </select>
+            </p>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div>
+    <button id="btn-get-more-feed">模拟向下拉取</button>
+    <button id="btn-refresh-new-feed">模拟刷新最新消息</button>
+    </div>
+
+    {{/*<div id="feed-block" style="height:500px;overflow:auto">*/}}
+    <div id="feed-block">
+        <div class="well well-sm mblog-card" id="mblog-demo">
+            <div class="panel panel-default">
+                <div class="panel-heading mblog-base-info">
+                    NickName:CreateTime
+                </div>
+                <div class="panel-body">
+                    <p class="mblog-content" mblog_time="time">
+                        Content
+                    </p>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="mblog-trans">转发:0</th>
+                                <th class="mblog-comment">评论:0</th>
+                                <th class="mblog-likes">赞:0</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="well well-sm mblog-card" id="mblog-demo" mid="123" uid="123" style="display: none">
+        <div class="panel panel-default">
+            <div class="panel-heading mblog-base-info">
+                NickName:CreateTime
+            </div>
+            <div class="panel-body">
+                <p class="mblog-content" mblog_time="time">
+                    Content
+                </p>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="mblog-trans">转发:0</th>
+                            <th class="mblog-comment">评论:0</th>
+                            <th class="mblog-likes">赞:0</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    var userInfo = {{$.UserInfo}}
+</script>
+<script type="text/javascript" src="/public/js/feed/feed.js"></script>

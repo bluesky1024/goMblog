@@ -48,16 +48,25 @@ type FanInfo struct {
 }
 
 type FollowGroup struct {
-	Id int64
-	Uid int64
+	Id         int64
+	Uid        int64
 	GroupName  string
 	Status     int8
 	CreateTime time.Time `xorm:"created"`
 	UpdateTime time.Time `xorm:"updated"`
 }
 
-type FollowKafkaStruct struct {
+type FollowMsg struct {
+	MsgId     int64
 	Uid       int64
 	FollowUid int64
 	Status    int8
+}
+
+type GroupMsg struct {
+	MsgId     int64
+	Uid       int64
+	FollowUid int64
+	GroupId   int64
+	InOrOut   bool
 }

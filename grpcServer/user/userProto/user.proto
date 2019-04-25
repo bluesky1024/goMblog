@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package mblogProtobuf;
+
+message User {
+    int64 Id = 1;
+    int64 Uid = 2;
+    string NickName = 3;
+    string Password = 4;
+    string Telephone = 5;
+    string Email = 6;
+    string ProfileImages = 7;
+    int64 FollowsCount = 8;
+    int64 FriendsCount = 9;
+    google.protobuf.Timestamp CreateTime = 10;
+    google.protobuf.Timestamp UpdateTime = 11;
+}
+
+message MultiUsers {
+    repeated User UserInfo = 1;
+}
+
+message Uid {
+    int64 Uid = 1;
+}
+
+message Uids {
+    repeated Uid singleUid = 1;
+}
+
+service MblogUser {
+    rpc Create(User) returns (User) {}
+    rpc GetByUid(Uid) returns (User) {}
+    rpc GetByNicknameAndPassword(User) returns (User) {}
+    rpc GetMultiByUids(Uids) returns (MultiUsers) {}
+}

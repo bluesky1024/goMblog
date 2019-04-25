@@ -65,15 +65,15 @@ func (r *UserDbRepository) SelectByUid(uid int64) (user dm.User, found bool) {
 func (r *UserDbRepository) SelectMultiByUids(uids []int64) (users map[int64]dm.User, err error) {
 	users = make(map[int64]dm.User)
 	var userArr []dm.User
-	err = r.sourceS.In("uid",uids).Find(&userArr)
-	if err != nil{
-		return users,err
+	err = r.sourceS.In("uid", uids).Find(&userArr)
+	if err != nil {
+		return users, err
 	}
 
-	for _,user := range userArr {
+	for _, user := range userArr {
 		users[user.Uid] = user
 	}
-	return users,nil
+	return users, nil
 }
 
 func (r *UserDbRepository) Insert(u dm.User) (affected int64, err error) {

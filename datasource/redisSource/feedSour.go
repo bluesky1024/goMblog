@@ -10,7 +10,7 @@ var feedMInstance *redis.Pool
 var feedSInstance *redis.Pool
 var userLock *sync.Mutex = &sync.Mutex{}
 
-func LoadFeedRdSour(master bool) (*redis.Pool,error)  {
+func LoadFeedRdSour(master bool) (*redis.Pool, error) {
 	var err error = nil
 	if master {
 		if feedMInstance == nil {
@@ -39,6 +39,6 @@ func LoadFeedRdSour(master bool) (*redis.Pool,error)  {
 				}
 			}
 		}
-		return feedSInstance,err
+		return feedSInstance, err
 	}
 }

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package mblogProto;
+
+message MblogInfo {
+    int32 Id = 1;
+    int64 Mid = 2;
+    int64 Uid = 3;
+    string Content = 4;
+    int64 OriginMid = 5;
+    int64 OriginUid = 6;
+    int32 TransCnt = 7;
+    int32 LikesCnt = 8;
+    int32 CommentCnt = 9;
+    int32 Status = 10;
+    int32 ReadAble = 11;
+    google.protobuf.Timestamp CreateTime = 12;
+    google.protobuf.Timestamp UpdateTime = 13;
+}
+
+message MultiMblogs {
+    repeated MblogInfo mblogInfo = 1;
+}
+
+message UidReq {
+    int64 Uid = 1;
+    int32 Page = 2;
+    int32 PageSize = 3;
+}
+
+message Mids {
+    repeated int32 Mid = 1;
+}
+
+message MidReq {
+    int64 Mid = 1;
+}
+
+service Mblog {
+    rpc Create(MblogInfo) returns (MblogInfo) {}
+    rpc GetByUid(UidReq) returns (MultiMblogs) {}
+    rpc GetByMid(MidReq) returns (MblogInfo) {}
+}

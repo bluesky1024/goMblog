@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/bluesky1024/goMblog/config"
-	"github.com/go-xorm/xorm"
 	"github.com/go-xorm/core"
+	"github.com/go-xorm/xorm"
 )
 
 var mblogMInstance *xorm.Engine
@@ -33,7 +33,7 @@ func LoadMblogSour(master bool) (*xorm.Engine, error) {
 					return nil, err
 				}
 			}
-			tbMapper := core.NewPrefixMapper(core.SnakeMapper{},"201903_")
+			tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "201903_")
 			mblogMInstance.SetTableMapper(tbMapper)
 		}
 		return mblogMInstance, err

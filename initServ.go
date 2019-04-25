@@ -1,9 +1,10 @@
 package main
 
 import (
+	feedServ "github.com/bluesky1024/goMblog/services/feed"
+	mblogServ "github.com/bluesky1024/goMblog/services/mblog"
 	relationServ "github.com/bluesky1024/goMblog/services/relation"
 	userServ "github.com/bluesky1024/goMblog/services/user"
-	mblogServ "github.com/bluesky1024/goMblog/services/mblog"
 
 	idGen "github.com/bluesky1024/goMblog/tools/idGenerate"
 	"github.com/bluesky1024/goMblog/web/middleware"
@@ -11,26 +12,36 @@ import (
 	"time"
 )
 
-var(
+var (
 	SessManager *sessions.Sessions
 
-	userSrv userServ.UserServicer
-	mblogSrv  mblogServ.MblogServicer
+	userSrv     userServ.UserServicer
+	mblogSrv    mblogServ.MblogServicer
 	relationSrv relationServ.RelationServicer
+	feedSrv     feedServ.FeedServicer
 )
 
 func initServ() {
 	initBasicServ()
 	initGlobalSession()
-	initIdGen()
+	//initIdGen()
 
 	initMiddleware()
 }
 
-func initBasicServ(){
+func initBasicServ() {
+	var err error
+
 	userSrv = userServ.NewUserServicer()
+
 	mblogSrv = mblogServ.NewMblogServicer()
-	relationSrv = relationServ.NewRelationServicer()
+
+	relationSrv, err = relationServ.NewRelationServicer()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	feedSrv = feedServ.NewFeedServicer()
 }
 
 func initIdGen() {
@@ -38,7 +49,7 @@ func initIdGen() {
 	idGen.InitUidPool(3)
 }
 
-func initGlobalSession(){
+func initGlobalSession() {
 	//设置全局session
 	SessManager = sessions.New(sessions.Config{
 		Cookie:  "my_session",
@@ -46,7 +57,7 @@ func initGlobalSession(){
 	})
 }
 
-func initMiddleware(){
+func initMiddleware() {
 	middleware.RegisterGlobalSession(SessManager)
 	middleware.RegisterUserServer(userSrv)
 }

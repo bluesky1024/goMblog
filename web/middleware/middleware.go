@@ -15,6 +15,6 @@ func RegisterGlobalSession(s *sessions.Sessions) {
 	SessManager = s
 }
 
-func RegisterUserServer(u userService.UserServicer){
+func RegisterUserServer(u userService.UserServicer) {
 	UserServer = u
 }

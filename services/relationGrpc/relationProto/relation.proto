@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package relationProto;
+
+message FollowInfo {
+    int32 Id = 1;
+    int64 Uid = 2;
+    int64 FollowUid = 3;
+    int32 Status = 4;
+    int32 IsFriend = 5;
+    int64 GroupId =6;
+    google.protobuf.Timestamp CreateTime = 7;
+    google.protobuf.Timestamp UpdateTime = 8;
+}
+
+message FanInfo {
+    int32 Id = 1;
+    int64 Uid = 2;
+    int64 FanUid = 3;
+    int32 Status = 4;
+    int32 IsFriend = 5;
+    google.protobuf.Timestamp CreateTime = 6;
+    google.protobuf.Timestamp UpdateTime = 7;
+}
+
+message FollowGroup {
+    int64 Id = 1;
+    int64 Uid = 2;
+    string GroupName = 3;
+    int32 Status = 4;
+    google.protobuf.Timestamp CreateTime = 5;
+    google.protobuf.Timestamp UpdateTime = 6;
+}
+
+message MultiFollows {
+    repeated FollowInfo Follows = 1;
+}
+
+message MultiFans {
+    repeated FanInfo Fans = 1;
+}
+
+message MultiFollowGroups {
+    repeated FollowGroup Groups = 1;
+}
+
+message UidReq {
+    int64 Uid = 1;
+    int32 Page = 2;
+    int32 PageSize = 3;
+}
+
+service Relation {
+    rpc GetFollowsByUid(UidReq) returns (MultiFollows) {}
+    rpc GetFansByUid(UidReq) returns  (MultiFans) {}
+    rpc GetGroupsByUid(UidReq) returns (MultiFollowGroups) {}
+}

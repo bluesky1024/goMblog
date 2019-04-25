@@ -17,8 +17,8 @@ import (
 type PersonalController struct {
 	Ctx iris.Context
 
-	UserSrv userSrv.UserServicer
-	MblogSrv mblogSrv.MblogServicer
+	UserSrv     userSrv.UserServicer
+	MblogSrv    mblogSrv.MblogServicer
 	RelationSrv relationSrv.RelationServicer
 
 	Session *sessions.Session
@@ -30,26 +30,34 @@ func (c *PersonalController) GetProfile() {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
 	if CurUid == 0 {
 		c.Ctx.Redirect("/user/login")
-	}else{
-		c.Ctx.Redirect("/personal/profile/" + strconv.FormatInt(CurUid,10))
 	}
+
+	c.Ctx.Redirect("/personal/profile/" + strconv.FormatInt(CurUid, 10))
 }
 
 // GetProfle handles GET: http://localhost:8080/personal/profile/[uid].
 func (c *PersonalController) GetProfileBy(uid int64) interface{} {
 	//获取基础数据
-	mblogs := c.MblogSrv.GetByUid(uid,1,20)
-	userInfo,_ := c.UserSrv.GetByUid(uid)
+	mblogs := c.MblogSrv.GetByUid(uid, 1, 20)
+	userInfo, _ := c.UserSrv.GetByUid(uid)
 
 	//获取uid与当前登录账户的关系
 	curUid := c.Ctx.Values().Get("CurUid").(int64)
-	relationStatus := c.RelationSrv.CheckFollow(curUid,uid)
+	relationStatus := c.RelationSrv.CheckFollow(curUid, uid)
+
+	CurUid := c.Ctx.Values().Get("CurUid").(int64)
+	var title string
+	if CurUid == uid {
+		title = "personal profile"
+	} else {
+		title = userInfo.NickName + "'s profile"
+	}
 
 	data := iris.Map{
-		"Title": "个人主页",
-		"Mblogs" :mblogs,
-		"UserInfo":userInfo,
-		"RelationStatus":relationStatus,
+		"Title":          title,
+		"Mblogs":         mblogs,
+		"UserInfo":       userInfo,
+		"RelationStatus": relationStatus,
 	}
-	return GenViewResponse(c.Ctx,"personal/profile.html",data)
+	return GenViewResponse(c.Ctx, "personal/profile.html", data)
 }
