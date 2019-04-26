@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/bluesky1024/goMblog/web/controllers"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/mvc"
+	"time"
 )
 
 func RequestMain(ctx iris.Context) {
@@ -58,6 +60,13 @@ func feed(app *mvc.Application) {
 	app.Register(SessManager.Start)
 
 	app.Handle(new(controllers.FeedController))
+}
+
+//访问静态资源时的路径
+//例： localhost:8080/public/css/site.css  =>  ./web/public/css/site.css
+func staticFile(app *mvc.Application) {
+	app.Router.Use(cache.StaticCache(24 * time.Hour))
+	app.Router.StaticWeb("/", "./web/public")
 }
 
 //func public(app *mvc.Application) {
