@@ -87,21 +87,21 @@ func (r *MblogDbRepository) SelectMultiByMids(mids []int64) (mblogs map[int64]dm
 
 	//根据map开多个线程并行进行表查询
 	wg := sync.WaitGroup{}
-	wg.Add(len(midMap))
 	for tableName, tempMids := range midMap {
-		go func(table string) {
+		wg.Add(1)
+		go func(table string, mids []int64) {
 			defer wg.Done()
 
 			var tempMblogs []dm.MblogInfo
-			err := r.sourceS.Table(table).In("mid", tempMids).Desc("id").Find(&tempMblogs)
+			err := r.sourceS.Table(table).In("mid", mids).Desc("id").Find(&tempMblogs)
 			if err != nil {
 				logger.Err(logType, err.Error())
 				return
 			}
-			for ind, mblog := range tempMblogs {
-				mblogs[int64(ind)] = mblog
+			for _, mblog := range tempMblogs {
+				mblogs[int64(mblog.Mid)] = mblog
 			}
-		}(tableName)
+		}(tableName, tempMids)
 	}
 	wg.Wait()
 
@@ -117,23 +117,43 @@ func (r *MblogDbRepository) SelectMultiByMids(mids []int64) (mblogs map[int64]dm
 	//		mblogs[int64(ind)] = mblog
 	//	}
 	//}
-
 	return mblogs
 }
 
-func (r *MblogDbRepository) SelectByUid(uid int64, page int, pageSize int) (mblogs map[int64]dm.MblogInfo) {
+//根据uid获取微博,默认顺序是根据更新时间从大到小排列
+func (r *MblogDbRepository) SelectNormalByUid(uid int64, readAbles []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64) {
+	//映射表
 	var midsMatch []dm.UidToMblog
 	start := (page - 1) * pageSize
-	err := r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).Limit(pageSize, start).Asc("mid").Find(&midsMatch)
+	err := r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal).In("read_able", readAbles).Limit(pageSize, start).Desc("update_time").Find(&midsMatch)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return mblogs
+		return mblogs, 0
 	}
-
+	//总数
+	var uidToMblog = new(dm.UidToMblog)
+	cnt, err = r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal).In("read_able", readAbles).Count(uidToMblog)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return mblogs, 0
+	}
 	//拼凑mids
 	mids := make([]int64, len(midsMatch))
 	for ind, midMatch := range midsMatch {
 		mids[ind] = midMatch.Mid
 	}
-	return r.SelectMultiByMids(mids)
+
+	//获取实际微博数据
+	mblogMap := r.SelectMultiByMids(mids)
+
+	//按midsMatch顺序拼凑返回的数组
+	mblogs = make([]dm.MblogInfo, len(mblogMap))
+	ind := 0
+	for _, mid := range mids {
+		if mblogInfo, ok := mblogMap[mid]; ok {
+			mblogs[ind] = mblogInfo
+			ind++
+		}
+	}
+	return mblogs, cnt
 }

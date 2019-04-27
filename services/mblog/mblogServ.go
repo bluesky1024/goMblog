@@ -16,7 +16,7 @@ type MblogServicer interface {
 	Create(uid int64, content string, readAble int8, originUid int64, originMid int64) (mblog dm.MblogInfo, err error)
 	GetByMid(mid int64) (mblog dm.MblogInfo, found bool)
 	GetMultiByMids(mids []int64) map[int64]dm.MblogInfo
-	GetByUid(uid int64, page int, pageSize int) (mblogs map[int64]dm.MblogInfo)
+	GetNormalByUid(uid int64, readAble []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64)
 
 	//	GetAll() []datamodels.User
 	//	GetByID(id int64) (datamodels.User, bool)
@@ -93,10 +93,11 @@ func (m *mblogService) GetMultiByMids(mids []int64) map[int64]dm.MblogInfo {
 	return res
 }
 
-func (m *mblogService) GetByUid(uid int64, page int, pageSize int) (mblogs map[int64]dm.MblogInfo) {
+//根据微博时间新旧排序，结合微博可读权限获取指定uid的未删除、未封禁微博列表
+func (m *mblogService) GetNormalByUid(uid int64, readAble []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64) {
 	if uid <= 0 {
-		return nil
+		return nil, 0
 	}
-	mblogs = m.repo.SelectByUid(uid, page, pageSize)
-	return mblogs
+	mblogs, cnt = m.repo.SelectNormalByUid(uid, readAble, page, pageSize)
+	return mblogs, cnt
 }

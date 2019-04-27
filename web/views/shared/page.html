@@ -1,0 +1,11 @@
+<div class="text-center">
+    <ul class="pagination">
+        {{if eq $.PageParam.First true}}<li class="{{if eq $.PageParam.CurPage 1}}active{{end}}"><a href="{{$.PageParam.BaseUrl}}?page=1">1</a></li>{{end}}
+        {{if gt $.PageParam.Back 0}}<li><a href="{{$.PageParam.BaseUrl}}?page={{$.PageParam.Back}}">...</a></li>{{end}}
+        {{range $i,$v := $.PageParam.PageList}}
+            <li class="{{if eq $.PageParam.CurPage $v}}active{{end}}"><a href="{{$.PageParam.BaseUrl}}?page={{$v}}">{{$v}}</a></li>
+        {{end}}
+        {{if gt $.PageParam.Forward 0}}<li><a href="{{$.PageParam.BaseUrl}}?page={{$.PageParam.Forward}}">...</a></li>{{end}}
+        {{if eq $.PageParam.Last true}}<li class="{{if eq $.PageParam.CurPage $.PageParam.Cnt}}active{{end}}"><a href="{{$.PageParam.BaseUrl}}?page={{$.PageParam.Cnt}}">{{$.PageParam.Cnt}}</a></li>{{end}}
+    </ul>
+</div>
