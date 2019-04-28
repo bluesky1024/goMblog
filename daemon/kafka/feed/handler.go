@@ -8,7 +8,7 @@ import (
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-func newRelationHandler() (handler kafkaConsumer.ConsumerGroupHandler) {
+func newFeedHandler() (handler kafkaConsumer.ConsumerGroupHandler) {
 	handler = kafkaConsumer.ConsumerGroupHandler{}
 
 	//处理关注消息
@@ -27,7 +27,7 @@ func handleFollow(msg sarama.ConsumerMessage) (err error) {
 		logger.Err(logType, err.Error())
 		return err
 	}
-	err = relationSrv.HandleFollowMsg(*realMsg)
+	err = feedSrv.HandleFollowMsg(*realMsg)
 	if err != nil {
 		logger.Err(logType, err.Error())
 	}
@@ -41,7 +41,7 @@ func handleUnFollow(msg sarama.ConsumerMessage) (err error) {
 		logger.Err(logType, err.Error())
 		return err
 	}
-	err = relationSrv.HandleUnFollowMsg(*realMsg)
+	err = feedSrv.HandleUnFollowMsg(*realMsg)
 	if err != nil {
 		logger.Err(logType, err.Error())
 	}

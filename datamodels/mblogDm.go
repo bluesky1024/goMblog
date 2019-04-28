@@ -41,8 +41,12 @@ type UidToMblog struct {
 	UpdateTime time.Time `xorm:"updated"`
 }
 
-type MblogSendKafkaStruct struct {
-	Uid       int64
-	FollowUid int64
-	Status    int8
+type sendMblogMsg struct {
+	Uid int64
+	Mid int64
+}
+
+type updateMblogMsg struct {
+	Uid int64
+	Mid int64
 }

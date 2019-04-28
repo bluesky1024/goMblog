@@ -8,7 +8,7 @@ import (
 
 var (
 	logType = "kafkaConsumerRelation"
-	groupId = "relationSrv"
+	groupId = "userSrv"
 )
 
 func main() {
@@ -48,7 +48,7 @@ func main() {
 		}
 	}()
 
-	msgHandler := newRelationHandler()
+	msgHandler := newUserHandler()
 
 	// Iterate over consumer sessions.
 	ctx := context.Background()
