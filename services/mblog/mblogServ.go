@@ -1,8 +1,7 @@
 package mblogService
 
 import (
-	"errors"
-	"fmt"
+	"github.com/Shopify/sarama"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/mblog"
@@ -29,11 +28,12 @@ type MblogServicer interface {
 }
 
 type mblogService struct {
-	repo *mblogDbRepo.MblogDbRepository
+	kafkaProducer sarama.AsyncProducer
+	repo          *mblogDbRepo.MblogDbRepository
 }
 
 // NewUserService returns the default user service.
-func NewMblogServicer() MblogServicer {
+func NewMblogServicer() (s MblogServicer, err error) {
 	//id生成池初始化
 	idGen.InitMidPool(10)
 
@@ -41,63 +41,27 @@ func NewMblogServicer() MblogServicer {
 	mblogSourceM, err := ds.LoadMblogSour(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	mblogSourceS, err := ds.LoadMblogSour(false)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	mblogRepo := mblogDbRepo.NewMblogRepository(mblogSourceM, mblogSourceS)
 
-	return &mblogService{
-		repo: mblogRepo,
-	}
-}
-
-func (m *mblogService) Create(uid int64, content string, readAble int8, originUid int64, originMid int64) (mblog dm.MblogInfo, err error) {
-	fmt.Println("enter create")
-	if uid <= 0 || content == "" || len(content) > 140 {
-		return dm.MblogInfo{}, errors.New("invalid mblog info")
-	}
-
-	insertData := dm.MblogInfo{
-		Uid:       uid,
-		Content:   content,
-		OriginMid: originMid,
-		OriginUid: originUid,
-		ReadAble:  readAble,
-		Status:    dm.MblogStatusNormal,
-	}
-	//生成专属mid
-	insertData.Mid, err = idGen.GenMidId()
+	//kafka生产者初始化
+	kafkaConfig := make(map[string]string)
+	kafkaConfig["host"] = "0.0.0.0"
+	kafkaConfig["port"] = "9092"
+	kafkaProducer, err := newKafkaProducer([]string{kafkaConfig["host"] + ":" + kafkaConfig["port"]})
 	if err != nil {
-		return dm.MblogInfo{}, err
-	}
-
-	affected, err := m.repo.Insert(insertData)
-	if err != nil || affected == 0 {
 		logger.Err(logType, err.Error())
-		return dm.MblogInfo{}, err
+		return nil, err
 	}
-	return insertData, nil
-}
 
-func (m *mblogService) GetByMid(mid int64) (mblog dm.MblogInfo, found bool) {
-	if mid <= 0 {
-		return dm.MblogInfo{}, false
-	}
-	return m.repo.SelectByMid(mid)
-}
-
-func (m *mblogService) GetMultiByMids(mids []int64) map[int64]dm.MblogInfo {
-	res := m.repo.SelectMultiByMids(mids)
-	return res
-}
-
-//根据微博时间新旧排序，结合微博可读权限获取指定uid的未删除、未封禁微博列表
-func (m *mblogService) GetNormalByUid(uid int64, readAble []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64) {
-	if uid <= 0 {
-		return nil, 0
-	}
-	mblogs, cnt = m.repo.SelectNormalByUid(uid, readAble, page, pageSize)
-	return mblogs, cnt
+	return &mblogService{
+		repo:          mblogRepo,
+		kafkaProducer: kafkaProducer,
+	}, nil
 }

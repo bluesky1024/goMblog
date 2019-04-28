@@ -16,8 +16,14 @@ func NewMblogService() *MblogService {
 		return nil
 	}
 
+	s, err := mblogService.NewMblogServicer()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil
+	}
+
 	return &MblogService{
-		serv: mblogService.NewMblogServicer(),
+		serv: s,
 	}
 }
 

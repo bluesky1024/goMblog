@@ -38,16 +38,16 @@ type feedService struct {
 	relationSrv relationGrpc.RelationServicer
 }
 
-func NewFeedServicer() FeedServicer {
+func NewFeedServicer() (s FeedServicer, err error) {
 	feedRdSourM, err := redisSource.LoadFeedRdSour(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return nil
+		return nil, err
 	}
 	feedRdSourS, err := redisSource.LoadFeedRdSour(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return nil
+		return nil, err
 	}
 	feedRepo := feedRdRepo.NewFeedRdRepo(feedRdSourM, feedRdSourS)
 
@@ -58,7 +58,7 @@ func NewFeedServicer() FeedServicer {
 		feedRdRepo: feedRepo,
 		userSrv:    userSrv,
 		mblogSrv:   mblogSrv,
-	}
+	}, nil
 }
 
 func (f *feedService) GetFeedByUidAndGroupId(uid int64, groupId int64, page int, pageSize int) (mids []int64, err error) {
@@ -80,7 +80,3 @@ func (f *feedService) GetFeedNewerByMid(uid int64, groupId int64, Mid int64, siz
 	timeAfter := idGenerate.GetDetailTimeById(Mid)
 	return f.feedRdRepo.GetByTimeAfter(uid, groupId, timeAfter, size)
 }
-
-//func (f *feedService) HandleMblogSendMsg(msg dm.MblogSendKafkaStruct) (err error) {
-//
-//}

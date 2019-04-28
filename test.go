@@ -19,6 +19,7 @@ import (
 	mblogSrv "github.com/bluesky1024/goMblog/services/mblog"
 	"github.com/bluesky1024/goMblog/services/userGrpc"
 	//"github.com/go-xorm/xorm"
+	"math"
 )
 
 func testConfig() {
@@ -147,7 +148,7 @@ func testSendMblog() {
 	//uid,_ :=idGen.GenUidId()
 	uid := 160846466519040
 
-	srv := mblogSrv.NewMblogServicer()
+	srv, _ := mblogSrv.NewMblogServicer()
 	mblog, err := srv.Create(int64(uid), "123", 1, 0, 0)
 	fmt.Println("mblog:", mblog, "err:", err)
 }
@@ -267,6 +268,73 @@ func SearchDeepMap(data map[string]interface{}) {
 	}
 }
 
+func testMblog() {
+	mblogserv, _ := mblogSrv.NewMblogServicer()
+	readAble := []int8{1, 2}
+	mblogs, _ := mblogserv.GetNormalByUid(160846466519040, readAble, 1, 10)
+	fmt.Println(mblogs)
+}
+
+type PageParams struct {
+	CurPage  int64
+	Cnt      int64
+	BaseUrl  string
+	PageList []int64
+	First    bool
+	Last     bool
+	Forward  bool
+	Back     bool
+}
+
+func GenPageView(curPage int64, pageSize int64, cnt int64, baseUrl string) (pageParam PageParams) {
+	var startListInd int64
+	var endListInd int64
+	pageCnt := int64(math.Ceil(float64(cnt) / float64(pageSize)))
+	pageParam.Cnt = pageCnt
+	pageParam.BaseUrl = baseUrl
+	pageParam.CurPage = curPage
+	switch {
+	case curPage > 4:
+		startListInd = curPage - 2
+		pageParam.First = true
+		pageParam.Back = true
+		break
+	case curPage == 4:
+		startListInd = curPage - 2
+		pageParam.First = true
+		pageParam.Back = false
+		break
+	default:
+		startListInd = 1
+		pageParam.First = false
+		pageParam.Back = false
+		break
+	}
+	switch {
+	case curPage+2 < pageCnt-1:
+		endListInd = curPage + 2
+		pageParam.Last = true
+		pageParam.Forward = true
+		break
+	case curPage+2 == pageCnt-1:
+		endListInd = curPage + 2
+		pageParam.Last = true
+		pageParam.Forward = false
+		break
+	default:
+		endListInd = pageCnt
+		pageParam.Last = false
+		pageParam.Forward = false
+		break
+	}
+	pageParam.PageList = make([]int64, endListInd-startListInd+1)
+	for ind, _ := range pageParam.PageList {
+		pageParam.PageList[ind] = startListInd + int64(ind)
+	}
+	return pageParam
+}
+
 func main() {
-	//testJsonEncodeDecode()
+	pageparams := GenPageView(1, 3, 6, "a/b/c")
+	fmt.Println(pageparams)
 }

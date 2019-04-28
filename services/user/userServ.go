@@ -32,24 +32,30 @@ type userService struct {
 }
 
 // NewUserService returns the default user service.
-func NewUserServicer() UserServicer {
+func NewUserServicer() (s UserServicer, err error) {
 	//id生成池初始化
-	idGen.InitUidPool(3)
+	err = idGen.InitUidPool(3)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil, err
+	}
 
 	//user服务仓库初始化
 	userSourceM, err := ds.LoadUsers(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	userSourceR, err := ds.LoadUsers(false)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	userRepo := userDbRepo.NewUserRepository(userSourceM, userSourceR)
 
 	return &userService{
 		repo: userRepo,
-	}
+	}, nil
 }
 
 // Create inserts a new User,
