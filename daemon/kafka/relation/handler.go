@@ -8,13 +8,13 @@ import (
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-func newRelationHandler() (handler kafkaConsumer.ConsumerGroupHandler) {
-	handler = kafkaConsumer.ConsumerGroupHandler{}
+func newRelationHandler() (handler *kafkaConsumer.ConsumerGroupHandlerC) {
+	handler = &kafkaConsumer.ConsumerGroupHandlerC{}
 
 	//处理关注消息
 	handler.RegisterHandler("relationFollow", handleFollow)
 
-	//处理取关消息
+	////处理取关消息
 	handler.RegisterHandler("relationUnFollow", handleUnFollow)
 
 	return handler

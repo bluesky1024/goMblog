@@ -6,11 +6,11 @@ import (
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-type topicHandler func(msg sarama.ConsumerMessage) error
+type TopicHandler func(msg sarama.ConsumerMessage) error
 
 type relationConsumerGroupHandler struct {
 	//map[topic]handler
-	handlerMap map[string]topicHandler
+	HandlerMap map[string]TopicHandler
 }
 
 func (h relationConsumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error { return nil }
@@ -21,7 +21,7 @@ func (h relationConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSess
 	for msg := range claim.Messages() {
 		fmt.Printf("Message topic:%q partition:%d offset:%d\n", msg.Topic, msg.Partition, msg.Offset)
 
-		tempHandler, ok := h.handlerMap[msg.Topic]
+		tempHandler, ok := h.HandlerMap[msg.Topic]
 		if !ok {
 			logger.Err(logType, "no topic handler about "+msg.Topic)
 			continue
@@ -35,6 +35,9 @@ func (h relationConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSess
 	return nil
 }
 
-func (h relationConsumerGroupHandler) registerHandler(topic string, handler topicHandler) {
-	h.handlerMap[topic] = handler
+func (h *relationConsumerGroupHandler) registerHandler(topic string, handler TopicHandler) {
+	if h.HandlerMap == nil {
+		h.HandlerMap = make(map[string]TopicHandler, 1)
+	}
+	h.HandlerMap[topic] = handler
 }

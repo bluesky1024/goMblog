@@ -49,7 +49,6 @@ func main() {
 	}()
 
 	msgHandler := newFeedHandler()
-
 	// Iterate over consumer sessions.
 	ctx := context.Background()
 	for {
