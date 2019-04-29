@@ -6,7 +6,7 @@
 
 ### redis
 ```bash
-	redis-server
+	redis-server ./redis.conf
 ```
 
 ### kafka
@@ -23,6 +23,12 @@
     go run auth.go server.go mblogGrpc.go
     cd $GO_PATH/src/github.com/bluesky1024/goMblog/grpcServer/relation
     go run auth.go server.go relationGrpc.go
+
+    #kafkaMsg处理
+    cd $GO_PATH/src/github.com/bluesky1024/goMblog/kafka/relation
+    go run handler.go initServ.go main.go
+    cd $GO_PATH/src/github.com/bluesky1024/goMblog/kafka/mblog
+    go run handler.go initServ.go main.go
 
     #前端web服务
     cd $GO_PATH/src/github.com/bluesky1024/goMblog
