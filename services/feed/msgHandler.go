@@ -16,7 +16,7 @@ func (f *feedService) HandleFollowMsg(msg dm.FollowMsg) (err error) {
 	page := 1
 	pageSize := 50
 	for {
-		mblogs, _ := f.mblogSrv.GetNormalByUid(msg.Uid, page, pageSize, readAble, startTime, 0)
+		mblogs, _ := f.mblogSrv.GetNormalByUid(msg.FollowUid, page, pageSize, readAble, startTime, 0)
 		if len(mblogs) == 0 {
 			break
 		}
@@ -40,7 +40,7 @@ func (f *feedService) HandleUnFollowMsg(msg dm.FollowMsg) (err error) {
 	page := 1
 	pageSize := 50
 	for {
-		mblogs, _ := f.mblogSrv.GetNormalByUid(msg.Uid, page, pageSize, readAble, startTime, 0)
+		mblogs, _ := f.mblogSrv.GetNormalByUid(msg.FollowUid, page, pageSize, readAble, startTime, 0)
 		if len(mblogs) == 0 {
 			break
 		}
