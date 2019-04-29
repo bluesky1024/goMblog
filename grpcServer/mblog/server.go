@@ -31,6 +31,7 @@ type MblogService struct {
 }
 
 func (s *MblogService) Create(ctx context.Context, mblogInfo *pb.MblogInfo) (res *pb.MblogInfo, err error) {
+	res = new(pb.MblogInfo)
 	mblog, err := s.serv.Create(mblogInfo.Uid, mblogInfo.Content, int8(mblogInfo.ReadAble), mblogInfo.OriginUid, mblogInfo.OriginMid)
 	if err != nil {
 		return res, err
@@ -46,6 +47,7 @@ func (s *MblogService) Create(ctx context.Context, mblogInfo *pb.MblogInfo) (res
 }
 
 func (s *MblogService) GetNormalByUid(ctx context.Context, uidReq *pb.UidReq) (res *pb.MultiMblogs, err error) {
+	res = new(pb.MultiMblogs)
 	readAble := make([]int8, len(uidReq.ReadAble))
 	for ind, v := range uidReq.ReadAble {
 		readAble[ind] = int8(v)
@@ -53,6 +55,7 @@ func (s *MblogService) GetNormalByUid(ctx context.Context, uidReq *pb.UidReq) (r
 	mblogs, cnt := s.serv.GetNormalByUid(uidReq.Uid, int(uidReq.Page), int(uidReq.PageSize), readAble, uidReq.StartTime, uidReq.EndTime)
 
 	res.MblogInfo = make([]*pb.MblogInfo, len(mblogs))
+
 	for ind, mblog := range mblogs {
 		res.MblogInfo[ind] = &pb.MblogInfo{
 			Mid:       mblog.Mid,
@@ -68,9 +71,11 @@ func (s *MblogService) GetNormalByUid(ctx context.Context, uidReq *pb.UidReq) (r
 }
 
 func (s *MblogService) GetMultiByMids(ctx context.Context, midsReq *pb.MidsReq) (res *pb.MultiMblogs, err error) {
+	res = new(pb.MultiMblogs)
 	mblogMap := s.serv.GetMultiByMids(midsReq.Mid)
 
 	res.MblogInfo = make([]*pb.MblogInfo, len(mblogMap))
+
 	ind := 0
 	for _, mblog := range mblogMap {
 		res.MblogInfo[ind] = &pb.MblogInfo{
