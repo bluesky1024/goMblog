@@ -2,6 +2,7 @@ package mblogDbRepo
 
 import (
 	"sync"
+	"time"
 
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/tools/logger"
@@ -121,18 +122,36 @@ func (r *MblogDbRepository) SelectMultiByMids(mids []int64) (mblogs map[int64]dm
 }
 
 //根据uid获取微博,默认顺序是根据更新时间从大到小排列
-func (r *MblogDbRepository) SelectNormalByUid(uid int64, readAbles []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64) {
+func (r *MblogDbRepository) SelectNormalByUid(uid int64, page int, pageSize int, readAbles []int8, startTime int64, endTime int64) (mblogs []dm.MblogInfo, cnt int64) {
 	//映射表
 	var midsMatch []dm.UidToMblog
 	start := (page - 1) * pageSize
-	err := r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal).In("read_able", readAbles).Limit(pageSize, start).Desc("update_time").Find(&midsMatch)
+	tempSession := r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal).In("read_able", readAbles)
+	if startTime > 0 {
+		tm := time.Unix(startTime, 0)
+		tempSession = tempSession.Where("update_time >= ?", tm.Format("02/01/2006 15:04:05"))
+	}
+	if endTime > 0 {
+		tm := time.Unix(endTime, 0)
+		tempSession = tempSession.Where("update_time <= ?", tm.Format("02/01/2006 15:04:05"))
+	}
+	err := tempSession.Limit(pageSize, start).Desc("update_time").Find(&midsMatch)
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mblogs, 0
 	}
 	//总数
 	var uidToMblog = new(dm.UidToMblog)
-	cnt, err = r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal).In("read_able", readAbles).Count(uidToMblog)
+	tempSession = r.sourceS.Table(getUidToMblogTableName(uid)).Where("uid = ?", uid).And("status = ?", dm.MblogStatusNormal)
+	if startTime > 0 {
+		tm := time.Unix(startTime, 0)
+		tempSession = tempSession.Where("update_time >= ?", tm.Format("02/01/2006 15:04:05"))
+	}
+	if endTime > 0 {
+		tm := time.Unix(endTime, 0)
+		tempSession = tempSession.Where("update_time <= ?", tm.Format("02/01/2006 15:04:05"))
+	}
+	cnt, err = tempSession.In("read_able", readAbles).Count(uidToMblog)
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mblogs, 0

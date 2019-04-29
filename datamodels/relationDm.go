@@ -60,6 +60,7 @@ type FollowMsg struct {
 	MsgId     int64
 	Uid       int64
 	FollowUid int64
+	GroupId   int64
 	Status    int8
 }
 

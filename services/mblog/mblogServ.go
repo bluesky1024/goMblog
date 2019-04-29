@@ -15,16 +15,9 @@ type MblogServicer interface {
 	Create(uid int64, content string, readAble int8, originUid int64, originMid int64) (mblog dm.MblogInfo, err error)
 	GetByMid(mid int64) (mblog dm.MblogInfo, found bool)
 	GetMultiByMids(mids []int64) map[int64]dm.MblogInfo
-	GetNormalByUid(uid int64, readAble []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64)
+	GetNormalByUid(uid int64, page int, pageSize int, readAble []int8, startTime int64, endTime int64) (mblogs []dm.MblogInfo, cnt int64)
 
-	//	GetAll() []datamodels.User
-	//	GetByID(id int64) (datamodels.User, bool)
-	//	GetByUsernameAndPassword(username, userPassword string) (datamodels.User, bool)
-	//	DeleteByID(id int64) bool
-
-	//	Update(id int64, user datamodels.User) (datamodels.User, error)
-	//	UpdatePassword(id int64, newPassword string) (datamodels.User, error)
-	//	UpdateUsername(id int64, newUsername string) (datamodels.User, error)
+	ReleaseSrv() (err error)
 }
 
 type mblogService struct {
@@ -64,4 +57,11 @@ func NewMblogServicer() (s MblogServicer, err error) {
 		repo:          mblogRepo,
 		kafkaProducer: kafkaProducer,
 	}, nil
+}
+
+func (s *mblogService) ReleaseSrv() (err error) {
+	if s.kafkaProducer != nil {
+		err = s.kafkaProducer.Close()
+	}
+	return err
 }

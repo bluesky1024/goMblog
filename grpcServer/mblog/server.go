@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	pb "github.com/bluesky1024/goMblog/grpcServer/mblog/mblogProto"
 	"github.com/bluesky1024/goMblog/services/mblog"
 	"github.com/bluesky1024/goMblog/tools/idGenerate"
@@ -46,8 +45,12 @@ func (s *MblogService) Create(ctx context.Context, mblogInfo *pb.MblogInfo) (res
 	}, nil
 }
 
-func (s *MblogService) GetByUid(ctx context.Context, uidReq *pb.UidReq) (res *pb.MultiMblogs, err error) {
-	mblogs := s.serv.GetByUid(uidReq.Uid, int(uidReq.Page), int(uidReq.PageSize))
+func (s *MblogService) GetNormalByUid(ctx context.Context, uidReq *pb.UidReq) (res *pb.MultiMblogs, err error) {
+	readAble := make([]int8, len(uidReq.ReadAble))
+	for ind, v := range uidReq.ReadAble {
+		readAble[ind] = int8(v)
+	}
+	mblogs, cnt := s.serv.GetNormalByUid(uidReq.Uid, int(uidReq.Page), int(uidReq.PageSize), readAble, uidReq.StartTime, uidReq.EndTime)
 
 	res.MblogInfo = make([]*pb.MblogInfo, len(mblogs))
 	for ind, mblog := range mblogs {
@@ -59,21 +62,27 @@ func (s *MblogService) GetByUid(ctx context.Context, uidReq *pb.UidReq) (res *pb
 			OriginUid: mblog.OriginUid,
 		}
 	}
+	res.Cnt = cnt
 
 	return res, err
 }
 
-func (s *MblogService) GetByMid(ctx context.Context, midReq *pb.MidReq) (res *pb.MblogInfo, err error) {
-	mblog, found := s.serv.GetByMid(midReq.Mid)
-	if !found {
-		return res, errors.New("not found mblog")
-	}
+func (s *MblogService) GetMultiByMids(ctx context.Context, midsReq *pb.MidsReq) (res *pb.MultiMblogs, err error) {
+	mblogMap := s.serv.GetMultiByMids(midsReq.Mid)
 
-	return &pb.MblogInfo{
-		Mid:       mblog.Mid,
-		Uid:       mblog.Uid,
-		Content:   mblog.Content,
-		OriginMid: mblog.OriginMid,
-		OriginUid: mblog.OriginUid,
-	}, nil
+	res.MblogInfo = make([]*pb.MblogInfo, len(mblogMap))
+	ind := 0
+	for _, mblog := range mblogMap {
+		res.MblogInfo[ind] = &pb.MblogInfo{
+			Mid:       mblog.Mid,
+			Uid:       mblog.Uid,
+			Content:   mblog.Content,
+			OriginMid: mblog.OriginMid,
+			OriginUid: mblog.OriginUid,
+		}
+		ind++
+	}
+	res.Cnt = int64(ind)
+
+	return res, err
 }

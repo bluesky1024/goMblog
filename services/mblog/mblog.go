@@ -47,10 +47,10 @@ func (m *mblogService) GetMultiByMids(mids []int64) map[int64]dm.MblogInfo {
 }
 
 //根据微博时间新旧排序，结合微博可读权限获取指定uid的未删除、未封禁微博列表
-func (m *mblogService) GetNormalByUid(uid int64, readAble []int8, page int, pageSize int) (mblogs []dm.MblogInfo, cnt int64) {
+func (m *mblogService) GetNormalByUid(uid int64, page int, pageSize int, readAble []int8, startTime int64, endTime int64) (mblogs []dm.MblogInfo, cnt int64) {
 	if uid <= 0 {
 		return nil, 0
 	}
-	mblogs, cnt = m.repo.SelectNormalByUid(uid, readAble, page, pageSize)
+	mblogs, cnt = m.repo.SelectNormalByUid(uid, page, pageSize, readAble, 0, 0)
 	return mblogs, cnt
 }

@@ -34,6 +34,9 @@ func main() {
 	opts = append(opts, grpc.UnaryInterceptor(interceptor))
 
 	s := grpc.NewServer(opts...)
+	if s == nil {
+		panic("fail to create grpc server")
+	}
 
 	mblogServ := NewMblogService()
 	pb.RegisterMblogServer(s, mblogServ)

@@ -17,6 +17,7 @@ func (s *relationService) Follow(uid int64, uidFollow int64) bool {
 		msg := dm.FollowMsg{
 			Uid:       uid,
 			FollowUid: uidFollow,
+			GroupId:   0,
 			Status:    dm.FollowStatusNormal,
 		}
 		s.sendFollowMsg(msg)
@@ -25,6 +26,11 @@ func (s *relationService) Follow(uid int64, uidFollow int64) bool {
 }
 
 func (s *relationService) UnFollow(uid int64, uidFollow int64) bool {
+	//获取原有follow属性
+	followInfo, found := s.repo.SelectFollowByUid(uid, uidFollow)
+	if !found {
+		return false
+	}
 	//修改follow表
 	succ := s.repo.DeleteFollow(uid, uidFollow)
 
@@ -33,6 +39,7 @@ func (s *relationService) UnFollow(uid int64, uidFollow int64) bool {
 		msg := dm.FollowMsg{
 			Uid:       uid,
 			FollowUid: uidFollow,
+			GroupId:   followInfo.GroupId,
 			Status:    dm.FollowStatusDelete,
 		}
 		s.sendUnFollowMsg(msg)
