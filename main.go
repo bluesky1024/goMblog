@@ -61,4 +61,7 @@ func resourceRecycle() {
 	if relationSrv != nil {
 		relationSrv.ReleaseSrv()
 	}
+	if mblogSrv != nil {
+		mblogSrv.ReleaseSrv()
+	}
 }
