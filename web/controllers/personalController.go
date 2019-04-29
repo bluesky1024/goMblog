@@ -3,6 +3,7 @@
 package controllers
 
 import (
+	dm "github.com/bluesky1024/goMblog/datamodels"
 	mblogSrv "github.com/bluesky1024/goMblog/services/mblog"
 	relationSrv "github.com/bluesky1024/goMblog/services/relation"
 	userSrv "github.com/bluesky1024/goMblog/services/user"
@@ -39,7 +40,7 @@ func (c *PersonalController) GetProfile() {
 func (c *PersonalController) GetProfileBy(uid int64) interface{} {
 	pageStr := c.Ctx.FormValue("page")
 	page, err := strconv.Atoi(pageStr)
-	pageSize := 1
+	pageSize := 5
 	if err != nil || page < 0 {
 		page = 1
 	}
@@ -51,9 +52,9 @@ func (c *PersonalController) GetProfileBy(uid int64) interface{} {
 	relationStatus := c.RelationSrv.CheckFollow(curUid, uid)
 
 	//获取基础数据
-	//关系还没做好，目前暂定为非朋友关系来获取微博
-	readAble := []int8{1, 2}
-	mblogs, cnt := c.MblogSrv.GetNormalByUid(uid, readAble, page, pageSize)
+	//关系还没做好，目前暂定为朋友关系来获取微博
+	readAble := []int8{dm.MblogReadAblePublic, dm.MblogReadAbleFriend}
+	mblogs, cnt := c.MblogSrv.GetNormalByUid(uid, page, pageSize, readAble, 0, 0)
 
 	var title string
 	if curUid == uid {
@@ -74,4 +75,14 @@ func (c *PersonalController) GetProfileBy(uid int64) interface{} {
 		"PageParam":      pageParam,
 	}
 	return GenViewResponse(c.Ctx, "personal/profile.html", data)
+}
+
+/*测试JSONP跨域请求*/
+func (c *PersonalController) GetTest() interface{} {
+	type tempStruct struct {
+		Data string
+	}
+	return tempStruct{
+		Data: "https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&prod=pc&from=wise_web&wd=lol&req=2&bs=lol&pbs=lol&pwd=lol",
+	}
 }
