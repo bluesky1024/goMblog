@@ -126,3 +126,13 @@ func (r *RelationDbRepository) SelectMultiFollowsByUid(uid int64, page int, page
 	}
 	return infos, cnt
 }
+
+func (r *RelationDbRepository) CountFollowsByUid(uid int64) (cnt int64, err error) {
+	followInfo := new(dm.FollowInfo)
+	cnt, err = r.sourceS.Table(getFollowTableName(uid)).Where("uid = ?", uid).Count(followInfo)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return 0, err
+	}
+	return cnt, nil
+}
