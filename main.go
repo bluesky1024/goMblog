@@ -45,11 +45,14 @@ func main() {
 	//	mvc.Configure(app.Party("/search"), search)
 
 	//启动
-	app.Run(
+	err := app.Run(
 		iris.Addr(":8080"),
 		iris.WithoutServerError(iris.ErrServerClosed),
 		iris.WithOptimizations,
 	)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	defer func() {
 		resourceRecycle()
