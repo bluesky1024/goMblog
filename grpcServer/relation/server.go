@@ -4,11 +4,17 @@ import (
 	"context"
 	pb "github.com/bluesky1024/goMblog/grpcServer/relation/relationProto"
 	"github.com/bluesky1024/goMblog/services/relation"
+	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
 func NewRelationService() *RelationService {
+	s, err := relationService.NewRelationServicer()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil
+	}
 	return &RelationService{
-		serv: relationService.NewRelationServicer(),
+		serv: s,
 	}
 }
 
