@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+var (
+	FansCntGate = 1000
+)
+
 type User struct {
 	Id           int64
 	Uid          int64
@@ -17,6 +21,18 @@ type User struct {
 	FriendsCount int64
 	CreateTime   time.Time `xorm:"created"`
 	UpdateTime   time.Time `xorm:"updated"`
+}
+
+type UserView struct {
+	Uid          string
+	NickName     string
+	Telephone    string
+	Email        string
+	ProfileImage string
+	FollowsCount string
+	FriendsCount string
+	CreateTime   string
+	UpdateTime   string
 }
 
 func (u User) IsValid() bool {

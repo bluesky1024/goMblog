@@ -57,17 +57,21 @@ type FollowGroup struct {
 }
 
 type FollowMsg struct {
-	MsgId     int64
-	Uid       int64
-	FollowUid int64
-	GroupId   int64
-	Status    int8
+	MsgId      int64
+	Uid        int64
+	FollowUid  int64
+	GroupId    int64
+	Status     int8
+	CreateTime time.Time
+	UpdateTime time.Time
 }
 
 type GroupMsg struct {
-	MsgId     int64
-	Uid       int64
-	FollowUid int64
-	GroupId   int64
-	InOrOut   bool
+	MsgId      int64
+	Uid        int64
+	FollowUid  int64
+	GroupId    int64
+	InOrOut    bool
+	CreateTime time.Time
+	UpdateTime time.Time
 }

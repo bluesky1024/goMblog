@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	dm "github.com/bluesky1024/goMblog/datamodels"
 	feedSrv "github.com/bluesky1024/goMblog/services/feed"
 	mblogSrv "github.com/bluesky1024/goMblog/services/mblog"
 	relationSrv "github.com/bluesky1024/goMblog/services/relation"
@@ -63,7 +64,7 @@ func (c *FeedController) PostMore() interface{} {
 		//pageSizeStr = c.Ctx.FormValue("pageSize")
 	)
 
-	pageSizeStr := "20"
+	pageSizeStr := "3"
 
 	groupId, _ := strconv.ParseInt(groupIdStr, 10, 64)
 	lastMid, _ := strconv.ParseInt(lastMidStr, 10, 64)
@@ -79,16 +80,23 @@ func (c *FeedController) PostMore() interface{} {
 	}
 
 	//根据mid获取具体微博信息（此处时间上有问题，需要重新排序）
-	mblogsInfo := c.MblogSrv.GetMultiByMids(mids)
+	mblogMap := c.MblogSrv.GetMultiByMids(mids)
+	mblogsInfo := make([]dm.MblogInfo, len(mblogMap))
 
 	//根据uid获取用户信息
-	uids := make([]int64, len(mblogsInfo))
+	uids := make([]int64, len(mblogMap))
 	ind := 0
-	for _, mblog := range mblogsInfo {
-		uids[ind] = mblog.Uid
-		ind++
+	for _, mid := range mids {
+		if mblog, ok := mblogMap[mid]; ok {
+			mblogsInfo[ind] = mblog
+			uids[ind] = mblog.Uid
+			ind++
+		}
 	}
 	usersInfo, err := c.UserSrv.GetMultiByUids(uids)
+
+	mblogsInfoView := mblogSrv.TransMblogInfoToView(mblogsInfo)
+	//usersInfoView := userSrv.TransUserInfoToView(usersInfo)
 
 	if err != nil {
 		return ResParams{
@@ -98,7 +106,7 @@ func (c *FeedController) PostMore() interface{} {
 	}
 
 	data := iris.Map{
-		"MblogsInfo": mblogsInfo,
+		"MblogsInfo": mblogsInfoView,
 		"UsersInfo":  usersInfo,
 	}
 
@@ -125,7 +133,7 @@ func (c *FeedController) PostNewer() interface{} {
 		//pageSizeStr = c.Ctx.FormValue("pageSize")
 	)
 
-	pageSizeStr := "20"
+	pageSizeStr := "3"
 
 	groupId, _ := strconv.ParseInt(groupIdStr, 10, 64)
 	firstMid, _ := strconv.ParseInt(firstMidStr, 10, 64)
@@ -141,16 +149,21 @@ func (c *FeedController) PostNewer() interface{} {
 	}
 
 	//根据mid获取具体微博信息（此处时间上有问题，需要重新排序）
-	mblogsInfo := c.MblogSrv.GetMultiByMids(mids)
+	mblogMap := c.MblogSrv.GetMultiByMids(mids)
+	mblogsInfo := make([]dm.MblogInfo, len(mblogMap))
 
 	//根据uid获取用户信息
-	uids := make([]int64, len(mblogsInfo))
+	uids := make([]int64, len(mblogMap))
 	ind := 0
-	for _, mblog := range mblogsInfo {
-		uids[ind] = mblog.Uid
-		ind++
+	for _, mid := range mids {
+		if mblog, ok := mblogMap[mid]; ok {
+			mblogsInfo[ind] = mblog
+			uids[ind] = mblog.Uid
+			ind++
+		}
 	}
 	usersInfo, err := c.UserSrv.GetMultiByUids(uids)
+	mblogsInfoView := mblogSrv.TransMblogInfoToView(mblogsInfo)
 
 	if err != nil {
 		return ResParams{
@@ -160,7 +173,7 @@ func (c *FeedController) PostNewer() interface{} {
 	}
 
 	data := iris.Map{
-		"MblogsInfo": mblogsInfo,
+		"MblogsInfo": mblogsInfoView,
 		"UsersInfo":  usersInfo,
 	}
 
