@@ -17,6 +17,9 @@ func newFeedHandler() (handler *kafkaConsumer.ConsumerGroupHandlerC) {
 	//处理取关消息
 	handler.RegisterHandler("relationUnFollow", handleUnFollow)
 
+	//处理用户发布新微博消息
+	handler.RegisterHandler("mblogNew", handleMblogNew)
+
 	return handler
 }
 
@@ -42,6 +45,20 @@ func handleUnFollow(msg sarama.ConsumerMessage) (err error) {
 		return err
 	}
 	err = feedSrv.HandleUnFollowMsg(*realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+	}
+	return err
+}
+
+func handleMblogNew(msg sarama.ConsumerMessage) (err error) {
+	realMsg := new(dm.MblogNewMsg)
+	err = json.Unmarshal(msg.Value, realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return err
+	}
+	err = feedSrv.HandleMblogNewMsg(*realMsg)
 	if err != nil {
 		logger.Err(logType, err.Error())
 	}

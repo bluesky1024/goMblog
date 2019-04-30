@@ -31,6 +31,19 @@ func (m *mblogService) Create(uid int64, content string, readAble int8, originUi
 		logger.Err(logType, err.Error())
 		return dm.MblogInfo{}, err
 	}
+
+	//发布新微博生产消息
+	msg := dm.MblogNewMsg{
+		Uid:       uid,
+		Mid:       insertData.Mid,
+		Content:   insertData.Content,
+		OriginMid: insertData.OriginMid,
+		OriginUid: insertData.OriginUid,
+		Status:    insertData.Status,
+		ReadAble:  insertData.ReadAble,
+	}
+	m.sendNewMblogMsg(msg)
+
 	return insertData, nil
 }
 

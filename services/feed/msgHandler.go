@@ -1,7 +1,9 @@
 package feedService
 
 import (
+	"errors"
 	dm "github.com/bluesky1024/goMblog/datamodels"
+	"github.com/bluesky1024/goMblog/tools/logger"
 	"time"
 )
 
@@ -53,5 +55,29 @@ func (f *feedService) HandleUnFollowMsg(msg dm.FollowMsg) (err error) {
 		f.feedRdRepo.RemoveMids(msg.Uid, msg.GroupId, mids)
 		page++
 	}
+	return nil
+}
+
+func (f *feedService) HandleMblogNewMsg(msg dm.MblogNewMsg) (err error) {
+	//判断该用户的属性(若粉丝数太多，feed采用推模式，不用给每个粉丝的feed池里逐一添加)
+	userInfo, err := f.userSrv.GetByUid(msg.Uid)
+	if err != nil {
+		err = errors.New("handle mblog new msg, uid is invalid")
+		logger.Err(logType, err.Error())
+		return err
+	}
+
+	//判断标准，粉丝数大于xx
+	if userInfo.FriendsCount >= int64(dm.FansCntGate) {
+		return nil
+	}
+
+	//提取该用户的粉丝列表,给所有粉丝的feed池新增数据
+	page := 1
+	pageSize := 50
+	for {
+
+	}
+
 	return nil
 }

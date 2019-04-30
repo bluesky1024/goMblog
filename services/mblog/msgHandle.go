@@ -23,12 +23,12 @@ func newKafkaProducer(addr []string) (producer sarama.AsyncProducer, err error) 
 	return producer, nil
 }
 
-func (s *mblogService) sendNewMblogMsg(msg dm.FollowMsg) {
+func (s *mblogService) sendNewMblogMsg(msg dm.MblogNewMsg) {
 	//kafkaConfig := conf.InitConfig("kafkaConfig.relation")
 
 	msgStr, _ := json.Marshal(&msg)
 	kafkaMsg := &sarama.ProducerMessage{
-		Topic: "relationFollow",
+		Topic: "mblogNew",
 		Key:   sarama.StringEncoder(msg.Uid),
 		Value: sarama.ByteEncoder(msgStr),
 	}
