@@ -84,6 +84,9 @@ func (s *userService) Create(nickname string, password string, telephone string,
 		return dm.User{}, err
 	}
 
+	//目前没有头像上传功能，采用默认头像
+	insertUser.ProfileImage = "//tvax3.sinaimg.cn/crop.19.0.620.620.180/006VvoKYly8fijhpwx2qoj30hs0hsdfx.jpg"
+
 	affect, err := s.repo.Insert(insertUser)
 	if err != nil || affect == 0 {
 		return dm.User{}, err
