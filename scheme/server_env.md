@@ -110,3 +110,53 @@ export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/
 # 
 ```
 
+### redis—cluster环境搭建
+* 参考链接
+https://www.cnblogs.com/wuxl360/p/5920330.html
+
+* 搭建步骤
+```bash
+# redis服务安装
+# mac
+brew install redis
+# centos
+wget http://download.redis.io/releases/redis-3.2.4.tar.gz
+tar -zxvf redis-3.2.4.tar.gz
+yum install gcc gcc-c++ automake autoconf libtool 
+make && make install
+
+# 以下为集群搭建
+mkdir redis_cluster
+
+# redis-cluster 要求至少6个节点
+mkdir 10011 10012 10013 10014 10015 10016
+cp redis.conf redis_cluster/10011 ...
+
+# 编辑redis.conf
+port  10011                             //端口10011      
+bind 本机ip                              //默认ip为127.0.0.1 需要改为其他节点机器可访问的ip 否则创建集群时无法访问对应的端口，无法创建集群
+daemonize    yes                        //redis后台运行
+pidfile  /var/run/redis_10011.pid       //pidfile文件对应10011
+cluster-enabled  yes                    //开启集群  把注释#去掉
+cluster-config-file  nodes_10011.conf   //集群的配置  配置文件首次启动自动生成 10011
+cluster-node-timeout  15000             //请求超时  默认15秒，可自行设置
+appendonly  yes                         //aof日志开启  有需要就开启，它会每次写操作都记录一条日志　
+# 其余5个节点类似
+
+# 启动6个redis服务
+redis-server 10011/redis.conf ...
+
+# 使用redis提供的官方ruby集群管理工具(对应redis安装包/src/redis-trib.rb)
+# centos
+yum -y install ruby ruby-devel rubygems rpm-build
+# mac
+brew install ruby
+
+# 安装ruby对于redis的支持库函数
+gem install redis
+
+# 运行脚本进行redis集群管理
+ruby redis-trib.rb  create  --replicas  1  redis-trib.rb create --replicas 1 10.222.76.205:10011 10.222.76.205:10012 10.222.76.205:10013 10.222.76.205:10014 10.222.76.205:10015 10.222.76.205:10016
+```
+
+
