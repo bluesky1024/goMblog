@@ -19,6 +19,7 @@ type redisLock struct {
 	LockId   string
 	TimeWait time.Duration
 	TimeExpire int64
+	TimeHoldLock time.Duration
 }
 
 var (
@@ -74,6 +75,7 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 			LockId:   lockId,
 			TimeWait: timeWait,
 			TimeExpire:timeExpire,
+			TimeHoldLock:timeHoldLock,
 		}, nil
 	}
 
@@ -108,6 +110,7 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 						LockId:   lockId,
 						TimeWait: timeWait,
 						TimeExpire:timeExpire,
+						TimeHoldLock:timeHoldLock,
 					}, nil
 				}
 				continue
@@ -128,6 +131,7 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 					LockId:lockId,
 					TimeWait:timeWait,
 					TimeExpire:timeExpire,
+					TimeHoldLock:timeHoldLock,
 				},nil
 			}
 		}
@@ -141,8 +145,45 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 	}
 }
 
+//启动一个协程监控当前客户端，若还存活根据redisLock.TimeHoldLock定期给锁续费
 func (l *redisLock) ExtendLock(ctx context.Context) (err error){
+	go func(lock *redisLock,ctxCancel context.Context) {
+		script := `local getRes=redis.call('GET', KEYS[1])
+				if getRes
+    				then
+        				if getRes==ARGV[1]
+            				then
+                				return redis.call('SET',KEYS[1],ARGV[2])
+							else
+                				return "invalid"
+        				end
+    				else
+        				return "not exist"
+				end`
+		redisScrip := redis.NewScript(1,script)
+		conn := RedisLockSrv.RedisPool.Get()
+		defer conn.Close()
+		for{
+			time.Sleep(l.TimeHoldLock*2/3)
+			//检测是否还持有锁，若持有则续费并继续循环,若不再持有则退出该协程
+			newTimeExpire := time.Now().UnixNano() + int64(l.TimeHoldLock)
+			delRes,err := redis.String(redisScrip.Do(conn,l.LockId,l.TimeExpire,newTimeExpire))
+			if err != nil {
+				return
+			}
+			if delRes != "OK" {
+				return
+			}
+			//更新锁的过期时间
+			l.TimeExpire = newTimeExpire
 
+			select{
+				case <-ctxCancel.Done():
+					return
+			default:
+			}
+		}
+	}(l,ctx)
 	return nil
 }
 

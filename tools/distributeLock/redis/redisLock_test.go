@@ -1,6 +1,7 @@
 package redisLock
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"testing"
@@ -47,4 +48,27 @@ func TestMultiRedisLock(t *testing.T) {
 	}
 	wg.Wait()
 	fmt.Println("finish test")
+}
+
+func TestLockWithExtend(t *testing.T) {
+	fmt.Println("test redis lock")
+	InitRedisLockSrv("127.0.0.1:6379")
+	lockSrv := LoadSrv()
+
+	tempLock, err := lockSrv.TryGetLock("testLock", 1*time.Second, 2*time.Second)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	fmt.Println("do something")
+
+	ctx := context.Background()
+	ctxCancel, cancel := context.WithCancel(ctx)
+	tempLock.ExtendLock(ctxCancel)
+
+	time.Sleep(10 * time.Second)
+
+	cancel()
+	tempLock.UnLock()
 }
