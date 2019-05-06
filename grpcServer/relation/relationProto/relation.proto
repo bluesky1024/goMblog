@@ -36,10 +36,12 @@ message FollowGroup {
 
 message MultiFollows {
     repeated FollowInfo Follows = 1;
+    int64 Cnt = 2;
 }
 
 message MultiFans {
     repeated FanInfo Fans = 1;
+    int64 Cnt = 2;
 }
 
 message MultiFollowGroups {
