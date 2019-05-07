@@ -43,6 +43,7 @@ type FanInfo struct {
 	FanUid     int64
 	Status     int8
 	IsFriend   int8
+	GroupId    int64
 	CreateTime time.Time `xorm:"created"`
 	UpdateTime time.Time `xorm:"updated"`
 }

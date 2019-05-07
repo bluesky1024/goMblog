@@ -47,9 +47,10 @@ func (s *RelationService) GetFansByUid(ctx context.Context, req *pb.UidReq) (res
 	res.Fans = make([]*pb.FanInfo, len(fans))
 	for ind, fan := range fans {
 		res.Fans[ind] = &pb.FanInfo{
-			Uid:    fan.Uid,
-			FanUid: fan.FanUid,
-			Status: int32(fan.Status),
+			Uid:     fan.Uid,
+			FanUid:  fan.FanUid,
+			Status:  int32(fan.Status),
+			GroupId: fan.GroupId,
 		}
 	}
 	return res, err
