@@ -113,7 +113,49 @@ func (r *RelationDbRepository) UpdateFollowGroupByUid(uid int64, uidFollow int64
 	}
 
 	relationA.GroupId = groupId
+
+	//groupId需要同时更新到follow表和fan表（事务处理）
+	session := r.sourceM.NewSession()
+	defer session.Clone()
+
+	err = session.Begin()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return false, err
+	}
+
+	//更新follow表
 	res = r.updateFollowByUid(relationA)
+	if !res {
+		session.Rollback()
+		err = errors.New("set group fail")
+		logger.Err(logType, err.Error())
+		return false, err
+	}
+
+	//更新fan表
+	fanInfo := dm.FanInfo{
+		Uid:      uidFollow,
+		FanUid:   uid,
+		GroupId:  groupId,
+		IsFriend: dm.IsFriendFalse,
+		Status:   dm.FollowStatusNormal,
+	}
+	res = r.updateFan(fanInfo)
+	if !res {
+		session.Rollback()
+		err = errors.New("set group fail")
+		logger.Err(logType, err.Error())
+		return false, err
+	}
+
+	err = session.Commit()
+	if err != nil {
+		session.Rollback()
+		logger.Err(logType, err.Error())
+		return false, err
+	}
+
 	return res, nil
 }
 
