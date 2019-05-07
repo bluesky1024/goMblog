@@ -17,7 +17,6 @@ type redisLockSrv struct {
 
 type redisLock struct {
 	LockId   string
-	TimeWait time.Duration
 	TimeExpire int64
 	TimeHoldLock time.Duration
 }
@@ -73,7 +72,6 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 	if res != 0 {
 		return &redisLock{
 			LockId:   lockId,
-			TimeWait: timeWait,
 			TimeExpire:timeExpire,
 			TimeHoldLock:timeHoldLock,
 		}, nil
@@ -108,7 +106,6 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 				if res != 0 {
 					return &redisLock{
 						LockId:   lockId,
-						TimeWait: timeWait,
 						TimeExpire:timeExpire,
 						TimeHoldLock:timeHoldLock,
 					}, nil
@@ -129,7 +126,6 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration,timeHo
 			if getRes == "OK" {
 				return &redisLock{
 					LockId:lockId,
-					TimeWait:timeWait,
 					TimeExpire:timeExpire,
 					TimeHoldLock:timeHoldLock,
 				},nil
