@@ -11,6 +11,7 @@ var is_scroll_valid = true;  //防止请求过程中反复获取数据
 function render_new_card(mblog){
     var mblog_element = $("#mblog-demo").clone();
     mblog_element.show();
+    mblog_element.attr("id","mblog-" + mblog.Mid);
     mblog_element.attr("mid",mblog.Mid);
     mblog_element.attr("uid",mblog.Uid);
     mblog_element.find(".mblog-base-info").html(mblog.NickName + "   " + mblog.CreateTime);
@@ -27,7 +28,7 @@ function append_feed_cards(mblog_datas,user_datas){
         mblog["NickName"] = user_datas[mblog.Uid]["NickName"];
         var tempHtml = render_new_card(mblog)
         $("#feed-block").append(tempHtml);
-        if(first_mid == 0 && ind == 0){
+        if(first_mid == 0){
             first_mid = mblog.Mid;
         }
         last_mid = mblog.Mid;
@@ -150,7 +151,7 @@ $(function() {
         mblog['TransCnt'] = "1";
         mblog['CommentCnt'] = "2";
         mblog['LikesCnt'] = "3";
-        $("#feed-block").prepend(render_new_card(mblog));
+        $("#feed-block").append(render_new_card(mblog));
 
         mblog['NickName'] = "fang2";
         mblog['Content'] = "content";

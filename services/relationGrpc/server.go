@@ -57,9 +57,10 @@ func (s *relationService) GetFansByUid(uid int64, page int, pageSize int) (fans 
 	fans = make([]dm.FanInfo, len(res.Fans))
 	for ind, fanInfo := range res.Fans {
 		fans[ind] = dm.FanInfo{
-			Uid:    fanInfo.Uid,
-			FanUid: fanInfo.FanUid,
-			Status: int8(fanInfo.Status),
+			Uid:     fanInfo.Uid,
+			FanUid:  fanInfo.FanUid,
+			Status:  int8(fanInfo.Status),
+			GroupId: fanInfo.GroupId,
 		}
 	}
 

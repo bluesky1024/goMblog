@@ -22,7 +22,7 @@ type server struct{}
 // SayHello implements helloworld.GreeterServer
 func (s *server) GetByUid(ctx context.Context, Uid *pb.Uid) (user *pb.User, err error) {
 	log.Printf("Received: %v", Uid.Uid)
-	usersrv := us.NewUserServicer()
+	usersrv, _ := us.NewUserServicer()
 	userinfo, _ := usersrv.GetByUid(Uid.Uid)
 	return &pb.User{
 		Uid:      userinfo.Uid,

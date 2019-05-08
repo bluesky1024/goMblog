@@ -1,17 +1,20 @@
 package feedService
 
+//个人feed中保存100天内的mid数据
+//每天脚本淘汰过期feed数据
+
 import (
+	"errors"
+	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/datasource/redisSource"
 	"github.com/bluesky1024/goMblog/repositories/redisRepo/feed"
 	"github.com/bluesky1024/goMblog/services/mblogGrpc"
 	"github.com/bluesky1024/goMblog/services/relationGrpc"
 	"github.com/bluesky1024/goMblog/services/userGrpc"
-	"github.com/bluesky1024/goMblog/tools/idGenerate"
 	"github.com/bluesky1024/goMblog/tools/logger"
-	"time"
 )
 
-var logType = "relationService"
+var logType = "feedService"
 
 type FeedServicer interface {
 	//按page顺序获取feed信息
@@ -21,9 +24,13 @@ type FeedServicer interface {
 	//获取在某条微博之后（更新）的size条微博
 	GetFeedNewerByMid(uid int64, groupId int64, Mid int64, size int) (mids []int64, err error)
 
-	/*kafka关注取关分组管理补充操作*/
-	//HandleFollowMsg(msg dm.FollowMsg) (err error)
-	//HandleUnFollowMsg(msg dm.FollowMsg) (err error)
+	/*kafka消息处理*/
+	HandleFollowMsg(msg dm.FollowMsg) (err error)
+	HandleUnFollowMsg(msg dm.FollowMsg) (err error)
+
+	HandleSetGroupMsg(msg dm.SetGroupMsg) (err error)
+
+	HandleMblogNewMsg(msg dm.MblogNewMsg) (err error)
 	////HandleGroupAddUidMsg()
 	////HandleGroupRemUidMsg()
 	////HandleGroupDelMsg()
@@ -38,49 +45,36 @@ type feedService struct {
 	relationSrv relationGrpc.RelationServicer
 }
 
-func NewFeedServicer() FeedServicer {
+func NewFeedServicer() (s FeedServicer, err error) {
 	feedRdSourM, err := redisSource.LoadFeedRdSour(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return nil
+		return nil, err
 	}
 	feedRdSourS, err := redisSource.LoadFeedRdSour(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return nil
+		return nil, err
 	}
 	feedRepo := feedRdRepo.NewFeedRdRepo(feedRdSourM, feedRdSourS)
 
 	userSrv := userGrpc.NewUserGrpcServicer()
+	if userSrv == nil {
+		return nil, errors.New("user grpc server invalid")
+	}
 	mblogSrv := mblogGrpc.NewMblogServicer()
+	if mblogSrv == nil {
+		return nil, errors.New("mblog grpc server invalid")
+	}
+	relationSrv := relationGrpc.NewRelationGrpcServicer()
+	if relationSrv == nil {
+		return nil, errors.New("relation grpc server invalid")
+	}
 
 	return &feedService{
-		feedRdRepo: feedRepo,
-		userSrv:    userSrv,
-		mblogSrv:   mblogSrv,
-	}
+		feedRdRepo:  feedRepo,
+		userSrv:     userSrv,
+		mblogSrv:    mblogSrv,
+		relationSrv: relationSrv,
+	}, nil
 }
-
-func (f *feedService) GetFeedByUidAndGroupId(uid int64, groupId int64, page int, pageSize int) (mids []int64, err error) {
-	return f.feedRdRepo.GetFeeds(uid, groupId, page, pageSize)
-}
-
-func (f *feedService) GetFeedMoreByMid(uid int64, groupId int64, Mid int64, size int) (mids []int64, err error) {
-	var timeBefore int64
-	if Mid == 0 {
-		timeBefore = time.Now().UnixNano()
-		timeBefore = timeBefore / 1e6
-	} else {
-		timeBefore = idGenerate.GetDetailTimeById(Mid)
-	}
-	return f.feedRdRepo.GetByTimeBefore(uid, groupId, timeBefore, size)
-}
-
-func (f *feedService) GetFeedNewerByMid(uid int64, groupId int64, Mid int64, size int) (mids []int64, err error) {
-	timeAfter := idGenerate.GetDetailTimeById(Mid)
-	return f.feedRdRepo.GetByTimeAfter(uid, groupId, timeAfter, size)
-}
-
-//func (f *feedService) HandleMblogSendMsg(msg dm.MblogSendKafkaStruct) (err error) {
-//
-//}

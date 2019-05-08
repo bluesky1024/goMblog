@@ -66,7 +66,7 @@ CREATE TABLE `mblog_info_201903` (
 * 所以需要冗余该表
 ###### 基本表设计
 ```sql
-CREATE TABLE `uid_to_mblog_201903` (
+CREATE TABLE `uid_to_mblog_1` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `uid` bigint(18) NOT NULL COMMENT '发博人uid',
   `mid` bigint(18) unsigned NOT NULL COMMENT '微博mid',
@@ -82,6 +82,8 @@ CREATE TABLE `uid_to_mblog_201903` (
 * 待补充
 ###### 分表方案
 * 冗余该映射表，按发博人uid进行进行分表
+* 一致性hash分表,建立10000个虚拟节点，目前对应10张真实表,uid%10000（0～999=>1,1999~2000=>2,...）
+* 后期要对部分表进行扩充，可将变动范围控制于局部。
 
 ---
 

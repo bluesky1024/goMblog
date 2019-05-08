@@ -3,27 +3,21 @@ package main
 import (
 	"encoding/json"
 	"github.com/Shopify/sarama"
+	"github.com/bluesky1024/goMblog/daemon/kafka"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-func newRelationHandler() (topics []string, handler relationConsumerGroupHandler) {
-	handler = relationConsumerGroupHandler{
-		handlerMap: make(map[string]topicHandler, 1),
-	}
+func newRelationHandler() (handler *kafkaConsumer.ConsumerGroupHandlerC) {
+	handler = &kafkaConsumer.ConsumerGroupHandlerC{}
 
-	var topic string
 	//处理关注消息
-	topic = "relationFollow"
-	topics = append(topics, topic)
-	handler.registerHandler(topic, handleFollow)
+	handler.RegisterHandler("relationFollow", handleFollow)
 
-	//处理取关消息
-	topic = "relationUnFollow"
-	topics = append(topics, topic)
-	handler.registerHandler(topic, handleUnFollow)
+	////处理取关消息
+	handler.RegisterHandler("relationUnFollow", handleUnFollow)
 
-	return topics, handler
+	return handler
 }
 
 func handleFollow(msg sarama.ConsumerMessage) (err error) {

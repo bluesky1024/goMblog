@@ -4,11 +4,17 @@ import (
 	"context"
 	pb "github.com/bluesky1024/goMblog/grpcServer/relation/relationProto"
 	"github.com/bluesky1024/goMblog/services/relation"
+	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
 func NewRelationService() *RelationService {
+	s, err := relationService.NewRelationServicer()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil
+	}
 	return &RelationService{
-		serv: relationService.NewRelationServicer(),
+		serv: s,
 	}
 }
 
@@ -41,9 +47,10 @@ func (s *RelationService) GetFansByUid(ctx context.Context, req *pb.UidReq) (res
 	res.Fans = make([]*pb.FanInfo, len(fans))
 	for ind, fan := range fans {
 		res.Fans[ind] = &pb.FanInfo{
-			Uid:    fan.Uid,
-			FanUid: fan.FanUid,
-			Status: int32(fan.Status),
+			Uid:     fan.Uid,
+			FanUid:  fan.FanUid,
+			Status:  int32(fan.Status),
+			GroupId: fan.GroupId,
 		}
 	}
 	return res, err

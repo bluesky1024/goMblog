@@ -16,7 +16,7 @@ function mblogSend(){
             console.log(res);
             if(res.Code == 1000){
                 alert("发布成功");
-                window.location.href = "/user/me";
+                window.location.href = "/";
                 return true;
             }
             alert(res.Msg);

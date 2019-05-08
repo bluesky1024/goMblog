@@ -31,6 +31,21 @@ type MblogInfo struct {
 	UpdateTime time.Time `xorm:"updated"`
 }
 
+type MblogInfoView struct {
+	Mid        string
+	Uid        string
+	Content    string
+	OriginMid  string
+	OriginUid  string
+	TransCnt   int32
+	LikesCnt   int32
+	CommentCnt int32
+	Status     int8
+	ReadAble   int8
+	CreateTime string
+	UpdateTime string
+}
+
 type UidToMblog struct {
 	Id         int32
 	Uid        int64
@@ -41,8 +56,19 @@ type UidToMblog struct {
 	UpdateTime time.Time `xorm:"updated"`
 }
 
-type MblogSendKafkaStruct struct {
-	Uid       int64
-	FollowUid int64
-	Status    int8
+type MblogNewMsg struct {
+	Uid        int64
+	Mid        int64
+	Content    string
+	OriginMid  int64
+	OriginUid  int64
+	Status     int8
+	ReadAble   int8
+	CreateTime time.Time
+	UpdateTime time.Time
+}
+
+type updateMblogMsg struct {
+	Uid int64
+	Mid int64
 }

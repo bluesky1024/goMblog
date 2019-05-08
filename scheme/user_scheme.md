@@ -29,8 +29,11 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`),
   UNIQUE KEY `nick_name` (`nick_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COMMENT='用户基本信息表' 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户基本信息表' 
 ```
+##### 分表
+* 一致性hash分表,与uid_to_mblog表一致(暂无法这么写，还没想好怎么根据nick_name进行查询)
+
 #### 用户详细信息
 CREATE TABLE `user_detail` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',

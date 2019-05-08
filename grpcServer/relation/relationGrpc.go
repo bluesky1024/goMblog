@@ -37,6 +37,10 @@ func main() {
 	s := grpc.NewServer(opts...)
 
 	relationServ := NewRelationService()
+	if relationServ == nil {
+		logger.Err(logType, "relation server init fail")
+		return
+	}
 
 	pb.RegisterRelationServer(s, relationServ)
 	if err := s.Serve(lis); err != nil {

@@ -21,8 +21,9 @@ message FanInfo {
     int64 FanUid = 3;
     int32 Status = 4;
     int32 IsFriend = 5;
-    google.protobuf.Timestamp CreateTime = 6;
-    google.protobuf.Timestamp UpdateTime = 7;
+    int64 GroupId = 6;
+    google.protobuf.Timestamp CreateTime = 7;
+    google.protobuf.Timestamp UpdateTime = 8;
 }
 
 message FollowGroup {
@@ -36,10 +37,12 @@ message FollowGroup {
 
 message MultiFollows {
     repeated FollowInfo Follows = 1;
+    int64 Cnt = 2;
 }
 
 message MultiFans {
     repeated FanInfo Fans = 1;
+    int64 Cnt = 2;
 }
 
 message MultiFollowGroups {

@@ -24,7 +24,7 @@ func (r *RelationDbRepository) updateFan(info dm.FanInfo) bool {
 	if info.Uid == 0 || info.FanUid == 0 {
 		return false
 	}
-	_, err := r.sourceM.Table(getFanTableName(info.Uid)).Cols("status", "update_time", "is_friend").Where("uid = ? and fan_uid = ?", info.Uid, info.FanUid).Update(&info)
+	_, err := r.sourceM.Table(getFanTableName(info.Uid)).Cols("status", "update_time", "is_friend", "group_id").Where("uid = ? and fan_uid = ?", info.Uid, info.FanUid).Update(&info)
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return false
@@ -81,4 +81,14 @@ func (r *RelationDbRepository) DeleteFan(uid int64, uidFan int64) bool {
 
 	relationA.Status = dm.FollowStatusDelete
 	return r.updateFan(relationA)
+}
+
+func (r *RelationDbRepository) CountFansByUid(uid int64) (cnt int64, err error) {
+	fanInfo := new(dm.FanInfo)
+	cnt, err = r.sourceS.Table(getFanTableName(uid)).Where("uid = ?", uid).Count(fanInfo)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return 0, err
+	}
+	return cnt, nil
 }

@@ -5,8 +5,10 @@ import (
 	"time"
 )
 
+//刚发现这里的error没有暴露出来，怎么将Dial中的error暴露出来？？？
 func LoadRedisSource(host string, port string) (pool *redis.Pool, err error) {
 	server := host + ":" + port
+
 	pool = &redis.Pool{
 		MaxIdle:     10,
 		IdleTimeout: 240 * time.Second,

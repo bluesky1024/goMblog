@@ -32,16 +32,25 @@ func initServ() {
 func initBasicServ() {
 	var err error
 
-	userSrv = userServ.NewUserServicer()
+	userSrv, err = userServ.NewUserServicer()
+	if err != nil {
+		panic(err.Error())
+	}
 
-	mblogSrv = mblogServ.NewMblogServicer()
+	mblogSrv, err = mblogServ.NewMblogServicer()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	relationSrv, err = relationServ.NewRelationServicer()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	feedSrv = feedServ.NewFeedServicer()
+	feedSrv, err = feedServ.NewFeedServicer()
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func initIdGen() {

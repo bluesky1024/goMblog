@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/bluesky1024/goMblog/tools/idGenerate"
-	"github.com/bluesky1024/goMblog/tools/logger"
-	//"fmt"
 	pb "github.com/bluesky1024/goMblog/grpcServer/user/userProto"
 	userServ "github.com/bluesky1024/goMblog/services/user"
+	"github.com/bluesky1024/goMblog/tools/idGenerate"
+	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
 func NewMblogUserService() *MblogUserService {
@@ -17,9 +16,14 @@ func NewMblogUserService() *MblogUserService {
 		logger.Err(logType, err.Error())
 		return nil
 	}
+	s, err := userServ.NewUserServicer()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil
+	}
 
 	return &MblogUserService{
-		serv: userServ.NewUserServicer(),
+		serv: s,
 	}
 }
 

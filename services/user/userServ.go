@@ -32,24 +32,30 @@ type userService struct {
 }
 
 // NewUserService returns the default user service.
-func NewUserServicer() UserServicer {
+func NewUserServicer() (s UserServicer, err error) {
 	//id生成池初始化
-	idGen.InitUidPool(3)
+	err = idGen.InitUidPool(3)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil, err
+	}
 
 	//user服务仓库初始化
 	userSourceM, err := ds.LoadUsers(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	userSourceR, err := ds.LoadUsers(false)
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return nil, err
 	}
 	userRepo := userDbRepo.NewUserRepository(userSourceM, userSourceR)
 
 	return &userService{
 		repo: userRepo,
-	}
+	}, nil
 }
 
 // Create inserts a new User,
@@ -77,6 +83,9 @@ func (s *userService) Create(nickname string, password string, telephone string,
 	if err != nil {
 		return dm.User{}, err
 	}
+
+	//目前没有头像上传功能，采用默认头像
+	insertUser.ProfileImage = "//tvax3.sinaimg.cn/crop.19.0.620.620.180/006VvoKYly8fijhpwx2qoj30hs0hsdfx.jpg"
 
 	affect, err := s.repo.Insert(insertUser)
 	if err != nil || affect == 0 {

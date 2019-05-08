@@ -43,6 +43,7 @@ type FanInfo struct {
 	FanUid     int64
 	Status     int8
 	IsFriend   int8
+	GroupId    int64
 	CreateTime time.Time `xorm:"created"`
 	UpdateTime time.Time `xorm:"updated"`
 }
@@ -57,16 +58,22 @@ type FollowGroup struct {
 }
 
 type FollowMsg struct {
-	MsgId     int64
-	Uid       int64
-	FollowUid int64
-	Status    int8
+	MsgId      int64
+	Uid        int64
+	FollowUid  int64
+	GroupId    int64
+	Status     int8
+	CreateTime time.Time
+	UpdateTime time.Time
 }
 
-type GroupMsg struct {
-	MsgId     int64
-	Uid       int64
-	FollowUid int64
-	GroupId   int64
-	InOrOut   bool
+type SetGroupMsg struct {
+	MsgId      int64
+	Uid        int64
+	FollowUid  int64
+	OriGroupId int64
+	GroupId    int64
+	InOrOut    bool
+	CreateTime time.Time
+	UpdateTime time.Time
 }

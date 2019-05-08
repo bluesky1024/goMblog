@@ -22,16 +22,20 @@ message MblogInfo {
 
 message MultiMblogs {
     repeated MblogInfo mblogInfo = 1;
+    int64 Cnt = 2;
 }
 
 message UidReq {
     int64 Uid = 1;
     int32 Page = 2;
     int32 PageSize = 3;
+    repeated int32 readAble =4;
+    int64 StartTime = 5;
+    int64 EndTime = 6;
 }
 
-message Mids {
-    repeated int32 Mid = 1;
+message MidsReq {
+    repeated int64 Mid = 1;
 }
 
 message MidReq {
@@ -40,6 +44,6 @@ message MidReq {
 
 service Mblog {
     rpc Create(MblogInfo) returns (MblogInfo) {}
-    rpc GetByUid(UidReq) returns (MultiMblogs) {}
-    rpc GetByMid(MidReq) returns (MblogInfo) {}
+    rpc GetNormalByUid(UidReq) returns (MultiMblogs) {}
+    rpc GetMultiByMids(MidsReq) returns (MultiMblogs) {}
 }

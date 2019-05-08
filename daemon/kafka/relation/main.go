@@ -48,12 +48,12 @@ func main() {
 		}
 	}()
 
-	topics, msgHandler := newRelationHandler()
+	msgHandler := newRelationHandler()
 
 	// Iterate over consumer sessions.
 	ctx := context.Background()
 	for {
-		err := group.Consume(ctx, topics, msgHandler)
+		err := group.Consume(ctx, msgHandler.Topics, msgHandler)
 		if err != nil {
 			panic(err)
 		}
