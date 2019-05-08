@@ -27,6 +27,9 @@ type FeedServicer interface {
 	/*kafka消息处理*/
 	HandleFollowMsg(msg dm.FollowMsg) (err error)
 	HandleUnFollowMsg(msg dm.FollowMsg) (err error)
+
+	HandleSetGroupMsg(msg dm.SetGroupMsg) (err error)
+
 	HandleMblogNewMsg(msg dm.MblogNewMsg) (err error)
 	////HandleGroupAddUidMsg()
 	////HandleGroupRemUidMsg()
@@ -63,10 +66,15 @@ func NewFeedServicer() (s FeedServicer, err error) {
 	if mblogSrv == nil {
 		return nil, errors.New("mblog grpc server invalid")
 	}
+	relationSrv := relationGrpc.NewRelationGrpcServicer()
+	if relationSrv == nil {
+		return nil, errors.New("relation grpc server invalid")
+	}
 
 	return &feedService{
-		feedRdRepo: feedRepo,
-		userSrv:    userSrv,
-		mblogSrv:   mblogSrv,
+		feedRdRepo:  feedRepo,
+		userSrv:     userSrv,
+		mblogSrv:    mblogSrv,
+		relationSrv: relationSrv,
 	}, nil
 }

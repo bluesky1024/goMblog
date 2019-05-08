@@ -67,10 +67,11 @@ type FollowMsg struct {
 	UpdateTime time.Time
 }
 
-type GroupMsg struct {
+type SetGroupMsg struct {
 	MsgId      int64
 	Uid        int64
 	FollowUid  int64
+	OriGroupId int64
 	GroupId    int64
 	InOrOut    bool
 	CreateTime time.Time

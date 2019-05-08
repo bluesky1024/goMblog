@@ -61,10 +61,10 @@ func (s *relationService) sendUnFollowMsg(msg dm.FollowMsg) {
 	}
 }
 
-func (s *relationService) sendGroupMsg(msg dm.GroupMsg) {
+func (s *relationService) sendGroupMsg(msg dm.SetGroupMsg) {
 	msgStr, _ := json.Marshal(&msg)
 	kafkaMsg := &sarama.ProducerMessage{
-		Topic: "relationGroup",
+		Topic: "relationSetGroup",
 		Key:   sarama.StringEncoder(msg.Uid),
 		Value: sarama.ByteEncoder(msgStr),
 	}
