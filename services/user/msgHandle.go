@@ -4,16 +4,15 @@ import (
 	dm "github.com/bluesky1024/goMblog/datamodels"
 )
 
+//根据关注取关动作消息维护粉丝数的变更
 func (s *userService) HandleFollowMsg(msg dm.FollowMsg) (err error) {
-	////更新
-	//s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
+	//被关注用户粉丝数加一
 
 	return err
 }
 
 func (s *userService) HandleUnFollowMsg(msg dm.FollowMsg) (err error) {
-	////删除粉丝表记录
-	//s.repo.DeleteFan(msg.FollowUid, msg.Uid)
+	//被取关用户粉丝数减一
 
 	return err
 }

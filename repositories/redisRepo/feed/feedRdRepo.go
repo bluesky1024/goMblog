@@ -2,7 +2,6 @@ package feedRdRepo
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bluesky1024/goMblog/tools/idGenerate"
 	"github.com/bluesky1024/goMblog/tools/logger"
 	"github.com/gomodule/redigo/redis"
@@ -10,7 +9,7 @@ import (
 	"time"
 )
 
-var logType string = "feedRdRepo"
+var logType = "feedRdRepo"
 
 type FeedRbRepository struct {
 	RedisPoolM *redis.Pool
@@ -21,23 +20,6 @@ func NewFeedRdRepo(redisPoolM *redis.Pool, redisPoolS *redis.Pool) *FeedRbReposi
 	return &FeedRbRepository{
 		RedisPoolM: redisPoolM,
 		RedisPoolS: redisPoolS,
-	}
-}
-
-func (f *FeedRbRepository) TestRedis() {
-	conn := f.RedisPoolM.Get()
-	defer conn.Close()
-
-	_, err := conn.Do("SET", "my_go_key", "test_one")
-	if err != nil {
-		fmt.Println("redis set failed:", err)
-	}
-
-	username, err := redis.String(conn.Do("GET", "my_go_key"))
-	if err != nil {
-		fmt.Println("redis get failed:", err)
-	} else {
-		fmt.Printf("Get mykey: %v \n", username)
 	}
 }
 
