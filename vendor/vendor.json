@@ -116,6 +116,48 @@
 			"revisionTime": "2019-01-16T20:46:35Z"
 		},
 		{
+			"checksumSHA1": "EWi7axpi8+DMU5GRE96lwoRQw9s=",
+			"path": "github.com/go-redis/redis",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "tZJRl4B7hKoRe+nWAMA4JtsM7Kc=",
+			"path": "github.com/go-redis/redis/internal",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "GQZsUVg/+6UpQAYpc4luMvMutSI=",
+			"path": "github.com/go-redis/redis/internal/consistenthash",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "l66eTZiJqueypc56HXCakGDm784=",
+			"path": "github.com/go-redis/redis/internal/hashtag",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "25ynuVWFdZZBPIPldXs9zshCxm0=",
+			"path": "github.com/go-redis/redis/internal/pool",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "zCo0t+gRBbctwyIpkDLrqRFtXew=",
+			"path": "github.com/go-redis/redis/internal/proto",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
+			"checksumSHA1": "1PH2NoAB/u3IZmLYyCrIbOzqLZ4=",
+			"path": "github.com/go-redis/redis/internal/util",
+			"revision": "75795aa4236dc7341eefac3bbe945e68c99ef9df",
+			"revisionTime": "2019-05-03T08:29:31Z"
+		},
+		{
 			"checksumSHA1": "k9izYoyobR8Upb3Yjsw9htgE/Mk=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "99ff426eb706cffe92ff3d058e168b278cabf7c7",
@@ -174,18 +216,6 @@
 			"path": "github.com/golang/snappy",
 			"revision": "2a8bb927dd31d8daada140a5d09578521ce5c36a",
 			"revisionTime": "2019-02-18T23:22:22Z"
-		},
-		{
-			"checksumSHA1": "w3QCCIYHgZzIXQ+xTl7oLfFrXHs=",
-			"path": "github.com/gomodule/redigo/internal",
-			"revision": "2cd21d9966bf7ff9ae091419744f0b3fb0fecace",
-			"revisionTime": "2018-06-27T14:45:07Z"
-		},
-		{
-			"checksumSHA1": "To/N5YA/FD0Rrs6r2OOmHXgxYwI=",
-			"path": "github.com/gomodule/redigo/redis",
-			"revision": "2cd21d9966bf7ff9ae091419744f0b3fb0fecace",
-			"revisionTime": "2018-06-27T14:45:07Z"
 		},
 		{
 			"checksumSHA1": "u9z5yPTvjsw9JKCs1xQNhwsO5Fo=",
@@ -557,6 +587,12 @@
 			"path": "golang.org/x/net/trace",
 			"revision": "ed066c81e75eba56dd9bd2139ade88125b855585",
 			"revisionTime": "2018-12-13T11:07:11Z"
+		},
+		{
+			"checksumSHA1": "bzPedWCq5swyrsNiaVj3h/wImRQ=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "ecd444e8653b66b20d764e53c22e3e615eea5fae",
+			"revisionTime": "2019-05-07T06:32:47Z"
 		},
 		{
 			"checksumSHA1": "CbpjEkkOeh0fdM/V8xKDdI0AA88=",
