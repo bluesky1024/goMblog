@@ -1,19 +1,17 @@
 package userRdRepo
 
 import (
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
 )
 
 type UserRbRepository struct {
-	RedisPoolM *redis.Pool
-	RedisPoolS *redis.Pool
+	RedisPool *redis.ClusterClient
 }
 
 var logType = "userRdRepo"
 
-func NewUserRdRepo(redisPoolM *redis.Pool, redisPoolS *redis.Pool) *UserRbRepository {
+func NewUserRdRepo(redisPool *redis.ClusterClient) *UserRbRepository {
 	return &UserRbRepository{
-		RedisPoolM: redisPoolM,
-		RedisPoolS: redisPoolS,
+		RedisPool: redisPool,
 	}
 }
