@@ -1,18 +1,18 @@
 package redisLock
 
 //基于redis实现的分布式锁工具
-//因为基于redis连接池，并发数受连接池最大连接数限制(连接数仅250左右，问题待定位...)
 
 import (
 	"context"
 	"errors"
 	"github.com/bluesky1024/goMblog/tools/distributeLock"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
+	"strconv"
 	"time"
 )
 
 type redisLockSrv struct {
-	RedisPool *redis.Pool
+	RedisPool *redis.ClusterClient
 }
 
 type redisLock struct {
@@ -26,29 +26,16 @@ var (
 	lockKey      = "thisIsKeyForTrans"
 )
 
-func InitRedisLockSrv(addr string) error {
-	pool := &redis.Pool{
-		MaxActive:   5000,
-		MaxIdle:     1000,
-		IdleTimeout: 240 * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", addr)
-			if err != nil {
-				return nil, err
-			}
-			//if _, err := c.Do("AUTH", password); err != nil {
-			//	c.Close()
-			//	return nil, err
-			//}
-			//if _, err := c.Do("SELECT", db); err != nil {
-			//	c.Close()
-			//	return nil, err
-			//}
-			return c, nil
-		},
+func InitRedisLockSrv(addrs []string) error {
+	redisCluster := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs: addrs,
+	})
+	pong, err := redisCluster.Ping().Result()
+	if err != nil || pong != "PONG" {
+		return err
 	}
 	RedisLockSrv = &redisLockSrv{
-		RedisPool: pool,
+		RedisPool: redisCluster,
 	}
 	return nil
 }
@@ -58,18 +45,16 @@ func LoadSrv() distributeLock.LockSrv {
 }
 
 func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration, timeHoldLock time.Duration) (distributeLock.DisLock, error) {
-	conn := RedisLockSrv.RedisPool.Get()
-	defer conn.Close()
 
 	lockId := lockName + lockKey
 	//尝试SETNX
 	timeExpire := time.Now().UnixNano() + int64(timeHoldLock)
-	res, err := redis.Int64(conn.Do("SETNX", lockId, timeExpire))
+	res, err := s.RedisPool.SetNX(lockId, timeExpire, 0).Result()
 	if err != nil {
 		return nil, err
 	}
 	//获取成功
-	if res != 0 {
+	if res {
 		return &redisLock{
 			LockId:       lockId,
 			TimeExpire:   timeExpire,
@@ -88,22 +73,21 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration, timeH
 		"else " +
 		"return 'fail' " +
 		"end "
-	redisScrip := redis.NewScript(1, script)
 
 	for {
 		//获取锁的值
-		timeExpireOthers, err := redis.Int64(conn.Do("GET", lockId))
+		timeExpireOthersStr, err := s.RedisPool.Get(lockId).Result()
 		if err != nil {
 			//fmt.Println("try get",err.Error())
 			//若获取不到，表示当前持有人已经释放了，再次尝试setnx
 			if err.Error() == "redigo: nil returned" {
 				timeExpire = time.Now().UnixNano() + int64(timeHoldLock)
-				res, err = redis.Int64(conn.Do("SETNX", lockId, timeExpire))
+				res, err = s.RedisPool.SetNX(lockId, timeExpire, 0).Result()
 				if err != nil {
 					return nil, err
 				}
 				//获取成功
-				if res != 0 {
+				if res {
 					return &redisLock{
 						LockId:       lockId,
 						TimeExpire:   timeExpire,
@@ -115,11 +99,15 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration, timeH
 				return nil, err
 			}
 		}
+		timeExpireOthers, _ := strconv.ParseInt(timeExpireOthersStr, 10, 64)
 		//判断是否超时了
 		if timeExpireOthers <= time.Now().UnixNano() {
 			//尝试释放锁,并由自身获取锁
 			timeExpire = time.Now().UnixNano() + int64(timeHoldLock)
-			getRes, err := redis.String(redisScrip.Do(conn, lockId, timeExpireOthers, timeExpire))
+			keys := []string{lockId}
+			args := []interface{}{timeExpireOthers, timeExpire}
+			getRes, err := s.RedisPool.Eval(script, keys, args...).Result()
+			getRes = getRes.(string)
 			if err != nil {
 				return nil, err
 			}
@@ -156,14 +144,14 @@ func (l *redisLock) ExtendLock(ctx context.Context) (err error) {
     				else
         				return "not exist"
 				end`
-		redisScrip := redis.NewScript(1, script)
-		conn := RedisLockSrv.RedisPool.Get()
-		defer conn.Close()
 		for {
 			time.Sleep(l.TimeHoldLock * 2 / 3)
 			//检测是否还持有锁，若持有则续费并继续循环,若不再持有则退出该协程
 			newTimeExpire := time.Now().UnixNano() + int64(l.TimeHoldLock)
-			delRes, err := redis.String(redisScrip.Do(conn, l.LockId, l.TimeExpire, newTimeExpire))
+			keys := []string{l.LockId}
+			args := []interface{}{l.TimeExpire, newTimeExpire}
+			delRes, err := RedisLockSrv.RedisPool.Eval(script, keys, args...).Result()
+			delRes = delRes.(string)
 			if err != nil {
 				return
 			}
@@ -184,18 +172,15 @@ func (l *redisLock) ExtendLock(ctx context.Context) (err error) {
 }
 
 func (l *redisLock) UnLock() (err error) {
-	conn := RedisLockSrv.RedisPool.Get()
-	defer conn.Close()
-
-	script := "if redis.call('GET', KEYS[1]) == KEYS[2] " +
+	script := "if redis.call('GET', KEYS[1]) == ARGV[1] " +
 		"then " +
 		"return redis.call('DEL', KEYS[1])" +
 		"else " +
-		"return 0 " +
+		"return 'fail' " +
 		"end "
-	redisScrip := redis.NewScript(2, script)
-
-	delRes, err := redis.String(redisScrip.Do(conn, l.LockId, l.TimeExpire))
+	keys := []string{l.LockId}
+	args := []interface{}{l.TimeExpire}
+	delRes, err := RedisLockSrv.RedisPool.Eval(script, keys, args...).Result()
 	if err != nil {
 		return errors.New("release lock fail:" + err.Error())
 	}
