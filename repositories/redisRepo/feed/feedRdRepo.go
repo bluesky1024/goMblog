@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/bluesky1024/goMblog/tools/idGenerate"
 	"github.com/bluesky1024/goMblog/tools/logger"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
 	"strconv"
 	"time"
 )
@@ -12,14 +12,12 @@ import (
 var logType = "feedRdRepo"
 
 type FeedRbRepository struct {
-	RedisPoolM *redis.Pool
-	RedisPoolS *redis.Pool
+	RedisPool *redis.ClusterClient
 }
 
-func NewFeedRdRepo(redisPoolM *redis.Pool, redisPoolS *redis.Pool) *FeedRbRepository {
+func NewFeedRdRepo(redisPool *redis.ClusterClient) *FeedRbRepository {
 	return &FeedRbRepository{
-		RedisPoolM: redisPoolM,
-		RedisPoolS: redisPoolS,
+		RedisPool: redisPool,
 	}
 }
 
@@ -27,13 +25,11 @@ func (f *FeedRbRepository) GetFeeds(uid int64, groupId int64, page int, pageSize
 	if uid == 0 || groupId < 0 {
 		return mids, errors.New("not valid param")
 	}
-	conn := f.RedisPoolS.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
 	startInd := (page - 1) * pageSize
 	endInd := page*pageSize - 1
-	res, err := redis.Strings(conn.Do("zrevrange", feedKey, startInd, endInd))
+	res, err := f.RedisPool.ZRevRange(feedKey, int64(startInd), int64(endInd)).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mids, err
@@ -50,11 +46,9 @@ func (f *FeedRbRepository) GetFirstMid(uid int64, groupId int64) (mid int64, err
 	if uid == 0 || groupId < 0 {
 		return mid, errors.New("invalid uid or groupId")
 	}
-	conn := f.RedisPoolS.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
-	res, err := redis.Strings(conn.Do("zrevrange", feedKey, 0, 0))
+	res, err := f.RedisPool.ZRevRange(feedKey, 0, 0).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mid, err
@@ -70,11 +64,9 @@ func (f *FeedRbRepository) GetLastMid(uid int64, groupId int64) (mid int64, err 
 	if uid == 0 || groupId < 0 {
 		return mid, errors.New("invalid uid or groupId")
 	}
-	conn := f.RedisPoolS.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
-	res, err := redis.Strings(conn.Do("zrange", feedKey, -1, -1))
+	res, err := f.RedisPool.ZRevRange(feedKey, -1, -1).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mid, err
@@ -86,50 +78,21 @@ func (f *FeedRbRepository) GetLastMid(uid int64, groupId int64) (mid int64, err 
 	return mid, err
 }
 
-//该函数注释保留作为如何获取kv对的示例
-//timeBefore为ms级时间戳
-////获取指定时间之前(<timeBefore)的feed数据（时间戳按从大到小的顺序）
-//func (f *FeedRbRepository) GetByTimeBefore(uid int64, groupId int64, timeBefore int64, size int) (res map[string]int64, err error) {
-//	if uid == 0 || groupId < 0 {
-//		return res, errors.New("invalid uid or groupId")
-//	}
-//	conn := f.RedisPoolS.Get()
-//	defer conn.Close()
-//
-//	feedKey := getFeedKey(uid, groupId)
-//	//ZREVRANGEBYSCORE key (max (min LIMIT offset count
-//	values, err := redis.Values(conn.Do("zrevrangebyscore", feedKey, "("+strconv.FormatInt(timeBefore, 10), "(0", "withscores", "limit", 0, size))
-//	fmt.Println("res", res)
-//	if err != nil {
-//		logger.Err(logType, err.Error())
-//		return res, err
-//	}
-//	type tempMid struct {
-//		mid  int64
-//		time int64
-//	}
-//	pairs := make([]tempMid, len(values)/2)
-//	for i := range pairs {
-//		values, err = redis.Scan(values, &pairs[i].mid, &pairs[i].time)
-//		if err != nil {
-//			logger.Err(logType, err.Error())
-//		}
-//	}
-//	return res, nil
-//}
-
 //timeBefore为ms级时间戳
 //获取指定时间之前的feed数据（时间戳按从大到小的顺序）
 func (f *FeedRbRepository) GetByTimeBefore(uid int64, groupId int64, timeBefore int64, size int) (mids []int64, err error) {
 	if uid == 0 || groupId < 0 {
 		return mids, errors.New("invalid uid or groupId")
 	}
-	conn := f.RedisPoolS.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
 	//ZREVRANGEBYSCORE key (max (min LIMIT offset count
-	res, err := redis.Strings(conn.Do("zrevrangebyscore", feedKey, "("+strconv.FormatInt(timeBefore, 10), "(0", "limit", 0, size))
+	res, err := f.RedisPool.ZRevRangeByScore(feedKey, redis.ZRangeBy{
+		Max:    "(" + strconv.FormatInt(timeBefore, 10),
+		Min:    "(0",
+		Offset: 0,
+		Count:  int64(size),
+	}).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mids, err
@@ -147,14 +110,17 @@ func (f *FeedRbRepository) GetByTimeAfter(uid int64, groupId int64, timeAfter in
 	if uid == 0 || groupId < 0 {
 		return mids, errors.New("invalid uid or groupId")
 	}
-	conn := f.RedisPoolS.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
 	curTime := time.Now().UnixNano()
 	curTime = curTime / 1e6
 	//ZRANGEBYSCORE key (min (max LIMIT offset count
-	res, err := redis.Strings(conn.Do("zrangebyscore", feedKey, "("+strconv.FormatInt(timeAfter, 10), "("+strconv.FormatInt(curTime, 10), "limit", 0, size))
+	res, err := f.RedisPool.ZRangeByScore(feedKey, redis.ZRangeBy{
+		Min:    "(" + strconv.FormatInt(timeAfter, 10),
+		Max:    "(" + strconv.FormatInt(curTime, 10),
+		Offset: 0,
+		Count:  int64(size),
+	}).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mids, err
@@ -171,16 +137,24 @@ func (f *FeedRbRepository) AppendNewMid(uid int64, groupId int64, mid int64) (er
 	if uid == 0 || groupId < 0 {
 		return errors.New("invalid uid or groupId")
 	}
-	conn := f.RedisPoolM.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
 	mblogTime := idGenerate.GetDetailTimeById(mid)
-	_, err = conn.Do("zadd", feedKey, mblogTime, mid)
+	//_, err = conn.Do("zadd", feedKey, mblogTime, mid)
+	res, err := f.RedisPool.ZAdd(feedKey, redis.Z{
+		Score:  float64(mblogTime),
+		Member: mid,
+	}).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
+		return err
 	}
-	return err
+	if res == 0 {
+		err = errors.New("append fail")
+		logger.Err(logType, err.Error())
+		return err
+	}
+	return nil
 }
 
 //feed被删除之后即无法再获取，故删除feed的操作可以异步执行
@@ -197,13 +171,10 @@ func (f *FeedRbRepository) DelFeed(uid int64, groupId int64) {
 			return
 		}
 
-		conn := f.RedisPoolM.Get()
-		defer conn.Close()
-
 		feedKey := getFeedKey(uid, groupId)
 		firstStr := strconv.FormatInt(first, 10)
 		lastStr := strconv.FormatInt(last, 10)
-		_, err = conn.Do("zremrangebylex", feedKey, "["+firstStr, "["+lastStr)
+		_, err = f.RedisPool.ZRemRangeByLex(feedKey, "["+firstStr, "["+lastStr).Result()
 		if err != nil {
 			logger.Err(logType, err.Error())
 			return
@@ -216,14 +187,16 @@ func (f *FeedRbRepository) RemoveMids(uid int64, groupId int64, mids []int64) (e
 	if len(mids) == 0 {
 		return errors.New("empty mids del")
 	}
-	conn := f.RedisPoolM.Get()
-	defer conn.Close()
 
 	feedKey := getFeedKey(uid, groupId)
-	_, err = conn.Do("zrem", redis.Args{}.Add(feedKey).AddFlat(mids)...)
+	midsInterface := make([]interface{}, len(mids))
+	for ind, v := range mids {
+		midsInterface[ind] = v
+	}
+	_, err = f.RedisPool.ZRem(feedKey, midsInterface...).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
-		return
+		return err
 	}
 	return err
 }

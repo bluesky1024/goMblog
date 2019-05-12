@@ -156,7 +156,13 @@ brew install ruby
 gem install redis
 
 # 运行脚本进行redis集群管理
-ruby redis-trib.rb  create  --replicas  1  redis-trib.rb create --replicas 1 10.222.76.205:10011 10.222.76.205:10012 10.222.76.205:10013 10.222.76.205:10014 10.222.76.205:10015 10.222.76.205:10016
+ruby redis-trib.rb create --replicas 1 10.222.76.205:10011 10.222.76.205:10012 10.222.76.205:10013 10.222.76.205:10014 10.222.76.205:10015 10.222.76.205:10016
+
+ruby redis-trib.rb create --replicas 1 192.168.0.60:10011 192.168.0.60:10012 192.168.0.60:10013 192.168.0.60:10014 192.168.0.60:10015 192.168.0.60:10016
+
+# 换了ip但端口没变动的情况下，重启ruby redis-trib.rb会报node不为空
+# 节点信息是保存在redis中，重新配置了集群，可以考虑把rdb，aof文件清空，对redis执行flushdb，然后重启redis-server
+# 配置文件和日志文件保存在 /usr/local/var/db/redis/
 ```
 
 

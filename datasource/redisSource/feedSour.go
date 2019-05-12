@@ -1,44 +1,32 @@
 package redisSource
 
 import (
-	"github.com/bluesky1024/goMblog/config"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
 	"sync"
 )
 
-var feedMInstance *redis.Pool
-var feedSInstance *redis.Pool
+var feedInstance *redis.ClusterClient
 var feedLock *sync.Mutex = &sync.Mutex{}
 
-func LoadFeedRdSour(master bool) (*redis.Pool, error) {
+func LoadFeedRdSour() (*redis.ClusterClient, error) {
 	var err error = nil
-	if master {
-		if feedMInstance == nil {
-			feedLock.Lock()
-			defer feedLock.Unlock()
-			if feedMInstance == nil {
-				redisConfig := conf.InitConfig("redisConfig.server")
-				feedMInstance, err = LoadRedisSource(redisConfig["m_host"],
-					redisConfig["m_port"])
-				if err != nil {
-					return nil, err
-				}
+	if feedInstance == nil {
+		feedLock.Lock()
+		defer feedLock.Unlock()
+		if feedInstance == nil {
+			addrs := []string{
+				"192.168.0.60:10011",
+				"192.168.0.60:10012",
+				"192.168.0.60:10013",
+				"192.168.0.60:10014",
+				"192.168.0.60:10015",
+				"192.168.0.60:10016",
+			}
+			feedInstance, err = LoadRedisSource(addrs)
+			if err != nil {
+				return nil, err
 			}
 		}
-		return feedMInstance, err
-	} else {
-		if feedSInstance == nil {
-			feedLock.Lock()
-			defer feedLock.Unlock()
-			if feedMInstance == nil {
-				redisConfig := conf.InitConfig("redisConfig.server")
-				feedSInstance, err = LoadRedisSource(redisConfig["s_host"],
-					redisConfig["s_port"])
-				if err != nil {
-					return nil, err
-				}
-			}
-		}
-		return feedSInstance, err
 	}
+	return feedInstance, err
 }
