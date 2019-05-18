@@ -12,12 +12,12 @@ import (
 var logType = "feedRdRepo"
 
 type FeedRbRepository struct {
-	RedisPool *redis.ClusterClient
+	redisPool *redis.ClusterClient
 }
 
 func NewFeedRdRepo(redisPool *redis.ClusterClient) *FeedRbRepository {
 	return &FeedRbRepository{
-		RedisPool: redisPool,
+		redisPool: redisPool,
 	}
 }
 
@@ -29,7 +29,7 @@ func (f *FeedRbRepository) GetFeeds(uid int64, groupId int64, page int, pageSize
 	feedKey := getFeedKey(uid, groupId)
 	startInd := (page - 1) * pageSize
 	endInd := page*pageSize - 1
-	res, err := f.RedisPool.ZRevRange(feedKey, int64(startInd), int64(endInd)).Result()
+	res, err := f.redisPool.ZRevRange(feedKey, int64(startInd), int64(endInd)).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mids, err
@@ -48,7 +48,7 @@ func (f *FeedRbRepository) GetFirstMid(uid int64, groupId int64) (mid int64, err
 	}
 
 	feedKey := getFeedKey(uid, groupId)
-	res, err := f.RedisPool.ZRevRange(feedKey, 0, 0).Result()
+	res, err := f.redisPool.ZRevRange(feedKey, 0, 0).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mid, err
@@ -66,7 +66,7 @@ func (f *FeedRbRepository) GetLastMid(uid int64, groupId int64) (mid int64, err 
 	}
 
 	feedKey := getFeedKey(uid, groupId)
-	res, err := f.RedisPool.ZRevRange(feedKey, -1, -1).Result()
+	res, err := f.redisPool.ZRevRange(feedKey, -1, -1).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return mid, err
@@ -87,7 +87,7 @@ func (f *FeedRbRepository) GetByTimeBefore(uid int64, groupId int64, timeBefore 
 
 	feedKey := getFeedKey(uid, groupId)
 	//ZREVRANGEBYSCORE key (max (min LIMIT offset count
-	res, err := f.RedisPool.ZRevRangeByScore(feedKey, redis.ZRangeBy{
+	res, err := f.redisPool.ZRevRangeByScore(feedKey, redis.ZRangeBy{
 		Max:    "(" + strconv.FormatInt(timeBefore, 10),
 		Min:    "(0",
 		Offset: 0,
@@ -115,7 +115,7 @@ func (f *FeedRbRepository) GetByTimeAfter(uid int64, groupId int64, timeAfter in
 	curTime := time.Now().UnixNano()
 	curTime = curTime / 1e6
 	//ZRANGEBYSCORE key (min (max LIMIT offset count
-	res, err := f.RedisPool.ZRangeByScore(feedKey, redis.ZRangeBy{
+	res, err := f.redisPool.ZRangeByScore(feedKey, redis.ZRangeBy{
 		Min:    "(" + strconv.FormatInt(timeAfter, 10),
 		Max:    "(" + strconv.FormatInt(curTime, 10),
 		Offset: 0,
@@ -141,7 +141,7 @@ func (f *FeedRbRepository) AppendNewMid(uid int64, groupId int64, mid int64) (er
 	feedKey := getFeedKey(uid, groupId)
 	mblogTime := idGenerate.GetDetailTimeById(mid)
 	//_, err = conn.Do("zadd", feedKey, mblogTime, mid)
-	res, err := f.RedisPool.ZAdd(feedKey, redis.Z{
+	res, err := f.redisPool.ZAdd(feedKey, redis.Z{
 		Score:  float64(mblogTime),
 		Member: mid,
 	}).Result()
@@ -174,7 +174,7 @@ func (f *FeedRbRepository) DelFeed(uid int64, groupId int64) {
 		feedKey := getFeedKey(uid, groupId)
 		firstStr := strconv.FormatInt(first, 10)
 		lastStr := strconv.FormatInt(last, 10)
-		_, err = f.RedisPool.ZRemRangeByLex(feedKey, "["+firstStr, "["+lastStr).Result()
+		_, err = f.redisPool.ZRemRangeByLex(feedKey, "["+firstStr, "["+lastStr).Result()
 		if err != nil {
 			logger.Err(logType, err.Error())
 			return
@@ -193,7 +193,7 @@ func (f *FeedRbRepository) RemoveMids(uid int64, groupId int64, mids []int64) (e
 	for ind, v := range mids {
 		midsInterface[ind] = v
 	}
-	_, err = f.RedisPool.ZRem(feedKey, midsInterface...).Result()
+	_, err = f.redisPool.ZRem(feedKey, midsInterface...).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return err

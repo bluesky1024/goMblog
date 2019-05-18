@@ -5,13 +5,13 @@ import (
 )
 
 type UserRbRepository struct {
-	RedisPool *redis.ClusterClient
+	redisPool *redis.ClusterClient
 }
 
 var logType = "userRdRepo"
 
 func NewUserRdRepo(redisPool *redis.ClusterClient) *UserRbRepository {
 	return &UserRbRepository{
-		RedisPool: redisPool,
+		redisPool: redisPool,
 	}
 }
