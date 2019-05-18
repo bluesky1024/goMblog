@@ -3,7 +3,9 @@ package userService
 import (
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
+	"github.com/bluesky1024/goMblog/datasource/redisSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/user"
+	"github.com/bluesky1024/goMblog/repositories/redisRepo/user"
 	idGen "github.com/bluesky1024/goMblog/tools/idGenerate"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
@@ -30,7 +32,8 @@ type UserServicer interface {
 }
 
 type userService struct {
-	repo *userDbRepo.UserDbRepository
+	mysqlRepo *userDbRepo.UserDbRepository
+	redisRepo *userRdRepo.UserRbRepository
 }
 
 // NewUserService returns the default user service.
@@ -42,7 +45,7 @@ func NewUserServicer() (s UserServicer, err error) {
 		return nil, err
 	}
 
-	//user服务仓库初始化
+	//user服务mysql仓库初始化
 	userSourceM, err := ds.LoadUsers(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
@@ -55,7 +58,16 @@ func NewUserServicer() (s UserServicer, err error) {
 	}
 	userRepo := userDbRepo.NewUserRepository(userSourceM, userSourceR)
 
+	//user服务redis仓库初始化
+	rdSource, err := redisSource.LoadUserRdSour()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil, err
+	}
+	redisRepo := userRdRepo.NewUserRdRepo(rdSource)
+
 	return &userService{
-		repo: userRepo,
+		mysqlRepo: userRepo,
+		redisRepo: redisRepo,
 	}, nil
 }

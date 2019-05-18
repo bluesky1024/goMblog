@@ -35,7 +35,7 @@ func (s *userService) Create(nickname string, password string, telephone string,
 	//目前没有头像上传功能，采用默认头像
 	insertUser.ProfileImage = "//tvax3.sinaimg.cn/crop.19.0.620.620.180/006VvoKYly8fijhpwx2qoj30hs0hsdfx.jpg"
 
-	affect, err := s.repo.Insert(insertUser)
+	affect, err := s.mysqlRepo.Insert(insertUser)
 	if err != nil || affect == 0 {
 		return dm.User{}, err
 	}
@@ -48,7 +48,7 @@ func (s *userService) GetByUid(uid int64) (user dm.User, found bool) {
 		return dm.User{}, false
 	}
 
-	user, found = s.repo.SelectByUid(uid)
+	user, found = s.mysqlRepo.SelectByUid(uid)
 
 	//验证密码是否正确
 	if found {
@@ -58,7 +58,7 @@ func (s *userService) GetByUid(uid int64) (user dm.User, found bool) {
 }
 
 func (s *userService) GetMultiByUids(uids []int64) (users map[int64]dm.User, err error) {
-	return s.repo.SelectMultiByUids(uids)
+	return s.mysqlRepo.SelectMultiByUids(uids)
 }
 
 // GetByUsernameAndPassword returns a user based on its username and passowrd,
@@ -68,7 +68,7 @@ func (s *userService) GetByNicknameAndPassword(nickname string, password string)
 		return dm.User{}, false
 	}
 
-	user, found = s.repo.SelectByNickname(nickname)
+	user, found = s.mysqlRepo.SelectByNickname(nickname)
 
 	//验证密码是否正确
 	if ok, _ := dm.ValidatePassword(password, user.Password); ok {
