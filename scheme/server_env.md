@@ -156,9 +156,22 @@ brew install ruby
 gem install redis
 
 # 运行脚本进行redis集群管理
-ruby redis-trib.rb create --replicas 1 10.222.76.205:10011 10.222.76.205:10012 10.222.76.205:10013 10.222.76.205:10014 10.222.76.205:10015 10.222.76.205:10016
+ruby redis-trib.rb create --replicas 1 127.0.0.1:10011 127.0.0.1:10012 127.0.0.1:10013 127.0.0.1:10014 127.0.0.1:10015 127.0.0.1:10016
 
-ruby redis-trib.rb create --replicas 1 192.168.0.60:10011 192.168.0.60:10012 192.168.0.60:10013 192.168.0.60:10014 192.168.0.60:10015 192.168.0.60:10016
+# 新增主节点
+redis-trib.rb add-node 127.0.0.1:10017 127.0.0.1:10011
+
+# 查看新增的主节点
+redis-cli -c -p 10011 CLUSTER nodes | grep 10017
+301b60cdb455b9ae27b7b562524c0d039e640815 127.0.0.1:10017 master - 0 1487342302506 0 connected
+
+# 新增从节点
+redis-trib.rb add-node  
+--slave --master-id 301b60cdb455b9ae27b7b562524c0d039e640815 127.0.0.1:10018
+ 192.168.11.3:6380
+
+ # 查看整个集群的状态
+redis-cli -c -p 10011 CLUSTER nodes
 
 # 换了ip但端口没变动的情况下，重启ruby redis-trib.rb会报node不为空
 # 节点信息是保存在redis中，重新配置了集群，可以考虑把rdb，aof文件清空，对redis执行flushdb，然后重启redis-server
