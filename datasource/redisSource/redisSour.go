@@ -4,13 +4,29 @@ import (
 	"github.com/go-redis/redis"
 )
 
-func LoadRedisSource(addrs []string) (pool *redis.ClusterClient, err error) {
+//redis集群
+func LoadRedisClusterSource(addrs []string) (pool *redis.ClusterClient, err error) {
 	redisCluster := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs: addrs,
 	})
-	pong, err := redisCluster.Ping().Result()
-	if err != nil || pong != "PONG" {
+	_, err = redisCluster.Ping().Result()
+	if err != nil {
 		return nil, err
 	}
 	return redisCluster, nil
+}
+
+//单点redis
+func LoadRedisClient(addr string) (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	_, err := client.Ping().Result()
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }

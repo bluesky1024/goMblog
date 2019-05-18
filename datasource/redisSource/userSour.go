@@ -22,7 +22,7 @@ func LoadUserRdSour() (*redis.ClusterClient, error) {
 				"127.0.0.1:10015",
 				"127.0.0.1:10016",
 			}
-			userInstance, err = LoadRedisSource(addrs)
+			userInstance, err = LoadRedisClusterSource(addrs)
 			if err != nil {
 				return nil, err
 			}
