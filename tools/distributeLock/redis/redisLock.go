@@ -1,6 +1,7 @@
 package redisLock
 
 //基于redis实现的分布式锁工具
+//保证锁的可重入性，首先需要确定同一个协程（mac地址+进程Id+线程Id+协程Id）
 
 import (
 	"context"
