@@ -46,17 +46,12 @@ type feedService struct {
 }
 
 func NewFeedServicer() (s FeedServicer, err error) {
-	feedRdSourM, err := redisSource.LoadFeedRdSour(true)
+	feedRdSour, err := redisSource.LoadFeedRdSour()
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return nil, err
 	}
-	feedRdSourS, err := redisSource.LoadFeedRdSour(true)
-	if err != nil {
-		logger.Err(logType, err.Error())
-		return nil, err
-	}
-	feedRepo := feedRdRepo.NewFeedRdRepo(feedRdSourM, feedRdSourS)
+	feedRepo := feedRdRepo.NewFeedRdRepo(feedRdSour)
 
 	userSrv := userGrpc.NewUserGrpcServicer()
 	if userSrv == nil {

@@ -15,12 +15,12 @@ func LoadFeedRdSour() (*redis.ClusterClient, error) {
 		defer feedLock.Unlock()
 		if feedInstance == nil {
 			addrs := []string{
-				"192.168.0.60:10011",
-				"192.168.0.60:10012",
-				"192.168.0.60:10013",
-				"192.168.0.60:10014",
-				"192.168.0.60:10015",
-				"192.168.0.60:10016",
+				"127.0.0.1:10011",
+				"127.0.0.1:10012",
+				"127.0.0.1:10013",
+				"127.0.0.1:10014",
+				"127.0.0.1:10015",
+				"127.0.0.1:10016",
 			}
 			feedInstance, err = LoadRedisClusterSource(addrs)
 			if err != nil {
