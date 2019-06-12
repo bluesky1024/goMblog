@@ -82,12 +82,20 @@ func (s *relationService) HandleFollowMsg(msg dm.FollowMsg) (err error) {
 	//新增粉丝表记录
 	s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
 
+	//维护粉丝数
+
+	//维护关注数
+
 	return err
 }
 
 func (s *relationService) HandleUnFollowMsg(msg dm.FollowMsg) (err error) {
 	//删除粉丝表记录
 	s.repo.DeleteFan(msg.FollowUid, msg.Uid)
+
+	//维护粉丝数
+
+	//维护关注数
 
 	return err
 }
