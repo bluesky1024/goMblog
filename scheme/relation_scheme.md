@@ -80,7 +80,7 @@ CREATE TABLE `relation_cnt_1` (
   `fan_cnt` int(10) unsigned NOT NULL COMMENT '粉丝数',
   `follow_cnt` int(10) unsigned NOT NULL COMMENT '粉丝数',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uid` (`uid`,`fan_uid`)
+  UNIQUE KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户关系数目表' 
 ```
 
