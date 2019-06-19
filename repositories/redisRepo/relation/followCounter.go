@@ -1,4 +1,4 @@
-package userRdRepo
+package relationRdRepo
 
 //用户关注数的计数处理逻辑
 
@@ -9,7 +9,7 @@ import (
 )
 
 //增加粉丝和删除粉丝的错误需要记录下来，加入队列进行及时补偿
-func (u *UserRbRepository) AddFollow(uid int64) (int64, error) {
+func (u *RelationRbRepository) AddFollow(uid int64) (int64, error) {
 	fanCnt, err := u.redisPool.Incr(getFollowCntKey(uid)).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
@@ -18,7 +18,7 @@ func (u *UserRbRepository) AddFollow(uid int64) (int64, error) {
 	return fanCnt, nil
 }
 
-func (u *UserRbRepository) LoseFollow(uid int64) (int64, error) {
+func (u *RelationRbRepository) LoseFollow(uid int64) (int64, error) {
 	fanCnt, err := u.redisPool.Decr(getFollowCntKey(uid)).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
@@ -27,7 +27,7 @@ func (u *UserRbRepository) LoseFollow(uid int64) (int64, error) {
 	return fanCnt, nil
 }
 
-func (u *UserRbRepository) GetFollowCnt(uids []int64) (map[int64]int64, error) {
+func (u *RelationRbRepository) GetFollowCnt(uids []int64) (map[int64]int64, error) {
 	resMap := make(map[int64]int64)
 	fanCntKeys := make([]string, len(uids))
 	for i := 0; i < len(uids); i++ {
@@ -48,7 +48,7 @@ func (u *UserRbRepository) GetFollowCnt(uids []int64) (map[int64]int64, error) {
 	return resMap, nil
 }
 
-func (u *UserRbRepository) ExpFollowCnt(uid int64, timeMore time.Duration) (bool, error) {
+func (u *RelationRbRepository) ExpFollowCnt(uid int64, timeMore time.Duration) (bool, error) {
 	success, err := u.redisPool.Expire(getFollowCntKey(uid), timeMore).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())
