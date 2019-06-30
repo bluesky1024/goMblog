@@ -15,6 +15,9 @@ type RelationServicer interface {
 
 	/*分组信息*/
 	GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cnt int64)
+
+	GetFollowCntByUids(uids []int64) (followCntMap map[int64]int64)
+	GetFanCntByUids(uids []int64) (fanCntMap map[int64]int64)
 }
 
 const (

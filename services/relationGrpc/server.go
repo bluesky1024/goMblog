@@ -90,3 +90,39 @@ func (s *relationService) GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cn
 
 	return groups, int64(len(res.Groups))
 }
+
+func (s *relationService) GetFollowCntByUids(uids []int64) (followCntMap map[int64]int64) {
+	req := pb.UidsReq{
+		Uids: uids,
+	}
+
+	ctx := getSign(context.Background(), &req)
+	res, err := s.client.GetFollowCntByUids(ctx, &req)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return followCntMap
+	}
+
+	for _, cntInfo := range res.CntInfos {
+		followCntMap[cntInfo.Uid] = cntInfo.FollowCnt
+	}
+	return followCntMap
+}
+
+func (s *relationService) GetFanCntByUids(uids []int64) (fanCntMap map[int64]int64) {
+	req := pb.UidsReq{
+		Uids: uids,
+	}
+
+	ctx := getSign(context.Background(), &req)
+	res, err := s.client.GetFollowCntByUids(ctx, &req)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return fanCntMap
+	}
+
+	for _, cntInfo := range res.CntInfos {
+		fanCntMap[cntInfo.Uid] = cntInfo.FanCnt
+	}
+	return fanCntMap
+}
