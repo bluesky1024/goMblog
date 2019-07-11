@@ -2,12 +2,14 @@ package redisLock
 
 //基于redis实现的分布式锁工具
 //保证锁的可重入性，首先需要确定同一个协程（mac地址+进程Id+线程Id+协程Id）
+//可重入计划流产，go语言设计者认为可重入锁是个失败的设计，所以coroutineId无法获取
 
 import (
 	"context"
 	"errors"
 	"github.com/bluesky1024/goMblog/tools/distributeLock"
 	"github.com/go-redis/redis"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -24,7 +26,7 @@ type redisLock struct {
 
 var (
 	RedisLockSrv *redisLockSrv
-	lockKey      = "thisIsKeyForTrans"
+	lockKey      = "lockKey"
 )
 
 func InitRedisLockSrv(addrs []string) error {
@@ -79,9 +81,8 @@ func (s *redisLockSrv) TryGetLock(lockName string, timeWait time.Duration, timeH
 		//获取锁的值
 		timeExpireOthersStr, err := s.RedisPool.Get(lockId).Result()
 		if err != nil {
-			//fmt.Println("try get",err.Error())
 			//若获取不到，表示当前持有人已经释放了，再次尝试setnx
-			if err.Error() == "redigo: nil returned" {
+			if err.Error() == "redis: nil" {
 				timeExpire = time.Now().UnixNano() + int64(timeHoldLock)
 				res, err = s.RedisPool.SetNX(lockId, timeExpire, 0).Result()
 				if err != nil {
@@ -185,7 +186,7 @@ func (l *redisLock) UnLock() (err error) {
 	if err != nil {
 		return errors.New("release lock fail:" + err.Error())
 	}
-	if delRes != "OK" {
+	if reflect.TypeOf(delRes).Name() != "int64" || delRes.(int64) != 1 {
 		return errors.New("release lock fail")
 	}
 	return nil

@@ -3,17 +3,57 @@ package redisLock
 import (
 	"context"
 	"fmt"
+	"runtime"
+	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 )
 
+var (
+	once sync.Once
+)
+
+func testSetup() {
+	addrs := []string{
+		"127.0.0.1:10011",
+		"127.0.0.1:10012",
+		"127.0.0.1:10013",
+		"127.0.0.1:10014",
+		"127.0.0.1:10015",
+		"127.0.0.1:10016",
+	}
+	InitRedisLockSrv(addrs)
+}
+
+func TestGetRoutineId(t *testing.T) {
+	var buf [64]byte
+	n := runtime.Stack(buf[:], false)
+	idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
+	id, err := strconv.Atoi(idField)
+	if err != nil {
+		panic(fmt.Sprintf("cannot get goroutine id: %v", err))
+	}
+	fmt.Println(id)
+}
+
 func TestSingleRedisLock(t *testing.T) {
 	fmt.Println("test redis lock")
-	InitRedisLockSrv("127.0.0.1:6379")
+	once.Do(testSetup)
 	lockSrv := LoadSrv()
 
-	tempLock, err := lockSrv.TryGetLock("testLock", 10*time.Second, 10*time.Second)
+	tempLock, err := lockSrv.TryGetLock("multiLock", 1000*time.Second, 1000*time.Second)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	fmt.Println("do something")
+
+	fmt.Println("lock param:", tempLock)
+
+	err = tempLock.UnLock()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -26,19 +66,19 @@ func TestSingleRedisLock(t *testing.T) {
 }
 
 func TestMultiRedisLock(t *testing.T) {
-	InitRedisLockSrv("127.0.0.1:6379")
+	once.Do(testSetup)
 	lockSrv := LoadSrv()
 
 	lockName := "multiLock"
 
 	wg := sync.WaitGroup{}
-	for i := 0; i < 260; i++ {
+	for i := 0; i < 2; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
 			tempLock, err := lockSrv.TryGetLock(lockName, 10*time.Second, 100*time.Millisecond)
 			if err != nil {
-				fmt.Println(i, err.Error())
+				fmt.Println(i, err)
 				return
 			}
 			//fmt.Println(i, "get lock success", "do something ...")
@@ -51,8 +91,8 @@ func TestMultiRedisLock(t *testing.T) {
 }
 
 func TestLockWithExtend(t *testing.T) {
+	once.Do(testSetup)
 	fmt.Println("test redis lock")
-	InitRedisLockSrv("127.0.0.1:6379")
 	lockSrv := LoadSrv()
 
 	tempLock, err := lockSrv.TryGetLock("testLock", 1*time.Second, 2*time.Second)
