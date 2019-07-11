@@ -30,7 +30,7 @@ func getFollowGroupTableName(uid int64) string {
 	return followGroupTableName + "_" + strconv.FormatInt(tableNum, 10)
 }
 
-// 根据uid中时间信息获取follow_group的表名
+// 根据uid中时间信息获取relation_cnt的表名
 func getRelationCntTableName(uid int64) string {
 	virtualNode := uid % 10000
 	tableNum := virtualNode/1000 + 1

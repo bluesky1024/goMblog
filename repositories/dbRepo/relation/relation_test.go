@@ -3,6 +3,7 @@ package relationDbRepo
 import (
 	"fmt"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
+	"runtime"
 	"sync"
 	"testing"
 )
@@ -40,5 +41,10 @@ func TestRelationDbRepository_UpdateFanCnt(t *testing.T) {
 
 func TestRelationDbRepository_UpdateFollowCnt(t *testing.T) {
 	res := relationRepo.UpdateFollowCntByUid(123, 10)
+	fmt.Println(res)
+}
+
+func TestRelationDbRepository_GetFromInvalidTable(t *testing.T) {
+	res := relationRepo.getRelationCntByUidsFromOneTable([]int64{1, 2, 3}, "123")
 	fmt.Println(res)
 }

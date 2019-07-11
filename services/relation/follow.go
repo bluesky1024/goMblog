@@ -6,10 +6,20 @@ import (
 )
 
 func (s *relationService) GetFollowCntByUids(uids []int64) map[int64]int64 {
+	//优先从redis中取数据
 	res, err := s.rdRepo.GetFollowCnt(uids)
 	if err != nil {
 		logger.Err(logType, err.Error())
 	}
+
+	//redis中失败了，从mysql取
+	dbUids := make([]int64, 0)
+	for _, uid := range uids {
+		if _, ok := res[uid]; !ok {
+			dbUids = append(dbUids, uid)
+		}
+	}
+
 	return res
 }
 
