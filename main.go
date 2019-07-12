@@ -41,6 +41,7 @@ func main() {
 	mvc.Configure(app.Party("/mblog"), mblog)
 	mvc.Configure(app.Party("/relation"), relation)
 	mvc.Configure(app.Party("/feed"), feed)
+	mvc.Configure(app.Party("/chat"), chat)
 	//	mvc.Configure(app.Party("/public"), public)
 	//	mvc.Configure(app.Party("/search"), search)
 

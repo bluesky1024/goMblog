@@ -1,20 +1,52 @@
-# ⚡️ Update: community-driven version 11.1.0
+# ⚡️ Stay tuned for updates: upcoming version 11.2.0
 
-Click [here](HISTORY.md#su-18-november-2018--v1110) to read about the versioning API that the most recent version of Iris brings to you.
+Click [here](https://github.com/kataras/iris/pull/1175) to watch the progress of the upcoming release and the new features that it brings into game. 
+
+@kataras: I was sick for almost a month, but this wasn't kept me from pushing some progress for the upcoming release. the v11.2.0 will contain a breaking change on the websockets usage, there is no other way to improve it. That one has its own repository for testing and experimentation to implement a faster and even more higher level websocket server and client written in Go which developers will be able select between [gorilla/websocket](https://github.com/gorilla/websocket) and [gobwas/ws](https://github.com/gobwas/ws) for the underline protocol communication and eventually will live into Iris, click [here](https://github.com/kataras/ws) to watch the progress of the new Iris websocket capabilities and features if you can't wait more.
 
 # Iris Web Framework <a href="README_ZH.md"> <img width="20px" src="https://iris-go.com/images/flag-china.svg?v=10" /></a> <a href="README_RU.md"><img width="20px" src="https://iris-go.com/images/flag-russia.svg?v=10" /></a> <a href="README_ID.md"> <img width="20px" src="https://iris-go.com/images/flag-indonesia.svg?v=10" /></a> <a href="README_GR.md"><img width="20px" src="https://iris-go.com/images/flag-greece.svg?v=10" /></a> <a href="README_PT_BR.md"><img width="20px" src="https://iris-go.com/images/flag-pt-br.svg?v=10" /></a> <a href="README_JPN.md"><img width="20px" src="https://iris-go.com/images/flag-japan.svg?v=10" /></a>
 
 <a href="https://iris-go.com"> <img align="right" width="169px" src="https://iris-go.com/images/icon.svg?v=a" title="logo created by @merry.dii" /> </a>
 
-[![build status](https://img.shields.io/travis/kataras/iris/master.svg?style=flat-square)](https://travis-ci.org/kataras/iris)<!-- [![release](https://img.shields.io/github/release/kataras/iris.svg?style=flat-square)](https://github.com/kataras/iris/releases)--> [![report card](https://img.shields.io/badge/report%20card-a%2B-ff3333.svg?style=flat-square)](http://goreportcard.com/report/kataras/iris) [![vscode-iris](https://img.shields.io/badge/ext%20-vscode-0c77e3.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kataras2006.iris)<!--[![github closed issues](https://img.shields.io/github/issues-closed-raw/kataras/iris.svg?style=flat-square)](https://github.com/kataras/iris/issues?q=is%3Aissue+is%3Aclosed)--> [![chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://kataras.rocket.chat/channel/iris) [![view examples](https://img.shields.io/badge/routing%20by-example-0077b3.svg?style=flat-square)](https://github.com/kataras/iris/tree/master/_examples/routing) [![release](https://img.shields.io/badge/release%20-v11.1-0077b3.svg?style=flat-square)](https://github.com/kataras/iris/releases)
+[![build status](https://img.shields.io/travis/kataras/iris/master.svg?style=flat-square)](https://travis-ci.org/kataras/iris) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkataras%2Firis.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkataras%2Firis?ref=badge_shield) <!-- [![release](https://img.shields.io/github/release/kataras/iris.svg?style=flat-square)](https://github.com/kataras/iris/releases)--> [![report card](https://img.shields.io/badge/report%20card-a%2B-ff3333.svg?style=flat-square)](http://goreportcard.com/report/kataras/iris) <!-- [![vscode-iris](https://img.shields.io/badge/ext%20-vscode-0c77e3.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kataras2006.iris)--> <!--[![github closed issues](https://img.shields.io/github/issues-closed-raw/kataras/iris.svg?style=flat-square)](https://github.com/kataras/iris/issues?q=is%3Aissue+is%3Aclosed)--> [![chat](https://img.shields.io/badge/community-%20chat-00BCD4.svg?style=flat-square)](https://chat.iris-go.com) [![view examples](https://img.shields.io/badge/routing%20by-example-0077b3.svg?style=flat-square)](https://github.com/kataras/iris/tree/master/_examples/routing) [![release](https://img.shields.io/badge/release%20-v11.1-0077b3.svg?style=flat-square)](https://github.com/kataras/iris/releases)
 
-Iris is a fast, simple yet fully featured and very efficient web framework for Go.
+Iris is a fast, simple yet fully featured and very efficient web framework for Go. Routing is powered by the [muxie](https://github.com/kataras/muxie#philosophy) project.
 
 Iris provides a beautifully expressive and easy to use foundation for your next website or API.
 
 Iris offers a complete and decent solution and support for all gophers around the globe.
 
 Learn what [others say about Iris](#support) and [star](https://github.com/kataras/iris/stargazers) this github repository to stay [up to date](https://facebook.com/iris.framework).
+
+## Ghost? No More! Support as first class citizen
+
+Have you bored of waiting weeks or months for someone to respond to your github issue? Yes, **me too**. If you choose Iris for your main backend development you will never be like a ghost again. 
+
+Iris is one of the few public github repositories that offers real support to individuals and collectivities, including companies. Unbeatable **free support**[*](#support) for three years and still counting. Navigate to the issues to see by yourself. 
+
+In these difficult and restless days **we stand beside you**. We **do not judge bad english writing**, no matter who you are, we will be here for you.
+
+Check below the features and the hard work that we putted to improve how the internet is built. If you really like it and appreciate it, give a star to this github **repository for the public.**
+
+## Benchmarks
+
+### Iris vs .NET Core vs Expressjs
+
+[![Iris vs .NET Core(C#) vs Node.js (Express)](_benchmarks/benchmarks_graph_22_october_2018_gray.png)](_benchmarks/README.md)
+
+_Updated at: [Monday, 22 October 2018](_benchmarks/README.md)_
+
+### Third-party
+
+[![](_benchmarks/benchmarks_third_party_source_snapshot_go_23_october_2018.png)](https://github.com/iris-contrib/third-party-benchmarks#full-table)
+
+> Last updated at: 01 March of 2019. Click to the image to view all results. You can run this in your own hardware by following the [steps here](https://github.com/iris-contrib/third-party-benchmarks#usage).
+
+## Philosophy
+
+The Iris philosophy is to provide robust tooling for HTTP, making it a great solution for single page applications, web sites, hybrids, or public HTTP APIs. Keep note that, so far, iris is the fastest web framework ever created in terms of performance.
+
+Iris does not force you to use any specific ORM or template engine. With support for the most used template engines, you can quickly craft the perfect application.
 
 ## Installation
 
@@ -45,28 +77,6 @@ import (
 
 </details>
 
-## Benchmarks
-
-### Iris vs .NET Core vs Expressjs
-
-[![Iris vs .NET Core(C#) vs Node.js (Express)](_benchmarks/benchmarks_graph_22_october_2018_gray.png)](_benchmarks/README.md)
-
-_Updated at: [Monday, 22 October 2018](_benchmarks/README.md)_
-
-### Iris vs the rest Go web frameworks and routers vs any other alternative
-
-[![](_benchmarks/benchmarks_third_party_source_snapshot_go_23_october_2018.png)](https://github.com/the-benchmarker/web-frameworks#full-table)
-
-As shown in the benchmarks (from a [third-party source](https://github.com/the-benchmarker)), Iris is the fastest open-source Go web framework in the planet. The net/http 100% compatible router [muxie](https://github.com/kataras/muxie) I've created some weeks ago is also trending there with amazing results, fastest net/http router ever created as well. View the results at:
-
-https://github.com/the-benchmarker/web-frameworks#full-table
-
-## Philosophy
-
-The Iris philosophy is to provide robust tooling for HTTP, making it a great solution for single page applications, web sites, hybrids, or public HTTP APIs. Keep note that, so far, iris is the fastest web framework ever created in terms of performance.
-
-Iris does not force you to use any specific ORM or template engine. With support for the most used template engines, you can quickly craft the perfect application.
-
 ## Quick start
  
 ```sh
@@ -95,35 +105,6 @@ func main() {
 # run example.go and visit http://0.0.0.0:8080/ping on browser
 $ go run example.go
 ```
-
-## Iris starter kits
-
-<!-- table form
-| Description | Link |
-| -----------|-------------|
-| Hasura hub starter project with a ready to deploy golang helloworld webapp with IRIS! | https://hasura.io/hub/project/hasura/hello-golang-iris |
-| A basic web app built in Iris for Go |https://github.com/gauravtiwari/go_iris_app |
-| A mini social-network created with the awesome Iris💖💖 | https://github.com/iris-contrib/Iris-Mini-Social-Network |
-| Iris isomorphic react/hot reloadable/redux/css-modules starter kit | https://github.com/iris-contrib/iris-starter-kit |
-| Demo project with react using typescript and Iris | https://github.com/ionutvilie/react-ts |
-| Self-hosted Localization Management Platform built with Iris and Angular | https://github.com/iris-contrib/parrot |
-| Iris + Docker and Kubernetes | https://github.com/iris-contrib/cloud-native-go |
-| Quickstart for Iris with Nanobox | https://guides.nanobox.io/golang/iris/from-scratch |
--->
-
-1. [snowlyg/IrisApiProject: Iris + gorm + jwt + sqlite3](https://github.com/snowlyg/IrisApiProject) **NEW-Chinese**
-2. [yz124/superstar: Iris + xorm to implement the star library](https://github.com/yz124/superstar) **NEW-Chinese**
-3. [jebzmos4/Iris-golang: A basic CRUD API in golang with Iris](https://github.com/jebzmos4/Iris-golang)
-4. [gauravtiwari/go_iris_app: A basic web app built in Iris for Go](https://github.com/gauravtiwari/go_iris_app)
-5. [A mini social-network created with the awesome Iris💖💖](https://github.com/iris-contrib/Iris-Mini-Social-Network)
-6. [Iris isomorphic react/hot reloadable/redux/css-modules starter kit](https://github.com/iris-contrib/iris-starter-kit)
-7. [ionutvilie/react-ts: Demo project with react using typescript and Iris](https://github.com/ionutvilie/react-ts)
-8. [Self-hosted Localization Management Platform built with Iris and Angular](https://github.com/iris-contrib/parrot)
-9. [Iris + Docker and Kubernetes](https://github.com/iris-contrib/cloud-native-go)
-10. [nanobox.io: Quickstart for Iris with Nanobox](https://guides.nanobox.io/golang/iris/from-scratch)
-11. [hasura.io: A Hasura starter project with a ready to deploy Golang hello-world web app with IRIS](https://hasura.io/hub/project/hasura/hello-golang-iris)
-
-> Did you build something similar? Let us [know](https://github.com/kataras/iris/pulls)!
 
 ## API Examples
 
@@ -296,9 +277,9 @@ func main() {
 
 The package [hero](hero) contains features for binding any object or functions that `handlers` can use, these are called dependencies.
 
-With Iris you get truly safe bindings thanks to the [hero](_examples/hero) [package](hero). It is blazing-fast, near to raw handlers performance because Iris calculates everything before even server goes online!
+With Iris you get truly safe bindings thanks to the [hero](_examples/hero) [package](hero). It is blazing-fast, near to raw handlers performance because Iris calculates everything before the server even goes online!
 
-Below you will see some screenshots I prepared for you in order to be easier to understand:
+Below you will see some screenshots I prepared to facilitate understanding:
 
 #### 1. Path Parameters - Built'n Dependencies
 
@@ -992,31 +973,43 @@ Iris has a great collection of handlers[[1]](middleware/)[[2]](https://github.co
 
 Iris, unlike others, is 100% compatible with the standards and that's why the majority of the big companies that adapt Go to their workflow, like a very famous US Television Network, trust Iris; it's up-to-date and it will be always aligned with the std `net/http` package which is modernized by the Go Authors on each new release of the Go Programming Language.
 
-### Articles
-
-* [CRUD REST API in Iris (a framework for golang)](https://medium.com/@jebzmos4/crud-rest-api-in-iris-a-framework-for-golang-a5d33652401e)
-* [A Todo MVC Application using Iris and Vue.js](https://hackernoon.com/a-todo-mvc-application-using-iris-and-vue-js-5019ff870064)
-* [A Hasura starter project with a ready to deploy Golang hello-world web app with IRIS](https://bit.ly/2lmKaAZ)
-* [Top 6 web frameworks for Go as of 2017](https://blog.usejournal.com/top-6-web-frameworks-for-go-as-of-2017-23270e059c4b)
-* [Iris Go Framework + MongoDB](https://medium.com/go-language/iris-go-framework-mongodb-552e349eab9c)
-* [How to build a file upload form using DropzoneJS and Go](https://hackernoon.com/how-to-build-a-file-upload-form-using-dropzonejs-and-go-8fb9f258a991)
-* [How to display existing files on server using DropzoneJS and Go](https://hackernoon.com/how-to-display-existing-files-on-server-using-dropzonejs-and-go-53e24b57ba19)
-* [Iris, a modular web framework](https://medium.com/@corebreaker/iris-web-cd684b4685c7)
-* [Go vs .NET Core in terms of HTTP performance](https://medium.com/@kataras/go-vs-net-core-in-terms-of-http-performance-7535a61b67b8)
-* [Iris Go vs .NET Core Kestrel in terms of HTTP performance](https://hackernoon.com/iris-go-vs-net-core-kestrel-in-terms-of-http-performance-806195dc93d5)
-* [How to Turn an Android Device into a Web Server](https://twitter.com/ThePracticalDev/status/892022594031017988)
-* [Deploying a Iris Golang app in hasura](https://medium.com/@HasuraHQ/deploy-an-iris-golang-app-with-backend-apis-in-minutes-25a559bf530b)
-* [A URL Shortener Service using Go, Iris and Bolt](https://medium.com/@kataras/a-url-shortener-service-using-go-iris-and-bolt-4182f0b00ae7)
-
 ### Video Courses
 
-* [Daily Coding - Web Framework Golang: Iris Framework]( https://www.youtube.com/watch?v=BmOLFQ29J3s) by WarnabiruTV, source: youtube, cost: **FREE**
-* [Tutorial Golang MVC dengan Iris Framework & Mongo DB](https://www.youtube.com/watch?v=uXiNYhJqh2I&list=PLMrwI6jIZn-1tzskocnh1pptKhVmWdcbS) (19 parts so far) by Musobar Media, source: youtube, cost: **FREE**
-* [Go/Golang 27 - Iris framework : Routage de base](https://www.youtube.com/watch?v=rQxRoN6ub78) by stephgdesign, source: youtube, cost: **FREE**
-* [Go/Golang 28 - Iris framework : Templating](https://www.youtube.com/watch?v=nOKYV073S2Y) by stephgdesignn, source: youtube, cost: **FREE**
-* [Go/Golang 29 - Iris framework : Paramètres](https://www.youtube.com/watch?v=K2FsprfXs1E) by stephgdesign, source: youtube, cost: **FREE**
-* [Go/Golang 30 - Iris framework : Les middelwares](https://www.youtube.com/watch?v=BLPy1So6bhE) by stephgdesign, source: youtube, cost: **FREE**
-* [Go/Golang 31 - Iris framework : Les sessions](https://www.youtube.com/watch?v=RnBwUrwgEZ8) by stephgdesign, source: youtube, cost: **FREE**
+| Description | Link | Author | Year |
+| -----------|-------------|-------------|-----|
+| Installing Iris | https://bit.ly/2KhgB1J | WarnabiruTV | 2018 |
+| Iris & Mongo DB Complete | https://bit.ly/2IcXZOu | Musobar Media | 2018 |
+| Quick Start with Iris | https://bit.ly/2wQIrJw | J-Secur1ty | **2019** |
+| Getting Started with Iris | https://bit.ly/2XGafMv | stephgdesign | 2018 |
+
+### Articles
+
+* [A URL Shortener Service using Go, Iris and Bolt (Updated)](https://bit.ly/2KeP6pE)
+* [CRUD REST API in Iris (a framework for golang)](https://bit.ly/2X9EsXl)
+* [A Todo MVC Application using Iris and Vue.js](https://bit.ly/2KgEarI)
+* [A Hasura starter project with a ready to deploy Golang hello-world web app with IRIS](https://bit.ly/2Kfdsjf)
+* [Top 6 web frameworks for Go as of 2017](https://bit.ly/2wMi9YY)
+* [Iris Go Framework + MongoDB](https://bit.ly/2WDOsZF)
+* [How to build a file upload form using DropzoneJS and Go](https://bit.ly/2IdigmZ)
+* [How to display existing files on server using DropzoneJS and Go](https://bit.ly/2IBQ7Vv)
+* [Iris, a modular web framework](https://bit.ly/2KHm6q0)
+* [Go vs .NET Core in terms of HTTP performance](https://bit.ly/2Kh7ezl)
+* [Iris Go vs .NET Core Kestrel in terms of HTTP performance](https://bit.ly/2WBqucu)
+* [How to Turn an Android Device into a Web Server](https://bit.ly/2Icl5EM)
+
+## Iris starter kits
+
+1. [snowlyg/IrisApiProject: Iris + gorm + jwt + sqlite3](https://bit.ly/2IaL1R6) **NEW-Chinese**
+2. [yz124/superstar: Iris + xorm to implement the star library](https://bit.ly/2WF4ZfK) **NEW-Chinese**
+3. [jebzmos4/Iris-golang: A basic CRUD API in golang with Iris](https://bit.ly/2XFyESo)
+4. [gauravtiwari/go_iris_app: A basic web app built in Iris for Go](https://bit.ly/2XFVYQ4)
+5. [A mini social-network created with the awesome Iris💖💖](https://bit.ly/2KJvZn7)
+6. [Iris isomorphic react/hot reloadable/redux/css-modules starter kit](https://bit.ly/2ReoGoH)
+7. [ionutvilie/react-ts: Demo project with react using typescript and Iris](https://bit.ly/2wZA52B)
+8. [Self-hosted Localization Management Platform built with Iris and Angular](https://bit.ly/2F9iYzM)
+9. [Iris + Docker and Kubernetes](https://bit.ly/2WGlXKL)
+10. [nanobox.io: Quickstart for Iris with Nanobox](https://bit.ly/2wMkdjG)
+11. [hasura.io: A Hasura starter project with a ready to deploy Golang hello-world web app with IRIS](https://bit.ly/2Kfdsjf)
 
 ## Support
 
@@ -1076,6 +1069,24 @@ Iris, unlike others, is 100% compatible with the standards and that's why the ma
 ### Get hired
 
 There are many companies and start-ups looking for Go web developers with Iris experience as requirement, we are searching for you every day and we post those information via our [facebook page](https://www.facebook.com/iris.framework), like the page to get notified, we have already posted some of them.
+
+### Author
+
+<table>
+<tr>
+<td>
+<img src="https://avatars3.githubusercontent.com/u/22900943?s=460&v=4" width="180"/>
+
+Gerasimos Maropoulos
+
+<p align="center">
+<a href = "https://github.com/kataras"><img src = "http://www.iconninja.com/files/241/825/211/round-collaboration-social-github-code-circle-network-icon.svg" width="36" height = "36"/></a>
+<a href = "https://twitter.com/MakisMaropoulos"><img src = "https://www.shareicon.net/download/2016/07/06/107115_media.svg" width="36" height="36"/></a>
+<a href = "https://www.linkedin.com/in/gerasimos-maropoulos/"><img src = "http://www.iconninja.com/files/863/607/751/network-linkedin-social-connection-circular-circle-media-icon.svg" width="36" height="36"/></a>
+</p>
+</td>
+</tr> 
+</table>
 
 ### Backers
 
