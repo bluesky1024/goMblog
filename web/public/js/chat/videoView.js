@@ -8,13 +8,13 @@
                 this.dom.style.position = 'relative';
             }
             this.dom.style.overflow = 'hidden';
-            let rect = this.dom.getBoundingClientRect();
+            var rect = this.dom.getBoundingClientRect();
             this.domWidth = rect.right - rect.left;
             this.domHeight = rect.bottom - rect.top;
         }
 
         shoot(text) {
-            let div = document.createElement('div');
+            var div = document.createElement('div');
             div.style.position = 'absolute';
             div.style.left = this.domWidth + 'px';
             div.style.top = (this.domHeight - 20) * +Math.random().toFixed(2) + 'px';
@@ -23,12 +23,12 @@
             div.innerText = text;
             this.dom.appendChild(div);
 
-            let roll = (timer) => {
-                let now = +new Date();
+            var roll = (timer) => {
+                var now = +new Date();
                 roll.last = roll.last || now;
                 roll.timer = roll.timer || timer;
-                let left = div.offsetLeft;
-                let rect = div.getBoundingClientRect();
+                var left = div.offsetLeft;
+                var rect = div.getBoundingClientRect();
                 if (left < (rect.left - rect.right)) {
                     this.dom.removeChild(div);
                 } else {
@@ -45,11 +45,11 @@
 
     }
     function appendList(text) {
-        let p = document.createElement('p');
+        var p = document.createElement('p');
         p.innerText = text;
         document.querySelector('#content-text').appendChild(p);
     }
-    let barage = new Barrage('content');
+    var barage = new Barrage('content');
 
     // document.querySelector('#send').onclick = () => {
     //
@@ -71,13 +71,13 @@
 
     function createWebsocket(){
         var scheme = document.location.protocol == "https:" ? "wss" : "ws";
-        socket = new Ws(scheme + "://localhost:8080/chat/barrage/websocket");
+        socket = new Ws(scheme + "://localhost:8080/chat/barrage/websocket/"+roomNO);
 
         //建立连接，通知后端，新客户进入房间，房间编号也需要发到后端
         socket.OnConnect(HandlerOnConnect);
 
         //接收到后端发来的新弹幕
-        socket.On("getMsg", function (messageData) {
+        socket.On("clientNewMsg", function (messageData) {
             HandlerOnGetNewMessage(messageData)
         });
 
@@ -104,12 +104,12 @@
 
     $("#send-message").on("click", function() {
         var audio = document.getElementById("video-view");
-        var a = audio.duration//播放时间
-        var b = audio.currentTime//播放进度
+        var a = audio.duration;//播放时间
+        var b = audio.currentTime;//播放进度
         console.log("time",a,b);
 
         // if (isConnect){
-        //     let text = document.querySelector('#text').value;
+        //     var text = document.querySelector('#text').value;
         //
         //     data = {
         //         roomNO:roomNO,

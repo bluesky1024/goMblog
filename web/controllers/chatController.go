@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/websocket"
+	"time"
 )
 
 // GET				/chat/get
@@ -43,6 +44,30 @@ func (c *ChatController) GetVideoviewBy(mid int64) interface{} {
 func (c *ChatController) OnBarrageWebsocketConnect(roomName interface{}) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
 	fmt.Println(CurUid, "on connect", roomName)
+
+	c.WebsocketConn.Join(roomName.(string))
+
+	//启动定时任务，定时从这个roomName的kafka队列中拉数据发送到该连接的前端
+	go func() {
+		for {
+			fmt.Println(c.WebsocketConn.ID())
+			if !c.WebsocketConn.Server().IsConnected(c.WebsocketConn.ID()) {
+				fmt.Println("server disconnect")
+				//break
+			}
+
+			fmt.Println("for exist")
+			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
+			time.Sleep(5 * time.Second)
+			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
+			time.Sleep(5 * time.Second)
+			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
+			time.Sleep(5 * time.Second)
+		}
+
+		fmt.Println("start_to_send_public")
+		c.WebsocketConn.To(websocket.All).Emit("clientNewMsg", "this is a public message for all")
+	}()
 }
 func (c *ChatController) OnBarrageWebsocketDisconnect(roomName string) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
