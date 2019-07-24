@@ -70,6 +70,7 @@ func chat(app *mvc.Application) {
 	app.Router.Any("/iris-ws.js", websocket.ClientHandler())
 
 	app.Register(userSrv)
+	app.Register(chatSrv)
 	app.Handle(new(controllers.ChatController))
 }
 

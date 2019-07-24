@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	chatSrv "github.com/bluesky1024/goMblog/services/chat"
 	userSrv "github.com/bluesky1024/goMblog/services/user"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/websocket"
+	"strconv"
 	"time"
 )
 
@@ -18,6 +20,7 @@ type ChatController struct {
 
 	//基础服务
 	UserSrv userSrv.UserServicer
+	ChatSrv chatSrv.ChatServicer
 
 	Session *sessions.Session
 }
@@ -87,4 +90,41 @@ func (c *ChatController) GetBarrageWebsocketBy(mid int64) {
 
 	//call it after all event callbacks registration.
 	c.WebsocketConn.Wait()
+}
+
+//注册房间
+func (c *ChatController) PostRoomRegister() interface{} {
+	var (
+		roomName       = c.Ctx.FormValue("roomName")
+		roomIdStr      = c.Ctx.FormValue("roomId")
+		redisSetCntStr = c.Ctx.FormValue("redisSetCnt")
+	)
+	curUid := GetCurrentUserID(c.Session)
+	roomId, _ := strconv.ParseInt(roomIdStr, 10, 64)
+	redisSetCnt, _ := strconv.Atoi(redisSetCntStr)
+
+	err := c.ChatSrv.AddRoom(roomName, roomId, curUid, redisSetCnt)
+	if err != nil {
+		return ResParams{
+			Code: 1001,
+			Msg:  err.Error(),
+			Data: nil,
+		}
+	}
+
+	return ResParams{
+		Code: 1000,
+		Msg:  "注册成功",
+		Data: nil,
+	}
+}
+
+//房间开播(通知后台开启kafka和redis资源的处理协程)
+func (c *ChatController) PostRoomStart() interface{} {
+	return nil
+}
+
+//房间停播(通知后台释放相关kafka和redis资源)
+func (c *ChatController) PostRoomStop() interface{} {
+	return nil
 }
