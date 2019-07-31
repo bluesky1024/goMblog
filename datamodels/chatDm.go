@@ -28,9 +28,15 @@ type ChatRoomConfigure struct {
 	UpdateTime   time.Time `xorm:"updated"`
 }
 
-type BarrageInfo struct {
+type RoomStatusSwitchMsg struct {
+	MsgId  int64
+	Uid    int64
+	Status int8
+}
+
+type ChatBarrageInfo struct {
 	Uid        int64
-	message    string
+	Message    string
 	CreateTime time.Time
-	VideoTime  time.Time
+	VideoTime  int64
 }

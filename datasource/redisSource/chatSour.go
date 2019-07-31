@@ -5,15 +5,15 @@ import (
 	"sync"
 )
 
-var userInstance *redis.ClusterClient
-var userLock = &sync.Mutex{}
+var chatInstance *redis.ClusterClient
+var chatLock = &sync.Mutex{}
 
-func LoadUserRdSour() (*redis.ClusterClient, error) {
+func LoadChatRdSour() (*redis.ClusterClient, error) {
 	var err error = nil
-	if userInstance == nil {
-		userLock.Lock()
-		defer userLock.Unlock()
-		if userInstance == nil {
+	if chatInstance == nil {
+		chatLock.Lock()
+		defer chatLock.Unlock()
+		if chatInstance == nil {
 			addrs := []string{
 				"127.0.0.1:10011",
 				"127.0.0.1:10012",
@@ -22,11 +22,11 @@ func LoadUserRdSour() (*redis.ClusterClient, error) {
 				"127.0.0.1:10015",
 				"127.0.0.1:10016",
 			}
-			userInstance, err = LoadRedisClusterSource(addrs)
+			chatInstance, err = LoadRedisClusterSource(addrs)
 			if err != nil {
 				return nil, err
 			}
 		}
 	}
-	return userInstance, err
+	return chatInstance, err
 }
