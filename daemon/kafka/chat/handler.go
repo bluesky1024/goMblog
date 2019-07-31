@@ -11,18 +11,54 @@ import (
 func newChatHandler() (handler *kafkaConsumer.ConsumerGroupHandlerC) {
 	handler = &kafkaConsumer.ConsumerGroupHandlerC{}
 
-	//处理关注消息
-	handler.RegisterHandler("relationFollow", handleFollow)
+	//处理房间开关消息
+	handler.RegisterHandler("roomStart", handleRoomStart)
+	handler.RegisterHandler("roomStop", handleRoomStop)
+
+	//处理新消息推送至房间
+	handler.RegisterHandler("newBarrageToRoom", handleNewMsgToRoom)
 
 	return handler
 }
 
-func handleFollow(msg sarama.ConsumerMessage) (err error) {
-	realMsg := new(dm.FollowMsg)
+func handleRoomStart(msg sarama.ConsumerMessage) (err error) {
+	realMsg := new(dm.RoomStatusSwitchMsg)
 	err = json.Unmarshal(msg.Value, realMsg)
 	if err != nil {
 		logger.Err(logType, err.Error())
 		return err
+	}
+	err = chatSrv.HandleRoomStartMsg(*realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+	}
+	return err
+}
+
+func handleRoomStop(msg sarama.ConsumerMessage) (err error) {
+	realMsg := new(dm.RoomStatusSwitchMsg)
+	err = json.Unmarshal(msg.Value, realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return err
+	}
+	err = chatSrv.HandleRoomStopMsg(*realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+	}
+	return err
+}
+
+func handleNewMsgToRoom(msg sarama.ConsumerMessage) (err error) {
+	realMsg := new(dm.ChatBarrageInfo)
+	err = json.Unmarshal(msg.Value, realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return err
+	}
+	err = chatSrv.HandleNewBarrageToRoomMsg(*realMsg)
+	if err != nil {
+		logger.Err(logType, err.Error())
 	}
 	return err
 }

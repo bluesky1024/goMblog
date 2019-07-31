@@ -19,16 +19,16 @@ func main() {
 
 	//relationConfig := conf.InitConfig("kafkaConfig.relation")
 	//fmt.Println(relationConfig)
-	relationConfig := make(map[string]string)
-	relationConfig["host"] = "0.0.0.0"
-	relationConfig["port"] = "9092"
+	chatConfig := make(map[string]string)
+	chatConfig["host"] = "0.0.0.0"
+	chatConfig["port"] = "9092"
 
 	config := sarama.NewConfig()
 	config.Version = sarama.V2_2_0_0
 	config.Consumer.Return.Errors = true
 
 	// Start with a client
-	client, err := sarama.NewClient([]string{relationConfig["host"] + ":" + relationConfig["port"]}, config)
+	client, err := sarama.NewClient([]string{chatConfig["host"] + ":" + chatConfig["port"]}, config)
 	if err != nil {
 		panic(err)
 	}
