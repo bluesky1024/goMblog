@@ -19,25 +19,26 @@ func init() {
 }
 
 func TestChatRbRepository_GetRoomConfig(t *testing.T) {
-	res, err := chatRd.GetRoomConfig(123)
+	res, err := chatRd.GetRoomConfigByRoomId(123)
 	fmt.Println(res, err)
 }
 
 func TestChatRbRepository_SetRoomConfig(t *testing.T) {
-	var uid int64 = 123
+	var RoomId int64 = 123
 	config := datamodels.ChatRoomConfigure{
-		RoomOwnerUid: uid,
+		RoomOwnerUid: 123,
+		RoomId:       RoomId,
 		RedisSetCnt:  3,
 		Status:       datamodels.RoomStatusNormal,
 		WorkStatus:   datamodels.WorkStatusOn,
 	}
-	err := chatRd.SetRoomConfig(uid, config)
+	err := chatRd.SetRoomConfig(RoomId, config)
 	fmt.Println(err)
 }
 
 func TestChatRbRepository_DelRoomConfig(t *testing.T) {
-	var uid int64 = 123
-	succ, err := chatRd.DelRoomConfig(uid)
+	var RoomId int64 = 123
+	succ, err := chatRd.DelRoomConfig(RoomId)
 	fmt.Println(succ, err)
 }
 

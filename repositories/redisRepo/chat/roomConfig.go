@@ -6,8 +6,8 @@ import (
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-func (r *ChatRbRepository) SetRoomConfig(uid int64, roomConfig datamodels.ChatRoomConfigure) error {
-	key, expireTimeDuration := getRoomConfigSetInfo(uid)
+func (r *ChatRbRepository) SetRoomConfig(roomId int64, roomConfig datamodels.ChatRoomConfigure) error {
+	key, expireTimeDuration := getRoomConfigSetInfo(roomId)
 	configInfo, _ := json.Marshal(&roomConfig)
 	_, err := r.redisPool.Set(key, configInfo, expireTimeDuration).Result()
 	if err != nil {
@@ -16,8 +16,8 @@ func (r *ChatRbRepository) SetRoomConfig(uid int64, roomConfig datamodels.ChatRo
 	return err
 }
 
-func (r *ChatRbRepository) GetRoomConfig(uid int64) (datamodels.ChatRoomConfigure, error) {
-	key, _ := getRoomConfigSetInfo(uid)
+func (r *ChatRbRepository) GetRoomConfigByRoomId(roomId int64) (datamodels.ChatRoomConfigure, error) {
+	key, _ := getRoomConfigSetInfo(roomId)
 	res, err := r.redisPool.Get(key).Result()
 	config := new(datamodels.ChatRoomConfigure)
 	if err != nil {
@@ -32,8 +32,8 @@ func (r *ChatRbRepository) GetRoomConfig(uid int64) (datamodels.ChatRoomConfigur
 	return *config, nil
 }
 
-func (r *ChatRbRepository) DelRoomConfig(uid int64) (succ bool, err error) {
-	key, _ := getRoomConfigSetInfo(uid)
+func (r *ChatRbRepository) DelRoomConfig(roomId int64) (succ bool, err error) {
+	key, _ := getRoomConfigSetInfo(roomId)
 	res, err := r.redisPool.Del(key).Result()
 	if err != nil {
 		logger.Err(logType, err.Error())

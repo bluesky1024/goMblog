@@ -1,6 +1,7 @@
 package chatService
 
 import (
+	"errors"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
@@ -65,7 +66,19 @@ func (s *chatService) HandleRoomStopMsg(msg dm.RoomStatusSwitchMsg) (err error) 
 	return nil
 }
 
-func (c *chatService) HandleNewBarrageToRoomMsg(msg dm.ChatBarrageInfo) (err error) {
+func (c *chatService) HandleNewBarrageToRoomMsg(msg dm.ChatBarrageInfo) error {
+	roomConfig, err := c.rdRepo.GetRoomConfigByRoomId(msg.RoomId)
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return errors.New("not found room config")
+	}
 
+	//弹幕信息写入redis
+	for setInd := 1; setInd <= roomConfig.RedisSetCnt; setInd++ {
+		err = c.rdRepo.AppendNewBarrage(roomConfig.RoomOwnerUid, setInd, msg)
+		if err != nil {
+			logger.Err(logType, err.Error())
+		}
+	}
 	return nil
 }

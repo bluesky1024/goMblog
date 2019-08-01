@@ -36,6 +36,7 @@ type RoomStatusSwitchMsg struct {
 
 type ChatBarrageInfo struct {
 	Uid        int64
+	RoomId     int64
 	Message    string
 	CreateTime time.Time
 	VideoTime  int64

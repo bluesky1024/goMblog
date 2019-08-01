@@ -18,8 +18,8 @@ type BarrageInfoInSet struct {
 }
 
 //往指定集合中塞入新的弹幕信息
-func (r *ChatRbRepository) AppendNewBarrage(uid int64, setInd int, barrageInfo datamodels.ChatBarrageInfo) error {
-	key := getBarrageSetInfo(uid, setInd)
+func (r *ChatRbRepository) AppendNewBarrage(roomOwnerUid int64, setInd int, barrageInfo datamodels.ChatBarrageInfo) error {
+	key := getBarrageSetInfo(roomOwnerUid, setInd)
 	info := BarrageInfoInSet{
 		Uid:       barrageInfo.Uid,
 		Message:   barrageInfo.Message,
@@ -45,8 +45,8 @@ func (r *ChatRbRepository) AppendNewBarrage(uid int64, setInd int, barrageInfo d
 }
 
 //从指定集合中获取timeAfter时间之后的size条弹幕信息
-func (r *ChatRbRepository) GetBarragesByUid(uid int64, setInd int, size int, timeAfter time.Time) ([]datamodels.ChatBarrageInfo, error) {
-	key := getBarrageSetInfo(uid, setInd)
+func (r *ChatRbRepository) GetBarragesByUid(roomOwnerUid int64, setInd int, size int, timeAfter time.Time) ([]datamodels.ChatBarrageInfo, error) {
+	key := getBarrageSetInfo(roomOwnerUid, setInd)
 
 	startTime := timeAfter.UnixNano() / 1e6
 	curTime := time.Now().UnixNano() / 1e6
@@ -71,8 +71,8 @@ func (r *ChatRbRepository) GetBarragesByUid(uid int64, setInd int, size int, tim
 }
 
 //删除某个房间指定时间之前的弹幕
-func (r *ChatRbRepository) RemoveBarrageByUid(uid int64, setInd int, timeBefore time.Time) error {
-	key := getBarrageSetInfo(uid, setInd)
+func (r *ChatRbRepository) RemoveBarrageByUid(roomOwnerUid int64, setInd int, timeBefore time.Time) error {
+	key := getBarrageSetInfo(roomOwnerUid, setInd)
 
 	//ZREMRANGEBYSCORE key min max
 	_, err := r.redisPool.ZRevRangeByScore(key, redis.ZRangeBy{

@@ -3,8 +3,11 @@ package chatService
 import (
 	"errors"
 	"github.com/Shopify/sarama"
+	dm "github.com/bluesky1024/goMblog/datamodels"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
+	"github.com/bluesky1024/goMblog/datasource/redisSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/chat"
+	"github.com/bluesky1024/goMblog/repositories/redisRepo/chat"
 	"github.com/bluesky1024/goMblog/services/userGrpc"
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
@@ -21,10 +24,13 @@ type ChatServicer interface {
 	StopRoom(uid int64) error
 
 	////观众操作
-	//EnterRoom(connectId int64, uid int64, roomId int64) error
-	//LeaveRoom(connectId int64, uid int64, roomId int64) error
-	//PostNewMessageIntoRoom(connectId int64, uid int64, roomId int64) error
-	//GetMessageFromRoom(connectId int64, uid int64, roomId int64)
+	GetBarrageByRoomId(uid int64, roomId int64) (barrages []dm.ChatBarrageInfo, err error)
+	SendBarrage(uid int64, roomId int64, message string, videoTime int64) error
+
+	//队列操作
+	HandleRoomStartMsg(msg dm.RoomStatusSwitchMsg) (err error)
+	HandleRoomStopMsg(msg dm.RoomStatusSwitchMsg) (err error)
+	HandleNewBarrageToRoomMsg(msg dm.ChatBarrageInfo) (err error)
 
 	ReleaseSrv() error
 }
@@ -33,6 +39,7 @@ type chatService struct {
 	//弹幕消息队列
 	kafkaProducer sarama.AsyncProducer
 	dbRepo        *chatDbRepo.ChatDbRepository
+	rdRepo        *chatRdRepo.ChatRbRepository
 
 	userSrv userGrpc.UserServicer
 }
@@ -52,6 +59,13 @@ func NewChatServicer() (ChatServicer, error) {
 	}
 	chatRepo := chatDbRepo.NewChatRepository(chatSourceM, chatSourceR)
 
+	//redis服务初始化
+	rdSource, err := redisSource.LoadChatRdSour()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil, err
+	}
+	chatRd := chatRdRepo.NewChatRdRepo(rdSource)
 	//kafka生产者初始化
 	//kafkaConfig := conf.InitConfig("kafkaConfig.relation")
 	kafkaConfig := make(map[string]string)
@@ -71,24 +85,10 @@ func NewChatServicer() (ChatServicer, error) {
 
 	return &chatService{
 		dbRepo:        chatRepo,
+		rdRepo:        chatRd,
 		kafkaProducer: kafkaProducer,
 		userSrv:       userSrv,
 	}, nil
-}
-
-func newKafkaProducer(addr []string) (producer sarama.AsyncProducer, err error) {
-	config := sarama.NewConfig()
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Partitioner = sarama.NewHashPartitioner
-	config.Producer.Return.Successes = true
-	config.Producer.Return.Errors = true
-	config.Version = sarama.V2_2_0_0
-	producer, err = sarama.NewAsyncProducer(addr, config)
-	if err != nil {
-		logger.Err(logType, err.Error())
-		return nil, err
-	}
-	return producer, nil
 }
 
 func (s *chatService) ReleaseSrv() (err error) {

@@ -14,10 +14,10 @@ var (
 	roomBarrageSetKey = "barrage_set_%d_%d"
 )
 
-func getRoomConfigSetInfo(uid int64) (key string, expireTime time.Duration) {
-	return fmt.Sprintf(roomConfigKey, uid), roomConfigTimeDuration
+func getRoomConfigSetInfo(roomId int64) (key string, expireTime time.Duration) {
+	return fmt.Sprintf(roomConfigKey, roomId), roomConfigTimeDuration
 }
 
-func getBarrageSetInfo(uid int64, setInd int) (key string) {
-	return fmt.Sprintf(roomBarrageSetKey, uid, setInd)
+func getBarrageSetInfo(roomId int64, setInd int) (key string) {
+	return fmt.Sprintf(roomBarrageSetKey, roomId, setInd)
 }
