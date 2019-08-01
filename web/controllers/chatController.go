@@ -1,14 +1,18 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/bluesky1024/goMblog/datamodels"
 	chatSrv "github.com/bluesky1024/goMblog/services/chat"
 	userSrv "github.com/bluesky1024/goMblog/services/user"
+	"github.com/bluesky1024/goMblog/tools/logger"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/websocket"
 	"strconv"
 	"time"
+	//"time"
 )
 
 // GET				/chat/get
@@ -44,33 +48,66 @@ func (c *ChatController) GetVideoviewBy(mid int64) interface{} {
 	return GenViewResponse(c.Ctx, "chat/videoView.html", data)
 }
 
-func (c *ChatController) OnBarrageWebsocketConnect(roomName interface{}) {
+type BarrageInfoView struct {
+	UserName  string
+	VideoTime int64
+	Message   string
+}
+
+func (c *ChatController) OnBarrageWebsocketConnect(roomId interface{}) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-	fmt.Println(CurUid, "on connect", roomName)
 
-	c.WebsocketConn.Join(roomName.(string))
-
-	//启动定时任务，定时从这个roomName的kafka队列中拉数据发送到该连接的前端
-	go func() {
+	//启动定时任务，定时从这个roomId的redis池中拉数据发送到该连接的前端
+	go func(roomId int64, visitorUid int64) {
 		for {
-			fmt.Println(c.WebsocketConn.ID())
 			if !c.WebsocketConn.Server().IsConnected(c.WebsocketConn.ID()) {
 				fmt.Println("server disconnect")
-				//break
+				break
 			}
 
-			fmt.Println("for exist")
-			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
-			time.Sleep(5 * time.Second)
-			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
-			time.Sleep(5 * time.Second)
-			fmt.Println(c.WebsocketConn.Emit("clientNewMsg", "roomName1"))
+			//barrageInfo := datamodels.ChatBarrageInfo{
+			//	Uid:        123,
+			//	Message:    "this is 123's message",
+			//	VideoTime:  222,
+			//	CreateTime: time.Now(),
+			//}
+
+			barrageInfos, err := c.ChatSrv.GetBarrageByRoomId(visitorUid, roomId)
+			if err != nil {
+				//处理方式待补充
+			}
+
+			//获取弹幕作者名
+			uids := make([]int64, len(barrageInfos))
+			for i, barrageInfo := range barrageInfos {
+				uids[i] = barrageInfo.Uid
+			}
+			userInfos, err := c.UserSrv.GetMultiByUids(uids)
+			if err != nil {
+				//处理方式待补充
+			}
+
+			//拼凑输出内容
+			viewInfos := make([]BarrageInfoView, len(barrageInfos))
+			for i, barrageInfo := range barrageInfos {
+				viewInfos[i] = BarrageInfoView{
+					UserName:  userInfos[barrageInfo.Uid].NickName,
+					VideoTime: barrageInfo.VideoTime,
+					Message:   barrageInfo.Message,
+				}
+			}
+
+			err = c.WebsocketConn.Emit("clientNewMsg", viewInfos)
+			if err != nil {
+
+			}
+
 			time.Sleep(5 * time.Second)
 		}
 
 		fmt.Println("start_to_send_public")
-		c.WebsocketConn.To(websocket.All).Emit("clientNewMsg", "this is a public message for all")
-	}()
+		//c.WebsocketConn.To(websocket.All).Emit("clientNewMsg", "this is a public message for all")
+	}(roomId.(int64), CurUid)
 }
 func (c *ChatController) OnBarrageWebsocketDisconnect(roomName string) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
@@ -78,7 +115,22 @@ func (c *ChatController) OnBarrageWebsocketDisconnect(roomName string) {
 }
 func (c *ChatController) OnBarrageWebsocketGetNewMessage(message string) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-	fmt.Println(CurUid, "getNewMessage", message)
+
+	type Barrage struct {
+		RoomId    int64  `json:"roomNO"`
+		Message   string `json:"message"`
+		videoTime int64  `json:"videoTime"`
+	}
+	var newMessage Barrage
+	err := json.Unmarshal([]byte(message), &newMessage)
+	if err != nil {
+		return
+	}
+
+	err = c.ChatSrv.SendBarrage(CurUid, newMessage.RoomId, newMessage.Message, newMessage.videoTime)
+	if err != nil {
+
+	}
 }
 
 func (c *ChatController) GetBarrageWebsocketBy(mid int64) {
@@ -121,10 +173,50 @@ func (c *ChatController) PostRoomRegister() interface{} {
 
 //房间开播(通知后台开启kafka和redis资源的处理协程)
 func (c *ChatController) PostRoomStart() interface{} {
-	return nil
+	curUid := GetCurrentUserID(c.Session)
+	if curUid == 0 {
+		return ResParams{
+			Code: 1001,
+			Msg:  "未登陆",
+			Data: nil,
+		}
+	}
+	err := c.ChatSrv.StartRoom(curUid)
+	if err != nil {
+		return ResParams{
+			Code: 1001,
+			Msg:  "直播间打开失败",
+			Data: nil,
+		}
+	}
+	return ResParams{
+		Code: 1000,
+		Msg:  "启动成功",
+		Data: nil,
+	}
 }
 
 //房间停播(通知后台释放相关kafka和redis资源)
 func (c *ChatController) PostRoomStop() interface{} {
-	return nil
+	curUid := GetCurrentUserID(c.Session)
+	if curUid == 0 {
+		return ResParams{
+			Code: 1001,
+			Msg:  "未登陆",
+			Data: nil,
+		}
+	}
+	err := c.ChatSrv.StopRoom(curUid)
+	if err != nil {
+		return ResParams{
+			Code: 1001,
+			Msg:  "直播间关闭失败",
+			Data: nil,
+		}
+	}
+	return ResParams{
+		Code: 1000,
+		Msg:  "关闭成功",
+		Data: nil,
+	}
 }

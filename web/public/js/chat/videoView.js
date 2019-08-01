@@ -44,9 +44,9 @@
         }
 
     }
-    function appendList(text) {
+    function appendList(userName,text) {
         var p = document.createElement('p');
-        p.innerText = text;
+        p.innerText = userName + ":" + text;
         document.querySelector('#content-text').appendChild(p);
     }
     var barage = new Barrage('content');
@@ -94,7 +94,8 @@
     }
 
     function HandlerOnGetNewMessage(messageData) {
-        console.log("get new message",messageData);
+        console.log("get new message",JSON.parse(messageData));
+        NewBarage(JSON.parse(messageData).Message);
     }
 
     function HandlerOnDisconnect() {
@@ -102,26 +103,29 @@
         console.log("on disconnect");
     }
 
-    $("#send-message").on("click", function() {
-        var audio = document.getElementById("video-view");
-        var a = audio.duration;//播放时间
-        var b = audio.currentTime;//播放进度
-        console.log("time",a,b);
+    function NewBarage(userName,message) {
+        barage.shoot(message);
+        appendList(userName,message);
+    }
 
-        // if (isConnect){
-        //     var text = document.querySelector('#text').value;
-        //
-        //     data = {
-        //         roomNO:roomNO,
-        //         message:text,
-        //     };
-        //     socket.Emit("newMsg",data);
-        //
-        //     barage.shoot(text);
-        //
-        //     appendList(text);
-        // }else{
-        //     alert("弹幕服务连接未建立");
-        // }
+    $("#send-message").on("click", function() {
+        // var audio = document.getElementById("video-view");
+        // var a = audio.duration;//播放时间
+        // var b = audio.currentTime;//播放进度
+        // console.log("time",a,b);
+
+        if (isConnect){
+            var text = document.querySelector('#text').value;
+
+            data = {
+                roomNO:roomNO,
+                message:text,
+            };
+            socket.Emit("newMsg",JSON.stringify(data));
+
+            NewBarage("我",text);
+        }else{
+            alert("弹幕服务连接未建立");
+        }
     });
-})()
+})();
