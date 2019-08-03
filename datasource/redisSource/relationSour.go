@@ -6,13 +6,13 @@ import (
 )
 
 var relationInstance *redis.ClusterClient
-var relationLock *sync.Mutex = &sync.Mutex{}
+var relationLock = &sync.Mutex{}
 
 func LoadRelationRdSour() (*redis.ClusterClient, error) {
 	var err error = nil
 	if relationInstance == nil {
-		userLock.Lock()
-		defer userLock.Unlock()
+		relationLock.Lock()
+		defer relationLock.Unlock()
 		if relationInstance == nil {
 			addrs := []string{
 				"127.0.0.1:10011",

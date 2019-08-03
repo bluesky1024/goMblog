@@ -6,7 +6,7 @@ import (
 )
 
 var userInstance *redis.ClusterClient
-var userLock *sync.Mutex = &sync.Mutex{}
+var userLock = &sync.Mutex{}
 
 func LoadUserRdSour() (*redis.ClusterClient, error) {
 	var err error = nil

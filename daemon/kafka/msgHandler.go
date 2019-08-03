@@ -43,7 +43,7 @@ func (h *ConsumerGroupHandlerC) RegisterHandler(topic string, handler TopicHandl
 	//	h.Topics = make([]string, 1)
 	//}
 	if h.HandlerMap == nil {
-		h.HandlerMap = make(map[string]TopicHandler, 1)
+		h.HandlerMap = make(map[string]TopicHandler)
 	}
 	h.Topics = append(h.Topics, topic)
 	h.HandlerMap[topic] = handler
