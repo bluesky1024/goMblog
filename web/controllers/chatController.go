@@ -3,16 +3,14 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bluesky1024/goMblog/datamodels"
 	chatSrv "github.com/bluesky1024/goMblog/services/chat"
 	userSrv "github.com/bluesky1024/goMblog/services/user"
-	"github.com/bluesky1024/goMblog/tools/logger"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/websocket"
+	"math/rand"
 	"strconv"
 	"time"
-	//"time"
 )
 
 // GET				/chat/get
@@ -29,23 +27,34 @@ type ChatController struct {
 	Session *sessions.Session
 }
 
+func (c *ChatController) GetNoRoom() interface{} {
+	data := iris.Map{
+		"Title": "chat error",
+	}
+	return GenViewResponse(c.Ctx, "chat/noRoom.html", data)
+}
+
 // GetProfle handles GET: http://localhost:8080/chat/videoview.
-func (c *ChatController) GetVideoviewBy(mid int64) interface{} {
+func (c *ChatController) GetVideoviewBy(roomId int64) interface{} {
+	//判断房间是否存在
+	roomConfig, err := c.ChatSrv.GetRoomConfigByRoomId(roomId)
+	if err != nil {
+		c.Ctx.Redirect("/chat/no/room")
+		return nil
+	}
+
 	//判断是否登录
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-
-	//if CurUid == 0 {
-	//	c.Ctx.Redirect("/user/login")
-	//}
 
 	//用户基础数据
 	userInfo, _ := c.UserSrv.GetByUid(CurUid)
 	data := iris.Map{
-		"Title":    "chat room",
+		"Title":    "chat room-" + roomConfig.RoomName,
 		"UserInfo": userInfo,
-		"RoomNO":   mid,
+		"RoomNO":   strconv.FormatInt(roomId, 10),
 	}
 	return GenViewResponse(c.Ctx, "chat/videoView.html", data)
+
 }
 
 type BarrageInfoView struct {
@@ -54,27 +63,36 @@ type BarrageInfoView struct {
 	Message   string
 }
 
-func (c *ChatController) OnBarrageWebsocketConnect(roomId interface{}) {
+func (c *ChatController) OnBarrageWebsocketConnect(roomIdStr string) {
+	roomId, _ := strconv.ParseInt(roomIdStr, 10, 64)
+	//判断房间是否存在
+	_, err := c.ChatSrv.GetRoomConfigByRoomId(roomId)
+	if err != nil {
+		disConnectErr := c.WebsocketConn.Disconnect()
+		if disConnectErr != nil {
+			fmt.Println(disConnectErr)
+		}
+		return
+	}
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
+	//后续需要根据curUid来进行hash，如果未登录，需要分配一个随机的int64，此处允许重复
+	if CurUid == 0 {
+		rand.Seed(time.Now().UnixNano())
+		CurUid = rand.Int63n(10000000-1) + 1
+	}
 
 	//启动定时任务，定时从这个roomId的redis池中拉数据发送到该连接的前端
-	go func(roomId int64, visitorUid int64) {
+	go func(roomId int64, visitorUid int64, server *websocket.Server) {
 		for {
-			if !c.WebsocketConn.Server().IsConnected(c.WebsocketConn.ID()) {
+			if !server.IsConnected(c.WebsocketConn.ID()) {
 				fmt.Println("server disconnect")
 				break
 			}
 
-			//barrageInfo := datamodels.ChatBarrageInfo{
-			//	Uid:        123,
-			//	Message:    "this is 123's message",
-			//	VideoTime:  222,
-			//	CreateTime: time.Now(),
-			//}
-
 			barrageInfos, err := c.ChatSrv.GetBarrageByRoomId(visitorUid, roomId)
 			if err != nil {
 				//处理方式待补充
+				fmt.Println(err)
 			}
 
 			//获取弹幕作者名
@@ -85,6 +103,7 @@ func (c *ChatController) OnBarrageWebsocketConnect(roomId interface{}) {
 			userInfos, err := c.UserSrv.GetMultiByUids(uids)
 			if err != nil {
 				//处理方式待补充
+				fmt.Println(err)
 			}
 
 			//拼凑输出内容
@@ -96,44 +115,44 @@ func (c *ChatController) OnBarrageWebsocketConnect(roomId interface{}) {
 					Message:   barrageInfo.Message,
 				}
 			}
-
-			err = c.WebsocketConn.Emit("clientNewMsg", viewInfos)
-			if err != nil {
-
+			if len(viewInfos) != 0 {
+				err = c.WebsocketConn.Emit("clientNewMsg", viewInfos)
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
 
 			time.Sleep(5 * time.Second)
 		}
-
-		fmt.Println("start_to_send_public")
-		//c.WebsocketConn.To(websocket.All).Emit("clientNewMsg", "this is a public message for all")
-	}(roomId.(int64), CurUid)
+	}(roomId, CurUid, c.WebsocketConn.Server())
 }
-func (c *ChatController) OnBarrageWebsocketDisconnect(roomName string) {
+func (c *ChatController) OnBarrageWebsocketDisconnect(roomId string) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
-	fmt.Println(CurUid, "disconnect", roomName)
+	fmt.Println(CurUid, "disconnect", roomId)
 }
 func (c *ChatController) OnBarrageWebsocketGetNewMessage(message string) {
 	CurUid := c.Ctx.Values().Get("CurUid").(int64)
 
 	type Barrage struct {
-		RoomId    int64  `json:"roomNO"`
+		RoomId    string `json:"roomNO"`
 		Message   string `json:"message"`
 		videoTime int64  `json:"videoTime"`
 	}
 	var newMessage Barrage
 	err := json.Unmarshal([]byte(message), &newMessage)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
-	err = c.ChatSrv.SendBarrage(CurUid, newMessage.RoomId, newMessage.Message, newMessage.videoTime)
+	roomId, _ := strconv.ParseInt(newMessage.RoomId, 10, 64)
+	err = c.ChatSrv.SendBarrage(CurUid, roomId, newMessage.Message, newMessage.videoTime)
 	if err != nil {
-
+		fmt.Println(err)
 	}
 }
 
-func (c *ChatController) GetBarrageWebsocketBy(mid int64) {
+func (c *ChatController) GetBarrageWebsocketBy(roomId int64) {
 	c.WebsocketConn.OnLeave(c.OnBarrageWebsocketDisconnect)
 
 	//mvc模式没找到OnConnect钩子函数，只能通过自定义事件，建立连接之后前端再次发送connect来响应
@@ -152,6 +171,13 @@ func (c *ChatController) PostRoomRegister() interface{} {
 		redisSetCntStr = c.Ctx.FormValue("redisSetCnt")
 	)
 	curUid := GetCurrentUserID(c.Session)
+	if curUid == 0 {
+		return ResParams{
+			Code: 1001,
+			Msg:  "please login first",
+			Data: nil,
+		}
+	}
 	roomId, _ := strconv.ParseInt(roomIdStr, 10, 64)
 	redisSetCnt, _ := strconv.Atoi(redisSetCntStr)
 

@@ -55,13 +55,13 @@
     //
     // };
 
-    const textList = ['弹幕', '666', '233333333', 'javascript', 'html', 'css', '前端框架', 'Vue', 'React', 'Angular',
-        '测试弹幕效果'
-    ];
-    textList.forEach((s) => {
-        barage.shoot(s);
-        appendList(s);
-    })
+    // const textList = ['弹幕', '666', '233333333', 'javascript', 'html', 'css', '前端框架', 'Vue', 'React', 'Angular',
+    //     '测试弹幕效果'
+    // ];
+    // textList.forEach((s) => {
+    //     barage.shoot(s);
+    //     appendList(s);
+    // })
 
 
     //后端websocket交互相关
@@ -95,7 +95,10 @@
 
     function HandlerOnGetNewMessage(messageData) {
         console.log("get new message",JSON.parse(messageData));
-        NewBarage(JSON.parse(messageData).Message);
+        var messages = JSON.parse(messageData);
+        for ( var i = 0; i <messages.length; i++){
+            NewBarage(messages[i].UserName,messages[i].Message);
+        }
     }
 
     function HandlerOnDisconnect() {
@@ -120,10 +123,11 @@
             data = {
                 roomNO:roomNO,
                 message:text,
+                videoTime:123
             };
             socket.Emit("newMsg",JSON.stringify(data));
 
-            NewBarage("我",text);
+            // NewBarage("我",text);
         }else{
             alert("弹幕服务连接未建立");
         }

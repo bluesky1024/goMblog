@@ -34,7 +34,8 @@ func (s *chatService) GetRoomConfigByRoomId(roomId int64) (info datamodels.ChatR
 	info, err = s.rdRepo.GetRoomConfigByRoomId(roomId)
 	if err != nil {
 		logger.Err(logType, err.Error())
-		info, found := s.dbRepo.GetRoomConfigByRoomId(roomId)
+		var found bool
+		info, found = s.dbRepo.GetRoomConfigByRoomId(roomId)
 		if !found {
 			err = errors.New(strconv.FormatInt(roomId, 10) + "room not found")
 			logger.Err(logType, err.Error())

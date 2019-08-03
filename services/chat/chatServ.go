@@ -15,6 +15,9 @@ import (
 var logType = "chatService"
 
 type ChatServicer interface {
+	//获取房间配置信息/判断房间是否存在
+	GetRoomConfigByRoomId(roomId int64) (info dm.ChatRoomConfigure, err error)
+
 	//后台管理
 	AddRoom(roomName string, roomId int64, roomOwnerUid int64, redisSetCnt int) error
 	RemoveRoom(roomId int64) error
