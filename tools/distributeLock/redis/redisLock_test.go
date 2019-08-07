@@ -112,3 +112,31 @@ func TestLockWithExtend(t *testing.T) {
 	cancel()
 	tempLock.UnLock()
 }
+
+func TestGoCoroutineA(t *testing.T) {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	for i := 0; i < 10000; i++ {
+		temp := 0
+		for j := 0; j < 1000; j++ {
+			temp = temp * (j + i)
+		}
+	}
+	wg.Done()
+	wg.Wait()
+}
+
+func TestGoCoroutineB(t *testing.T) {
+	wg := sync.WaitGroup{}
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			temp := 0
+			for j := 0; j < 10000; j++ {
+				temp = temp * (j + i)
+			}
+		}(i)
+	}
+	wg.Wait()
+}
