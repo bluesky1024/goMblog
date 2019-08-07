@@ -72,3 +72,35 @@ func (s *RelationService) GetGroupsByUid(ctx context.Context, req *pb.UidReq) (r
 	}
 	return res, err
 }
+
+func (s *RelationService) GetFollowCntByUids(ctx context.Context, req *pb.UidsReq) (res *pb.MultiCnts, err error) {
+	followCntMap := s.serv.GetFollowCntByUids(req.Uids)
+
+	res = &pb.MultiCnts{}
+	res.CntInfos = make([]*pb.CntInfo, len(followCntMap))
+	ind := 0
+	for uid, followCnt := range followCntMap {
+		res.CntInfos[ind] = &pb.CntInfo{
+			Uid:       uid,
+			FollowCnt: followCnt,
+		}
+		ind++
+	}
+	return res, err
+}
+
+func (s *RelationService) GetFanCntByUids(ctx context.Context, req *pb.UidsReq) (res *pb.MultiCnts, err error) {
+	fanCntMap := s.serv.GetFanCntByUids(req.Uids)
+
+	res = &pb.MultiCnts{}
+	res.CntInfos = make([]*pb.CntInfo, len(fanCntMap))
+	ind := 0
+	for uid, fanCnt := range fanCntMap {
+		res.CntInfos[ind] = &pb.CntInfo{
+			Uid:    uid,
+			FanCnt: fanCnt,
+		}
+		ind++
+	}
+	return res, err
+}

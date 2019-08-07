@@ -1,6 +1,7 @@
 package main
 
 import (
+	chatServ "github.com/bluesky1024/goMblog/services/chat"
 	feedServ "github.com/bluesky1024/goMblog/services/feed"
 	mblogServ "github.com/bluesky1024/goMblog/services/mblog"
 	relationServ "github.com/bluesky1024/goMblog/services/relation"
@@ -19,6 +20,7 @@ var (
 	mblogSrv    mblogServ.MblogServicer
 	relationSrv relationServ.RelationServicer
 	feedSrv     feedServ.FeedServicer
+	chatSrv     chatServ.ChatServicer
 )
 
 func initServ() {
@@ -48,6 +50,11 @@ func initBasicServ() {
 	}
 
 	feedSrv, err = feedServ.NewFeedServicer()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	chatSrv, err = chatServ.NewChatServicer()
 	if err != nil {
 		panic(err.Error())
 	}

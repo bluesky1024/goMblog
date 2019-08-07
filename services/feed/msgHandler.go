@@ -1,7 +1,6 @@
 package feedService
 
 import (
-	"errors"
 	"fmt"
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	"github.com/bluesky1024/goMblog/tools/logger"

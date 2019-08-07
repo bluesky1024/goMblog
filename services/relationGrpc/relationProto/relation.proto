@@ -26,6 +26,12 @@ message FanInfo {
     google.protobuf.Timestamp UpdateTime = 8;
 }
 
+message CntInfo {
+    int64 FollowCnt = 1;
+    int64 FanCnt = 2;
+    int64 Uid = 3;
+}
+
 message FollowGroup {
     int64 Id = 1;
     int64 Uid = 2;
@@ -53,8 +59,19 @@ message UidReq {
     int32 PageSize = 3;
 }
 
+message UidsReq {
+    repeated int64 Uids = 1;
+}
+
+message MultiCnts {
+    repeated CntInfo CntInfos = 1;
+}
+
+
 service Relation {
     rpc GetFollowsByUid(UidReq) returns (MultiFollows) {}
     rpc GetFansByUid(UidReq) returns  (MultiFans) {}
     rpc GetGroupsByUid(UidReq) returns (MultiFollowGroups) {}
+    rpc GetFollowCntByUids(UidsReq) returns (MultiCnts) {}
+    rpc GetFanCntByUids(UidsReq) returns (MultiCnts) {}
 }

@@ -80,14 +80,47 @@ func (s *relationService) sendGroupMsg(msg dm.SetGroupMsg) {
 
 func (s *relationService) HandleFollowMsg(msg dm.FollowMsg) (err error) {
 	//新增粉丝表记录
-	s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
+	dbRes := s.repo.AddOrUpdateFan(msg.FollowUid, msg.Uid)
+	if !dbRes {
+
+	}
+
+	//维护粉丝数
+	_, fanErr := s.rdRepo.AddFan(msg.FollowUid)
+	//粉丝计数的错误不应该终止本次消息处理，整合error，统一反馈到队列前端
+	if fanErr != nil {
+		logger.Err(logType, fanErr.Error())
+	}
+
+	//维护关注数
+	_, followErr := s.rdRepo.AddFollow(msg.Uid)
+	if followErr != nil {
+		logger.Err(logType, followErr.Error())
+	}
 
 	return err
 }
 
 func (s *relationService) HandleUnFollowMsg(msg dm.FollowMsg) (err error) {
 	//删除粉丝表记录
-	s.repo.DeleteFan(msg.FollowUid, msg.Uid)
+	dbRes := s.repo.DeleteFan(msg.FollowUid, msg.Uid)
+	if !dbRes {
+		errMsg, _ := json.Marshal(msg)
+		logger.Err(logType, "delete fan failed"+string(errMsg))
+	}
+
+	//维护粉丝数
+	_, fanErr := s.rdRepo.LoseFan(msg.FollowUid)
+	//粉丝计数的错误不应该终止本次消息处理，整合error，统一反馈到队列前端
+	if fanErr != nil {
+		logger.Err(logType, fanErr.Error())
+	}
+
+	//维护关注数
+	_, followErr := s.rdRepo.LoseFollow(msg.Uid)
+	if followErr != nil {
+		logger.Err(logType, followErr.Error())
+	}
 
 	return err
 }

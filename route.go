@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/websocket"
 	"time"
 )
 
@@ -60,6 +61,17 @@ func feed(app *mvc.Application) {
 	app.Register(SessManager.Start)
 
 	app.Handle(new(controllers.FeedController))
+}
+
+func chat(app *mvc.Application) {
+	ws := websocket.New(websocket.Config{})
+	app.Register(ws.Upgrade)
+	// http://localhost:8080/chat/iris-ws.js
+	app.Router.Any("/iris-ws.js", websocket.ClientHandler())
+
+	app.Register(userSrv)
+	app.Register(chatSrv)
+	app.Handle(new(controllers.ChatController))
 }
 
 //访问静态资源时的路径

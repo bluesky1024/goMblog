@@ -57,6 +57,13 @@ type FollowGroup struct {
 	UpdateTime time.Time `xorm:"updated"`
 }
 
+type RelationCnt struct {
+	Id        int32
+	Uid       int64
+	FanCnt    int32
+	FollowCnt int32
+}
+
 type FollowMsg struct {
 	MsgId      int64
 	Uid        int64

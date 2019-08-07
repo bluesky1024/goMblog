@@ -72,6 +72,18 @@ CREATE TABLE `fan_info_201903` (
 
 ---
 
+###### 粉丝数和关注数表
+```sql
+CREATE TABLE `relation_cnt_1` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `uid` bigint(18) unsigned NOT NULL COMMENT '用户uid',
+  `fan_cnt` int(10) unsigned NOT NULL COMMENT '粉丝数',
+  `follow_cnt` int(10) unsigned NOT NULL COMMENT '粉丝数',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户关系数目表' 
+```
+
 #### 难点
 * 粉丝列表人数过多怎么处理？
   - 使用一致性hash进行分表

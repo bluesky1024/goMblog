@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	logType = "kafkaConsumerRelation"
+	logType = "kafkaConsumerFeed"
 	groupId = "feedSrv"
 )
 

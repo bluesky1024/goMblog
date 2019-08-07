@@ -9,7 +9,7 @@ import (
 	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-var logType = "userService"
+var logType = "mblogService"
 
 type MblogServicer interface {
 	Create(uid int64, content string, readAble int8, originUid int64, originMid int64) (mblog dm.MblogInfo, err error)

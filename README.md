@@ -29,6 +29,17 @@ FUNCTION|PATH|METHOD|NEED_LOGIN
 个人关注feed页|/feed|GET|YES
 个人关注feed页(定领域)|/feed/[domain]|GET|YES
 
+### 直播弹幕
+FUNCTION|PATH|METHOD|NEED_LOGIN
+---|:--:|:--:|:--:
+个人直播页|/chat/videoview/[roomId]|GET|NO
+无效直播页|/chat/no/room|GET|NO
+注册直播间|/chat/room/register|POST|YES
+开始直播|/chat/room/start|POST|YES
+结束直播|/chat/room/stop|POST|YES
+弹幕接收(长连接)|/chat/barrage/websocket/[roomId]|GET|NO
+弹幕发送(长连接)|/chat/barrage/websocket/[roomId]|GET|YES
+
 ### 微博广场
 FUNCTION|PATH|METHOD|NEED_LOGIN
 ---|:--:|:--:|:--:

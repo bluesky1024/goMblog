@@ -2,10 +2,34 @@ package relationService
 
 import (
 	dm "github.com/bluesky1024/goMblog/datamodels"
+	"github.com/bluesky1024/goMblog/tools/logger"
 )
 
-func (s *relationService) GetFollowsByUid(uid int64, page int, pageSize int) (follows []dm.FollowInfo, cnt int64) {
-	return s.repo.SelectMultiFollowsByUid(uid, page, pageSize)
+func (s *relationService) GetFollowCntByUids(uids []int64) map[int64]int64 {
+	//优先从redis中取数据
+	res, err := s.rdRepo.GetFollowCnt(uids)
+	if err != nil {
+		logger.Err(logType, err.Error())
+	}
+
+	//redis中失败了，从mysql取
+	dbUids := make([]int64, 0)
+	for _, uid := range uids {
+		if _, ok := res[uid]; !ok {
+			dbUids = append(dbUids, uid)
+		}
+	}
+
+	return res
+}
+
+func (s *relationService) GetFollowsByUid(uid int64, page int, pageSize int) (follows []dm.FollowInfo, totalCnt int64) {
+	follows, _ = s.repo.SelectMultiFollowsByUid(uid, page, pageSize)
+	cntMap, err := s.rdRepo.GetFollowCnt([]int64{uid})
+	if len(cntMap) == 0 || err != nil {
+		return follows, 0
+	}
+	return follows, cntMap[uid]
 }
 
 func (s *relationService) Follow(uid int64, uidFollow int64) bool {

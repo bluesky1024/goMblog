@@ -3,7 +3,9 @@ package relationService
 import (
 	dm "github.com/bluesky1024/goMblog/datamodels"
 	ds "github.com/bluesky1024/goMblog/datasource/dbSource"
+	"github.com/bluesky1024/goMblog/datasource/redisSource"
 	"github.com/bluesky1024/goMblog/repositories/dbRepo/relation"
+	"github.com/bluesky1024/goMblog/repositories/redisRepo/relation"
 	"github.com/bluesky1024/goMblog/tools/logger"
 
 	"github.com/Shopify/sarama"
@@ -18,6 +20,9 @@ type RelationServicer interface {
 	UnFollow(uid int64, uidFollow int64) bool
 	CheckFollow(uidA int64, uidB int64) int
 	CheckRelation(uidA int64, uidB int64) int8
+
+	GetFollowCntByUids(uids []int64) (followCntMap map[int64]int64)
+	GetFanCntByUids(uids []int64) (fanbCntMap map[int64]int64)
 
 	/*分组管理*/
 	GetGroupsByUid(uid int64) (groups []dm.FollowGroup, cnt int64)
@@ -43,10 +48,12 @@ type relationService struct {
 	//}
 	kafkaProducer sarama.AsyncProducer
 	repo          *relationDbRepo.RelationDbRepository
+	rdRepo        *relationRdRepo.RelationRbRepository
 }
 
 func NewRelationServicer() (RelationServicer, error) {
 	//relation服务仓库初始化
+	//mysql
 	relationSourceM, err := ds.LoadRelation(true)
 	if err != nil {
 		logger.Err(logType, err.Error())
@@ -58,6 +65,14 @@ func NewRelationServicer() (RelationServicer, error) {
 		return nil, err
 	}
 	relationRepo := relationDbRepo.NewRelationRepository(relationSourceM, relationSourceS)
+
+	//redis cluster
+	redisSource, err := redisSource.LoadRelationRdSour()
+	if err != nil {
+		logger.Err(logType, err.Error())
+		return nil, err
+	}
+	redisRepo := relationRdRepo.NewRelationRdRepo(redisSource)
 
 	//kafka生产者初始化
 	//kafkaConfig := conf.InitConfig("kafkaConfig.relation")
@@ -72,6 +87,7 @@ func NewRelationServicer() (RelationServicer, error) {
 
 	return &relationService{
 		repo:          relationRepo,
+		rdRepo:        redisRepo,
 		kafkaProducer: kafkaProducer,
 	}, nil
 }
